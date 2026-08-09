@@ -711,6 +711,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tools/roi/hours-saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Hours Saved */
+        post: operations["run_hours_saved"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/roi/model-roi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Model Roi */
+        post: operations["run_model_roi"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/roi/implementation-cost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Implementation Cost */
+        post: operations["run_implementation_cost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/roi/build-vs-buy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Roi Build Vs Buy */
+        post: operations["run_roi_build_vs_buy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/runs": {
         parameters: {
             query?: never;
@@ -1410,6 +1478,30 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HoursSavedIn */
+        HoursSavedIn: {
+            /** Affected Users */
+            affected_users: number;
+            /** Hours Saved Per User Per Week */
+            hours_saved_per_user_per_week: number | string;
+            /** Fully Loaded Hourly Cost */
+            fully_loaded_hourly_cost: number | string;
+            /**
+             * Adoption Rate Pct
+             * @default 100
+             */
+            adoption_rate_pct: number | string;
+            /**
+             * Error Rate Reduction Pct
+             * @default 0
+             */
+            error_rate_reduction_pct: number | string;
+            /**
+             * Rework Hours Per Month
+             * @default 0
+             */
+            rework_hours_per_month: number | string;
+        };
         /**
          * IdentityOut
          * @description Unauthenticated-safe. Lets the client choose between the signed-in and
@@ -1427,6 +1519,41 @@ export interface components {
              * Format: date-time
              */
             server_time: string;
+        };
+        /** ImplementationCostIn */
+        ImplementationCostIn: {
+            /** Roles */
+            roles: components["schemas"]["RoleCostIn"][];
+            /**
+             * Duration Months
+             * @default 3
+             */
+            duration_months: number | string;
+            /**
+             * Infrastructure Setup
+             * @default 0
+             */
+            infrastructure_setup: number | string;
+            /**
+             * Licences
+             * @default 0
+             */
+            licences: number | string;
+            /**
+             * Training
+             * @default 0
+             */
+            training: number | string;
+            /**
+             * Contingency Pct
+             * @default 15
+             */
+            contingency_pct: number | string;
+            /**
+             * Ongoing Monthly
+             * @default 0
+             */
+            ongoing_monthly: number | string;
         };
         /** LlmPricingIn */
         LlmPricingIn: {
@@ -1510,6 +1637,30 @@ export interface components {
             /** Status Reason */
             status_reason?: string | null;
             provenance: components["schemas"]["ProvenanceOut"];
+        };
+        /** ModelRoiIn */
+        ModelRoiIn: {
+            /** Current Monthly Cost */
+            current_monthly_cost: number | string;
+            /** Ai Monthly Cost */
+            ai_monthly_cost: number | string;
+            /** Implementation Cost */
+            implementation_cost: number | string;
+            /**
+             * Adoption Ramp Months
+             * @description Months to reach full adoption. 1 means instant.
+             */
+            adoption_ramp_months: number;
+            /**
+             * Horizon Months
+             * @default 36
+             */
+            horizon_months: number;
+            /**
+             * Discount Rate Pct
+             * @default 10
+             */
+            discount_rate_pct: number | string;
         };
         /** PageMeta */
         PageMeta: {
@@ -1714,6 +1865,55 @@ export interface components {
             token: string;
             /** Password */
             password: string;
+        };
+        /** RoiBuildVsBuyIn */
+        RoiBuildVsBuyIn: {
+            /** Build Hours */
+            build_hours: number;
+            /** Blended Hourly Rate */
+            blended_hourly_rate: number | string;
+            /**
+             * Build Infra Monthly
+             * @default 0
+             */
+            build_infra_monthly: number | string;
+            /**
+             * Maintenance Pct Of Build Annual
+             * @description Annual maintenance as a percentage of the original build cost.
+             * @default 20
+             */
+            maintenance_pct_of_build_annual: number | string;
+            /** Vendor Monthly */
+            vendor_monthly: number | string;
+            /**
+             * Vendor Integration Hours
+             * @default 0
+             */
+            vendor_integration_hours: number;
+            /**
+             * Vendor Escalation Pct Annual
+             * @default 0
+             */
+            vendor_escalation_pct_annual: number | string;
+            /**
+             * Build Months To Value
+             * @default 6
+             */
+            build_months_to_value: number;
+            /**
+             * Buy Months To Value
+             * @default 1
+             */
+            buy_months_to_value: number;
+        };
+        /** RoleCostIn */
+        RoleCostIn: {
+            /** Name */
+            name: string;
+            /** Hours */
+            hours: number;
+            /** Hourly Rate */
+            hourly_rate: number | string;
         };
         /**
          * RunDetailOut
@@ -3169,6 +3369,138 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_CompareMetaOut_"];
+                };
+            };
+        };
+    };
+    run_hours_saved: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HoursSavedIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_model_roi: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModelRoiIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_implementation_cost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImplementationCostIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_roi_build_vs_buy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoiBuildVsBuyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

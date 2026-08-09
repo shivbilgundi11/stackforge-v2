@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { Panel, PanelHeader } from "@/components/forge/panel";
 import type { ToolRunResult } from "@/lib/api/tools";
 import { useWorkflowSession, type Handoff } from "@/lib/stores/workflow-session";
+import { omitUndefined } from "@/lib/tools/handoff";
 import { getTool, toolHref } from "@/lib/tools/registry";
 import type { ToolSpec } from "@/lib/tools/spec";
 
@@ -54,11 +55,13 @@ export function HandoffBar({
               send(target.slug, {
                 from: spec.slug,
                 fromTitle: spec.title,
-                values: handoff.values({
-                  metrics: result.metrics ?? {},
-                  input,
-                  targetDefaults: target.defaults ?? {},
-                }),
+                values: omitUndefined(
+                  handoff.values({
+                    metrics: result.metrics ?? {},
+                    input,
+                    targetDefaults: target.defaults ?? {},
+                  }),
+                ),
               });
               router.push(toolHref(target));
             }}

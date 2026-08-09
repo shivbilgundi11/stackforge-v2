@@ -146,6 +146,12 @@ export const llmPricingSpec: ToolSpec = {
       }),
     },
     {
+      to: "model-roi",
+      label: "Build the ROI case",
+      description: "Carry this model spend in as the AI running cost.",
+      values: ({ metrics }) => ({ ai_monthly_cost: Number(metrics.monthly_cost ?? 0) }),
+    },
+    {
       to: "compare-models",
       label: "Compare against others",
       description: "Score this model against alternatives at the same workload.",
@@ -487,6 +493,14 @@ export const budgetEstimatorSpec: ToolSpec = {
     ],
   },
   handoffs: [
+    {
+      to: "model-roi",
+      label: "Build the ROI case",
+      description: "Carry this monthly spend in as the AI running cost.",
+      // The full monthly cost, not just the LLM line: the ROI case is against
+      // what the platform actually costs to run, infrastructure included.
+      values: ({ metrics }) => ({ ai_monthly_cost: Number(metrics.monthly_cost ?? 0) }),
+    },
     {
       to: "compare-stacks",
       label: "Compare stack archetypes",

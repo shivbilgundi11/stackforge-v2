@@ -94,7 +94,21 @@ export type FieldKind = Field["kind"];
 // ── Result blocks ────────────────────────────────────────────────────────────
 
 export type ResultBlock =
-  | { kind: "metrics"; keys?: string[]; columns?: 2 | 3 | 4; emphasise?: string }
+  | {
+      kind: "metrics";
+      keys?: string[];
+      columns?: 2 | 3 | 4;
+      emphasise?: string;
+      /**
+       * Override the derived label for specific keys.
+       *
+       * Titleising the key is right nearly always and wrong exactly when the
+       * key is an abbreviation: `roi_12m_pct` becomes "Roi 12M Pct". Those
+       * are worth naming by hand rather than teaching the humaniser about
+       * every acronym in the product.
+       */
+      labels?: Record<string, string>;
+    }
   | { kind: "table"; key: string; title?: string; description?: string; limit?: number }
   | {
       kind: "chart";

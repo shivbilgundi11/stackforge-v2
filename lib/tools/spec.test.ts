@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { z } from "zod";
 
 import { ALL_TOOLS } from "@/lib/navigation";
+import { omitUndefined } from "@/lib/tools/handoff";
 import { ALL_SPECS, TOOL_REGISTRY, searchTools, toolHref } from "@/lib/tools/registry";
 import type { Field } from "@/lib/tools/spec";
 import type { paths } from "@/types/api";
@@ -38,6 +39,10 @@ const KNOWN_ENDPOINTS = [
   "/api/v1/tools/compare/vector-db",
   "/api/v1/tools/compare/stacks",
   "/api/v1/tools/compare/build-vs-buy",
+  "/api/v1/tools/roi/hours-saved",
+  "/api/v1/tools/roi/model-roi",
+  "/api/v1/tools/roi/implementation-cost",
+  "/api/v1/tools/roi/build-vs-buy",
 ] as const satisfies readonly ApiPath[];
 
 /**
@@ -102,6 +107,23 @@ const METRIC_FIXTURES: Record<string, Record<string, unknown>> = {
     score: 74.1,
     priority: "balanced",
     options_compared: 3,
+  },
+  "hours-saved": {
+    monthly_hours: "43.48",
+    annual_hours: "521.79",
+    monthly_value: "4348.21",
+    annual_value: "52178.57",
+    fte_equivalent: "0.25",
+    rework_value_monthly: "0.00",
+    total_monthly_value: "4348.21",
+  },
+  "implementation-cost": {
+    total_cost: "48000.00",
+    labour_cost: "40000.00",
+    contingency: "8000.00",
+    monthly_burn: "12000.00",
+    ongoing_monthly: "0.00",
+    duration_months: 4,
   },
 };
 
@@ -303,11 +325,18 @@ describe("spec shape", () => {
         const metrics = METRIC_FIXTURES[spec.slug];
         expect(metrics, `${spec.slug}: no metric fixture for its handoffs`).toBeDefined();
 
-        const produced = handoff.values({
-          metrics: metrics ?? {},
-          input: spec.defaults ?? {},
-          targetDefaults: target.defaults ?? {},
-        });
+        // Through `omitUndefined`, exactly as `<HandoffBar>` sends it. A key
+        // set to `undefined` still overwrites the destination's default via
+        // spread, so testing the raw return would pass on values the real
+        // path rejects — and the failure lands on the user as a form that is
+        // invalid before they touch it.
+        const produced = omitUndefined(
+          handoff.values({
+            metrics: metrics ?? {},
+            input: spec.defaults ?? {},
+            targetDefaults: target.defaults ?? {},
+          }),
+        );
 
         const result = target.input.safeParse({ ...target.defaults, ...produced });
         expect(

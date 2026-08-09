@@ -118,7 +118,7 @@ function MetricsBlock({
       {chosen.map(([key, value]) => (
         <MetricTile
           key={key}
-          label={humanise(key)}
+          label={block.labels?.[key] ?? humanise(key)}
           value={formatMetric(key, value)}
           emphasis={block.emphasise === key}
         />
