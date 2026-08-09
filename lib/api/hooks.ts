@@ -49,6 +49,15 @@ export function useCompatibility(slugs: string[]) {
   });
 }
 
+export function useArchitectures() {
+  return useQuery({
+    queryKey: qk.catalog.architectures(),
+    queryFn: () => catalog.listArchitectures(),
+    // Immutable reference data; a layer count does not change.
+    staleTime: Infinity,
+  });
+}
+
 export function useGraveyard() {
   return useQuery({
     queryKey: qk.catalog.graveyard(),

@@ -39,7 +39,7 @@ export function GpuSelect({
   const { data: gpus, isPending } = useGpus(minVram ? { minVram } : {});
 
   const grouped = useMemo(() => groupByProvider(gpus ?? []), [gpus]);
-  const selected = gpus?.find((gpu) => gpu.id === value);
+  const selected = gpus?.find((gpu) => gpu.slug === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -79,7 +79,7 @@ export function GpuSelect({
                     key={gpu.id}
                     value={`${gpu.instance_name} ${gpu.gpu_model} ${gpu.provider}`}
                     onSelect={() => {
-                      onChange(gpu.id);
+                      onChange(gpu.slug);
                       setOpen(false);
                     }}
                     className="gap-2"
@@ -87,7 +87,7 @@ export function GpuSelect({
                     <CheckIcon
                       className={cn(
                         "size-3.5 shrink-0",
-                        gpu.id === value ? "opacity-100" : "opacity-0",
+                        gpu.slug === value ? "opacity-100" : "opacity-0",
                       )}
                       aria-hidden
                     />

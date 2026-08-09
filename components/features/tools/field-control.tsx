@@ -4,6 +4,7 @@ import { PlusIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, type Control, type FieldErrors } from "react-hook-form";
 
+import { ArchitectureSelect } from "@/components/features/catalog/architecture-select";
 import { GpuSelect } from "@/components/features/catalog/gpu-select";
 import { ModelSelect } from "@/components/features/catalog/model-select";
 import { ToolSelect } from "@/components/features/catalog/tool-select";
@@ -392,6 +393,16 @@ function Renderer({ field, value, onChange, onBlur, invalid, describedBy }: Rend
           category={field.category}
           multiple={field.multiple}
           max={field.max}
+          placeholder={field.placeholder}
+        />
+      );
+
+    case "architecture-select":
+      return (
+        <ArchitectureSelect
+          id={field.name}
+          value={typeof value === "string" ? value : undefined}
+          onChange={onChange}
           placeholder={field.placeholder}
         />
       );

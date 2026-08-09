@@ -20,6 +20,7 @@ export type CompatibilityPair = Schemas["CompatibilityPairOut"];
 export type Provenance = Schemas["ProvenanceOut"];
 export type CatalogStats = Schemas["CatalogStatsOut"];
 export type PricingHistoryEntry = Schemas["PricingHistoryOut"];
+export type Architecture = Schemas["ArchitectureOut"];
 
 export type ModelFilters = {
   family?: "chat" | "embedding" | "rerank";
@@ -90,6 +91,16 @@ export function getCompatibility(slugs: string[]) {
 
 export function getGraveyard() {
   return apiFetch<GraveyardEntry[]>("/api/v1/catalog/graveyard");
+}
+
+/**
+ * Open-weight model shapes, for VRAM estimation.
+ *
+ * Cached hard: these are physical constants, not prices, so there is nothing
+ * for a refetch to discover.
+ */
+export function listArchitectures() {
+  return apiFetch<Architecture[]>("/api/v1/catalog/architectures");
 }
 
 export function getCatalogStats() {

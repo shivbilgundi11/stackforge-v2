@@ -456,6 +456,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/catalog/architectures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Architectures
+         * @description Open-weight model architectures, for VRAM estimation.
+         *
+         *     No database and no provenance chip. These are physical properties fixed at
+         *     publication — a layer count cannot go stale — so the freshness machinery
+         *     that surrounds every price would be answering a question nobody has.
+         */
+        get: operations["list_architectures"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/catalog/graveyard": {
         parameters: {
             query?: never;
@@ -711,6 +735,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tools/infra/vram-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Vram Estimate */
+        post: operations["run_vram_estimate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/infra/gpu-cost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Gpu Cost */
+        post: operations["run_gpu_cost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/infra/cloud-cost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Cloud Cost */
+        post: operations["run_cloud_cost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/infra/docker-compose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Docker Compose */
+        post: operations["run_docker_compose"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/infra/k8s-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run K8S Estimate */
+        post: operations["run_k8s_estimate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/infra/readiness-checklist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Readiness Checklist */
+        post: operations["run_readiness_checklist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tools/rag/chunk-estimate": {
         parameters: {
             query?: never;
@@ -956,6 +1082,38 @@ export interface components {
             /** Anonymous Id */
             anonymous_id: string;
         };
+        /**
+         * ArchitectureOut
+         * @description A model's shape, for VRAM estimation.
+         *
+         *     `uses_gqa` is computed rather than left to the client: the KV cache scales
+         *     with `kv_heads`, and a caller that compares the wrong pair of fields gets
+         *     an answer that is wrong by the group size.
+         */
+        ArchitectureOut: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Family */
+            family: string;
+            /** Params B */
+            params_b: number;
+            /** Layers */
+            layers: number;
+            /** Hidden Size */
+            hidden_size: number;
+            /** Heads */
+            heads: number;
+            /** Kv Heads */
+            kv_heads: number;
+            /** Head Dim */
+            head_dim: number;
+            /** Max Context */
+            max_context: number;
+            /** Uses Gqa */
+            uses_gqa: boolean;
+        };
         /** Artifact */
         Artifact: {
             /** Type */
@@ -1093,6 +1251,45 @@ export interface components {
             claimed: boolean;
             /** Reassigned */
             reassigned: number;
+        };
+        /** CloudCostIn */
+        CloudCostIn: {
+            /**
+             * Provider
+             * @default aws
+             * @enum {string}
+             */
+            provider: "aws" | "gcp" | "azure";
+            /**
+             * Compute Monthly
+             * @default 0
+             */
+            compute_monthly: number | string;
+            /**
+             * Database Monthly
+             * @default 0
+             */
+            database_monthly: number | string;
+            /**
+             * Cache Monthly
+             * @default 0
+             */
+            cache_monthly: number | string;
+            /**
+             * Storage Gb
+             * @default 0
+             */
+            storage_gb: number | string;
+            /**
+             * Egress Gb
+             * @default 0
+             */
+            egress_gb: number | string;
+            /**
+             * Load Balancer Monthly
+             * @default 0
+             */
+            load_balancer_monthly: number | string;
         };
         /** CompareBuildVsBuyIn */
         CompareBuildVsBuyIn: {
@@ -1257,6 +1454,25 @@ export interface components {
             notes?: string | null;
             /** Warnings */
             warnings?: string[];
+        };
+        /** DockerComposeIn */
+        DockerComposeIn: {
+            /**
+             * Archetype
+             * @enum {string}
+             */
+            archetype: "ollama-webui" | "vllm-redis" | "fastapi-pgvector" | "rag-stack";
+            /**
+             * Model
+             * @description Model tag or HuggingFace id. Emitted through a YAML dumper, never interpolated into a template.
+             * @default llama3.1:8b
+             */
+            model: string;
+            /**
+             * Gpu
+             * @default true
+             */
+            gpu: boolean;
         };
         /** DriftEntryOut */
         DriftEntryOut: {
@@ -1445,6 +1661,15 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[list[ArchitectureOut]] */
+        Envelope_list_ArchitectureOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["ArchitectureOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[list[GpuOut]] */
         Envelope_list_GpuOut__: {
             /** Success */
@@ -1555,10 +1780,52 @@ export interface components {
              */
             email: string;
         };
+        /** GpuCostIn */
+        GpuCostIn: {
+            /**
+             * Gpu
+             * @description Stable GPU slug from /catalog/gpus, e.g. lambda-gpu-1x-h100-pcie.
+             */
+            gpu: string;
+            /**
+             * Hours Per Day
+             * @default 24
+             */
+            hours_per_day: number | string;
+            /**
+             * Days Per Month
+             * @default 30
+             */
+            days_per_month: number;
+            /**
+             * Utilisation Pct
+             * @default 60
+             */
+            utilisation_pct: number | string;
+            /** Api Model Id */
+            api_model_id?: string | null;
+            /**
+             * Input Tokens
+             * @default 2000
+             */
+            input_tokens: number;
+            /**
+             * Output Tokens
+             * @default 500
+             */
+            output_tokens: number;
+            /**
+             * Requests Per Day
+             * @default 1000
+             */
+            requests_per_day: number;
+        };
         /** GpuOut */
         GpuOut: {
             /** Id */
             id: string;
+            /** Slug */
+            slug: string;
             /** Provider */
             provider: string;
             /** Instance Name */
@@ -1717,6 +1984,49 @@ export interface components {
              * @default 0
              */
             ongoing_monthly: number | string;
+        };
+        /** K8sEstimateIn */
+        K8sEstimateIn: {
+            /**
+             * Name
+             * @default inference
+             */
+            name: string;
+            /**
+             * Image
+             * @default vllm/vllm-openai:latest
+             */
+            image: string;
+            /**
+             * Replicas
+             * @default 2
+             */
+            replicas: number;
+            /**
+             * Requests Per Second
+             * @default 10
+             */
+            requests_per_second: number | string;
+            /**
+             * Gpu Count
+             * @default 1
+             */
+            gpu_count: number;
+            /**
+             * Vram Required Gb
+             * @default 20
+             */
+            vram_required_gb: number | string;
+            /**
+             * Target Utilisation
+             * @default 70
+             */
+            target_utilisation: number;
+            /**
+             * Max Replicas
+             * @default 8
+             */
+            max_replicas: number;
         };
         /** LlmPricingIn */
         LlmPricingIn: {
@@ -2041,6 +2351,21 @@ export interface components {
              * @enum {string}
              */
             team_skill: "beginner" | "intermediate" | "advanced";
+        };
+        /** ReadinessChecklistIn */
+        ReadinessChecklistIn: {
+            /**
+             * Self Hosted
+             * @default false
+             */
+            self_hosted: boolean;
+            /**
+             * Has Rag
+             * @default true
+             */
+            has_rag: boolean;
+            /** Completed */
+            completed?: string[];
         };
         /**
          * RefreshResultOut
@@ -2481,6 +2806,47 @@ export interface components {
         VerifyEmailRequest: {
             /** Token */
             token: string;
+        };
+        /** VramEstimateIn */
+        VramEstimateIn: {
+            /**
+             * Architecture Key
+             * @description Key from /catalog/architectures.
+             */
+            architecture_key: string;
+            /**
+             * Quantisation
+             * @default fp16
+             * @enum {string}
+             */
+            quantisation: "fp32" | "fp16" | "bf16" | "int8" | "fp8" | "int4" | "gguf-q8_0" | "gguf-q6_k" | "gguf-q5_k_m" | "gguf-q4_k_m" | "gguf-q3_k_m" | "awq-4bit" | "gptq-4bit";
+            /**
+             * Context
+             * @default 8192
+             */
+            context: number;
+            /**
+             * Concurrency
+             * @default 1
+             */
+            concurrency: number;
+            /**
+             * Kv Precision
+             * @default fp16
+             * @enum {string}
+             */
+            kv_precision: "fp32" | "fp16" | "bf16" | "fp8" | "int8";
+            /**
+             * Runtime
+             * @default vllm
+             * @enum {string}
+             */
+            runtime: "vllm" | "tgi" | "llama.cpp" | "transformers" | "sglang";
+            /**
+             * Lora Finetune
+             * @default false
+             */
+            lora_finetune: boolean;
         };
         /** WorkloadLineIn */
         WorkloadLineIn: {
@@ -3222,6 +3588,26 @@ export interface operations {
             };
         };
     };
+    list_architectures: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_ArchitectureOut__"];
+                };
+            };
+        };
+    };
     get_graveyard: {
         parameters: {
             query?: never;
@@ -3639,6 +4025,204 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_CompareMetaOut_"];
+                };
+            };
+        };
+    };
+    run_vram_estimate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VramEstimateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_gpu_cost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GpuCostIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_cloud_cost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloudCostIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_docker_compose: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DockerComposeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_k8s_estimate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["K8sEstimateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_readiness_checklist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadinessChecklistIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

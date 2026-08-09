@@ -75,6 +75,13 @@ export type Field =
     })
   | (FieldBase & { kind: "gpu-select"; minVram?: number })
   /**
+   * Open-weight model shapes, for VRAM estimation. Separate from
+   * `model-select` because these are physical constants rather than priced
+   * catalog rows, and the two lists barely overlap: you self-host Llama and
+   * compare it against a hosted GPT.
+   */
+  | (FieldBase & { kind: "architecture-select" })
+  /**
    * A repeating group of typed sub-fields — budget workload lines, infra
    * nodes, agent tool definitions. Generic rather than one-off because three
    * tools in this program need the same shape, and the third one discovering

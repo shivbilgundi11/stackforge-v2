@@ -19,6 +19,7 @@ export const qk = {
     // Sorted, so `[a, b]` and `[b, a]` share one cache entry — the backend
     // returns the same answer for both.
     compatibility: (slugs: string[]) => ["catalog", "compatibility", [...slugs].sort()] as const,
+    architectures: () => ["catalog", "architectures"] as const,
     graveyard: () => ["catalog", "graveyard"] as const,
     stats: () => ["catalog", "stats"] as const,
   },
