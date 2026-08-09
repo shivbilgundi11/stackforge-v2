@@ -3,7 +3,9 @@ import { cookies } from "next/headers";
 import { SidebarInset, SidebarProvider } from "@/components/animate-ui/components/radix/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
 import { AppSidebar } from "@/components/shell/app-sidebar";
+import { AuthGuard } from "@/components/shell/auth-guard";
 import { CommandPalette } from "@/components/shell/command-palette";
+import { VerificationBanner } from "@/components/shell/verification-banner";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   // Read on the server so the collapsed state is correct on first paint.
@@ -17,8 +19,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <AppSidebar />
       <SidebarInset className="min-w-0 bg-bg">
         <AppHeader />
+        <VerificationBanner />
         <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
-          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
+          <div className="mx-auto w-full max-w-[1440px]">
+            <AuthGuard>{children}</AuthGuard>
+          </div>
         </main>
       </SidebarInset>
       <CommandPalette />

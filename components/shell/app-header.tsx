@@ -2,26 +2,18 @@
 
 import { Fragment } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronRightIcon, CircleUserIcon, LifeBuoyIcon, LogOutIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ChevronRightIcon } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/animate-ui/components/radix/dropdown-menu";
 import { SidebarTrigger } from "@/components/animate-ui/components/radix/sidebar";
 import { CommandTrigger } from "@/components/shell/command-palette";
 import { ThemeToggle } from "@/components/shell/theme-toggle";
+import { UserMenu } from "@/components/shell/user-menu";
 import { Separator } from "@/components/ui/separator";
 import { findGroupByHref, findToolByHref, WORKSPACE_NAV } from "@/lib/navigation";
 
 export function AppHeader() {
   const crumbs = useBreadcrumbs();
-  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-bg/85 px-3 backdrop-blur-md sm:px-4">
@@ -63,40 +55,7 @@ export function AppHeader() {
 
       <ThemeToggle />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            aria-label="Account menu"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface transition-colors hover:border-line-strong"
-          >
-            <CircleUserIcon className="size-4 text-fg-muted" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel className="font-normal">
-            <p className="text-[13px] font-medium text-fg">Not signed in</p>
-            <p className="mt-0.5 text-[11.5px] text-fg-subtle">Anonymous session · 5 runs a day</p>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {/* Animate UI's DropdownMenuItem omits `asChild`, so navigation is
-              programmatic. onSelect fires for both click and Enter, which keeps
-              the menu keyboard-operable. */}
-          <DropdownMenuItem onSelect={() => router.push("/login")}>
-            <LogOutIcon className="size-4 rotate-180" />
-            Sign in
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push("/signup")}>
-            <CircleUserIcon className="size-4" />
-            Create an account
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => router.push("/docs")}>
-            <LifeBuoyIcon className="size-4" />
-            Documentation
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <UserMenu />
     </header>
   );
 }
