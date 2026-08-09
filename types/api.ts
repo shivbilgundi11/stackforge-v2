@@ -711,6 +711,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tools/rag/chunk-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Chunk Estimate */
+        post: operations["run_chunk_estimate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/rag/vectordb-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Vectordb Estimate */
+        post: operations["run_vectordb_estimate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/rag/pipeline-cost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Pipeline Cost */
+        post: operations["run_pipeline_cost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/rag/chunking-strategy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Chunking Strategy */
+        post: operations["run_chunking_strategy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/rag/architecture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Rag Architecture */
+        post: operations["run_rag_architecture"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/rag/pdf-tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Pdf Tokens */
+        post: operations["run_pdf_tokens"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tools/roi/hours-saved": {
         parameters: {
             query?: never;
@@ -875,6 +977,24 @@ export interface components {
             user: components["schemas"]["UserOut"];
             tokens: components["schemas"]["SessionTokens"];
         };
+        /** Body_run_pdf_tokens */
+        Body_run_pdf_tokens: {
+            /**
+             * File
+             * @description PDF, up to 25 MB. Never stored.
+             */
+            file: string;
+            /**
+             * Model Id
+             * @default text-embedding-3-small
+             */
+            model_id: string;
+            /**
+             * Chunk Size
+             * @default 512
+             */
+            chunk_size: number;
+        };
         /** BudgetEstimatorIn */
         BudgetEstimatorIn: {
             /** Lines */
@@ -918,6 +1038,49 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** ChunkEstimateIn */
+        ChunkEstimateIn: {
+            /** Document Count */
+            document_count: number;
+            /** Avg Tokens Per Document */
+            avg_tokens_per_document: number;
+            /**
+             * Chunk Size
+             * @default 512
+             */
+            chunk_size: number;
+            /**
+             * Overlap
+             * @default 76
+             */
+            overlap: number;
+            /**
+             * Query Type
+             * @default mixed
+             * @enum {string}
+             */
+            query_type: "factoid" | "synthesis" | "mixed";
+            /** Model Id */
+            model_id?: string | null;
+        };
+        /** ChunkingStrategyIn */
+        ChunkingStrategyIn: {
+            /**
+             * Document Type
+             * @enum {string}
+             */
+            document_type: "articles" | "docs" | "code" | "support" | "logs" | "policy" | "research" | "mixed";
+            /** Avg Tokens Per Document */
+            avg_tokens_per_document: number;
+            /**
+             * Query Pattern
+             * @default mixed
+             * @enum {string}
+             */
+            query_pattern: "factoid" | "synthesis" | "mixed";
+            /** Model Id */
+            model_id?: string | null;
         };
         /** ClaimAnonymousRequest */
         ClaimAnonymousRequest: {
@@ -1632,6 +1795,11 @@ export interface components {
             };
             /** Tokenizer */
             tokenizer?: string | null;
+            /**
+             * Price Unit
+             * @default tokens
+             */
+            price_unit: string;
             /** Status */
             status: string;
             /** Status Reason */
@@ -1672,6 +1840,51 @@ export interface components {
             limit: number;
             /** Total */
             total?: number | null;
+        };
+        /** PipelineCostIn */
+        PipelineCostIn: {
+            /** Document Count */
+            document_count: number;
+            /** Avg Tokens Per Document */
+            avg_tokens_per_document: number;
+            /**
+             * Chunk Size
+             * @default 512
+             */
+            chunk_size: number;
+            /**
+             * Overlap
+             * @default 76
+             */
+            overlap: number;
+            /**
+             * Reindex Per Month
+             * @default 1
+             */
+            reindex_per_month: number | string;
+            /** Queries Per Day */
+            queries_per_day: number;
+            /**
+             * Chunks Retrieved
+             * @default 5
+             */
+            chunks_retrieved: number;
+            /** Embedding Model Id */
+            embedding_model_id: string;
+            /** Generation Model Id */
+            generation_model_id: string;
+            /** Rerank Model Id */
+            rerank_model_id?: string | null;
+            /**
+             * Output Tokens
+             * @default 500
+             */
+            output_tokens: number;
+            /**
+             * Vector Store Monthly
+             * @default 0
+             */
+            vector_store_monthly: number | string;
         };
         /**
          * Plan
@@ -1794,6 +2007,40 @@ export interface components {
             resets_at: string;
             /** Plan */
             plan: string;
+        };
+        /** RagArchitectureIn */
+        RagArchitectureIn: {
+            /**
+             * Use Case
+             * @default mixed
+             * @enum {string}
+             */
+            use_case: "docs" | "support" | "code" | "research" | "policy" | "mixed";
+            /** Corpus Documents */
+            corpus_documents: number;
+            /**
+             * Sensitivity
+             * @default internal
+             * @enum {string}
+             */
+            sensitivity: "public" | "internal" | "internal-only" | "restricted";
+            /**
+             * Latency Target Ms
+             * @default 2000
+             */
+            latency_target_ms: number;
+            /**
+             * Scale
+             * @default medium
+             * @enum {string}
+             */
+            scale: "small" | "medium" | "large" | "xlarge";
+            /**
+             * Team Skill
+             * @default intermediate
+             * @enum {string}
+             */
+            team_skill: "beginner" | "intermediate" | "advanced";
         };
         /**
          * RefreshResultOut
@@ -2206,6 +2453,29 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** VectorDbEstimateIn */
+        VectorDbEstimateIn: {
+            /** Vector Count */
+            vector_count: number;
+            /** Dimensions */
+            dimensions: number;
+            /**
+             * Index Type
+             * @default hnsw
+             * @enum {string}
+             */
+            index_type: "flat" | "ivf" | "hnsw";
+            /**
+             * Metadata Bytes Per Vector
+             * @default 200
+             */
+            metadata_bytes_per_vector: number;
+            /**
+             * Replicas
+             * @default 1
+             */
+            replicas: number;
         };
         /** VerifyEmailRequest */
         VerifyEmailRequest: {
@@ -3369,6 +3639,204 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_CompareMetaOut_"];
+                };
+            };
+        };
+    };
+    run_chunk_estimate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChunkEstimateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_vectordb_estimate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VectorDbEstimateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_pipeline_cost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PipelineCostIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_chunking_strategy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChunkingStrategyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_rag_architecture: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RagArchitectureIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_pdf_tokens: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_run_pdf_tokens"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ToolRunOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -351,14 +351,13 @@ function Renderer({ field, value, onChange, onBlur, invalid, describedBy }: Rend
           aria-describedby={describedBy}
           className="h-9 cursor-pointer py-1.5 file:mr-3 file:text-xs"
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (!file) {
-              onChange(undefined);
-              return;
-            }
-            // Read as text: every file-taking tool in this product wants the
-            // contents, not a binary handle.
-            void file.text().then(onChange);
+            // The `File` itself, not its text. This used to decode the file
+            // to a string on the assumption that every file-taking tool
+            // wanted the contents — which stopped being true the moment one
+            // took a PDF. Decoding binary as text produces mojibake, and the
+            // schema then rejects a file the user can plainly see is
+            // attached. `runTool` switches to multipart when it finds a File.
+            onChange(event.target.files?.[0]);
           }}
         />
       );

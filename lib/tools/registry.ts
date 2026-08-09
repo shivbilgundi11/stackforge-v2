@@ -1,5 +1,6 @@
 import { COMPARE_SPECS } from "@/lib/tools/specs/compare";
 import { COST_SPECS } from "@/lib/tools/specs/cost";
+import { RAG_SPECS } from "@/lib/tools/specs/rag";
 import { ROI_SPECS } from "@/lib/tools/specs/roi";
 import type { ToolGroup, ToolSpec } from "@/lib/tools/spec";
 
@@ -12,7 +13,7 @@ import type { ToolGroup, ToolSpec } from "@/lib/tools/spec";
  * paid for in six places per tool.
  */
 
-const ALL: ToolSpec[] = [...COST_SPECS, ...COMPARE_SPECS, ...ROI_SPECS];
+const ALL: ToolSpec[] = [...COST_SPECS, ...COMPARE_SPECS, ...RAG_SPECS, ...ROI_SPECS];
 
 export const TOOL_REGISTRY: Record<string, ToolSpec> = Object.fromEntries(
   ALL.map((spec) => [spec.slug, spec]),

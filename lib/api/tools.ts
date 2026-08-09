@@ -19,7 +19,29 @@ export type CompareMeta = Schemas["CompareMetaOut"];
  * `<ToolPage>` be one component rather than 28.
  */
 export function runTool(endpoint: string, input: unknown) {
+  // One tool takes a file. Rather than give `pdf-tokens` its own submit path
+  // — and with it its own error handling, quota handling, and provenance —
+  // the values are packed into a FormData here and everything downstream
+  // stays identical.
+  const values = (input ?? {}) as Record<string, unknown>;
+  const file = Object.values(values).find((value) => value instanceof File);
+
+  if (file) return apiFetch<ToolRunResult>(endpoint, { method: "POST", formData: toForm(values) });
   return apiFetch<ToolRunResult>(endpoint, { method: "POST", body: input });
+}
+
+function toForm(values: Record<string, unknown>): FormData {
+  const form = new FormData();
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined || value === null) continue;
+    // The file always goes under `file`, whatever the field is called, because
+    // that is the parameter name the endpoint declares.
+    form.append(
+      value instanceof File ? "file" : key,
+      value instanceof File ? value : String(value),
+    );
+  }
+  return form;
 }
 
 export function getQuota() {
