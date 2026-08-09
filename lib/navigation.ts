@@ -106,7 +106,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/compare/models",
         summary: "LLMs on cost, context, speed, and task suitability.",
         keywords: ["llm", "gpt", "claude", "gemini"],
-        ...planned,
       },
       {
         slug: "compare-vector-db",
@@ -114,14 +113,12 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/compare/vector-db",
         summary: "Pinecone, Qdrant, Weaviate, Milvus, pgvector, Chroma.",
         keywords: ["pinecone", "qdrant", "pgvector", "chroma", "weaviate"],
-        ...planned,
       },
       {
         slug: "compare-stacks",
         title: "Stack compare",
         href: "/compare/stacks",
         summary: "MVP against enterprise against open-source archetypes.",
-        ...planned,
       },
       {
         slug: "compare-build-vs-buy",
@@ -129,7 +126,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/compare/build-vs-buy",
         summary: "Twelve-month cost of building against buying.",
         keywords: ["tco", "vendor"],
-        ...planned,
       },
     ],
   },
@@ -147,7 +143,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/cost/llm-pricing",
         summary: "Model spend from tokens and daily request volume.",
         keywords: ["price", "cost", "spend", "tokens"],
-        ...planned,
       },
       {
         slug: "token-calculator",
@@ -155,7 +150,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/cost/token-calculator",
         summary: "Real tokenizer counts, plus which models the input fits.",
         keywords: ["tiktoken", "context", "window", "count"],
-        ...planned,
       },
       {
         slug: "embedding-cost",
@@ -163,7 +157,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/cost/embedding-cost",
         summary: "Ingestion and re-embedding cost across providers.",
         keywords: ["embed", "vector", "ingest"],
-        ...planned,
       },
       {
         slug: "budget-estimator",
@@ -171,7 +164,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/cost/budget-estimator",
         summary: "Blended monthly cost across every workload line.",
         keywords: ["monthly", "forecast", "projection"],
-        ...planned,
       },
     ],
   },

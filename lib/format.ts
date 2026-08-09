@@ -44,6 +44,21 @@ export function tokens(value: string | number): string {
   return `${compactNumber(value)}`;
 }
 
+/**
+ * `$0.15/M` — a per-1k price shown in the unit providers publish in.
+ *
+ * The catalog stores per-1k because that is what the calculators divide by,
+ * but nobody reasons about models at that scale. Showing `$0.00015` in a
+ * dropdown makes two models look identical when one is four times the price.
+ */
+export function perMillion(perThousand: string | number): string {
+  const n = num(perThousand);
+  if (!Number.isFinite(n)) return "—";
+  const perM = n * 1000;
+  const digits = perM > 0 && perM < 1 ? 2 : perM % 1 === 0 ? 0 : 2;
+  return `$${perM.toFixed(digits)}/M`;
+}
+
 /** `14.2 GB` — binary units, which is what VRAM and index sizing use. */
 export function bytes(value: string | number): string {
   const n = num(value);
