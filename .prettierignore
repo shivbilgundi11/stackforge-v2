@@ -1,0 +1,13 @@
+.next
+node_modules
+out
+build
+package-lock.json
+
+# Vendored registry code — owned, but not hand-authored.
+components/animate-ui
+components/ui
+components/icons
+
+# Generated from the FastAPI OpenAPI schema.
+types/api.ts

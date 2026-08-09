@@ -1,26 +1,345 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* Dark mode is driven by next-themes writing class="dark" on <html>. */
+@custom-variant dark (&:is(.dark *));
+
+/* ==========================================================================
+   StackForge — design tokens
+
+   Warm, light-first. Cream page, white panels, hairline separation, one ember
+   accent. Colours are OKLCH so a hue rotation does not change apparent
+   brightness — which is what keeps the chart ramp balanced by construction
+   instead of by hand-tuning.
+
+   Every token is defined unconditionally on :root. `.dark` only overrides.
+   No colour ever has its only definition inside a conditional block.
+   ========================================================================== */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ---- surfaces ---------------------------------------------------------
+     Four steps. The page is warm cream; panels sit *above* it in white.
+     This inversion (page darker than card) is what gives the Claude/Notion
+     calm — a pure-white page with grey cards reads like a form. */
+  --bg: oklch(0.9772 0.0044 84.57); /* #FAF9F5 warm cream page */
+  --surface: oklch(1 0 0); /* #FFFFFF panels, cards */
+  --surface-2: oklch(0.9713 0.0053 84.57); /* nested, hover, popover */
+  --surface-3: oklch(0.9484 0.0072 84.57); /* pressed, selected row */
+  --surface-inset: oklch(0.9614 0.0061 84.57); /* code wells, inputs */
+
+  /* ---- hairlines — separation without shadow --------------------------- */
+  --line: oklch(0.9114 0.0075 79.1); /* #E8E4DC */
+  --line-strong: oklch(0.8557 0.0096 79.1);
+
+  /* ---- text — three levels, no more ------------------------------------ */
+  --fg: oklch(0.2393 0.0083 67.6); /* near-black, warm */
+  --fg-muted: oklch(0.5178 0.0119 71.5); /* labels, secondary */
+  --fg-subtle: oklch(0.6634 0.0126 75.3); /* placeholder, disabled */
+
+  /* ---- ember — the accent. Interaction, active nav, focus, primary CTA.
+     Named for the forge. Warm enough to sit with the cream, saturated
+     enough to be unambiguous against it. */
+  --ember: oklch(0.5896 0.1372 42.5); /* #C4643C */
+  --ember-hover: oklch(0.5423 0.1372 42.5);
+  --ember-fg: oklch(1 0 0);
+  --ember-quiet: oklch(0.9503 0.0243 55); /* accent-tinted surface */
+  --ember-line: oklch(0.8574 0.0623 48);
+
+  /* ---- indigo — the intelligent layer.
+     Reserved for Stack Architect and anything AI-synthesised. Its only job
+     is to distinguish *computed* from *synthesised*, which is a product
+     requirement, so it never appears decoratively. */
+  --forge: oklch(0.5122 0.1554 279);
+  --forge-quiet: oklch(0.9498 0.0243 285);
+  --forge-line: oklch(0.8395 0.0704 282);
+
+  /* ---- semantics — meaning only ---------------------------------------- */
+  --success: oklch(0.5459 0.1131 155);
+  --success-quiet: oklch(0.9541 0.0281 158);
+  --success-line: oklch(0.8484 0.0721 156);
+
+  --warning: oklch(0.6224 0.1224 68);
+  --warning-quiet: oklch(0.9601 0.0374 82);
+  --warning-line: oklch(0.8624 0.0834 74);
+
+  --danger: oklch(0.5344 0.1789 25.7);
+  --danger-quiet: oklch(0.9531 0.0224 20);
+  --danger-line: oklch(0.8484 0.0721 22);
+
+  /* ---- charts — six categoricals at constant L/C, rotated in hue only.
+     More than six series means the chart is wrong, not that the palette is
+     short: aggregate, facet, or filter. */
+  --chart-1: oklch(0.5896 0.1372 42.5); /* ember */
+  --chart-2: oklch(0.5122 0.1554 279); /* forge */
+  --chart-3: oklch(0.5642 0.1131 175);
+  --chart-4: oklch(0.6224 0.1224 95);
+  --chart-5: oklch(0.5344 0.1489 348);
+  --chart-6: oklch(0.5542 0.1031 225);
+
+  /* ---- shape ------------------------------------------------------------
+     Tight. Large radii read consumer; this is a console. */
+  --radius: 0.5rem; /* 8px  — panels, cards */
+  --radius-sm: 0.375rem; /* 6px  — inputs, buttons */
+  --radius-xs: 0.25rem; /* 4px  — chips, badges */
+
+  /* ---- elevation --------------------------------------------------------
+     The shell has no drop shadows; separation is a 1px hairline. Shadows are
+     reserved for overlays that are genuinely detached from the page, where
+     they carry information rather than decoration. */
+  --shadow-panel: 0 1px 2px 0 oklch(0.2393 0.0083 67.6 / 0.04);
+  --shadow-overlay:
+    0 10px 38px -10px oklch(0.2393 0.0083 67.6 / 0.16),
+    0 10px 20px -15px oklch(0.2393 0.0083 67.6 / 0.12);
+
+  /* ---- motion — the budget, as tokens, so it cannot creep --------------- */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms; /* hover, focus, colour */
+  --dur-base: 180ms; /* expand, collapse */
+  --dur-slow: 240ms; /* dialog, sheet, popover */
 }
+
+.dark {
+  /* Warm near-black, not blue-black. The hue stays in the same family as the
+     light theme so the two read as one product in two lightings. */
+  --bg: oklch(0.1822 0.0043 67.6); /* #1A1917 */
+  --surface: oklch(0.2183 0.0052 67.6); /* #221F1D */
+  --surface-2: oklch(0.2593 0.0061 67.6);
+  --surface-3: oklch(0.3072 0.0071 67.6);
+  --surface-inset: oklch(0.1587 0.004 67.6);
+
+  --line: oklch(0.3183 0.0071 67.6); /* #322E2A */
+  --line-strong: oklch(0.4093 0.0084 67.6);
+
+  --fg: oklch(0.9563 0.0035 84.57);
+  --fg-muted: oklch(0.7134 0.0104 75.3);
+  --fg-subtle: oklch(0.5534 0.0109 71.5);
+
+  /* Lifted and slightly desaturated — the light-theme ember is too dense to
+     read as interactive against a dark surface. */
+  --ember: oklch(0.7024 0.1289 45);
+  --ember-hover: oklch(0.7524 0.1289 45);
+  --ember-fg: oklch(0.1822 0.0043 67.6);
+  --ember-quiet: oklch(0.2893 0.0453 45);
+  --ember-line: oklch(0.3893 0.0723 45);
+
+  --forge: oklch(0.6884 0.1234 285);
+  --forge-quiet: oklch(0.2823 0.0483 285);
+  --forge-line: oklch(0.3793 0.0743 285);
+
+  --success: oklch(0.7234 0.1231 160);
+  --success-quiet: oklch(0.2793 0.0423 160);
+  --success-line: oklch(0.3693 0.0663 160);
+
+  --warning: oklch(0.7834 0.1231 78);
+  --warning-quiet: oklch(0.2923 0.0433 78);
+  --warning-line: oklch(0.3893 0.0673 78);
+
+  --danger: oklch(0.6634 0.1731 25.7);
+  --danger-quiet: oklch(0.2823 0.0503 25.7);
+  --danger-line: oklch(0.3793 0.0793 25.7);
+
+  --chart-1: oklch(0.7024 0.1289 45);
+  --chart-2: oklch(0.6884 0.1234 285);
+  --chart-3: oklch(0.7234 0.1031 175);
+  --chart-4: oklch(0.7834 0.1131 95);
+  --chart-5: oklch(0.6934 0.1389 348);
+  --chart-6: oklch(0.7034 0.0931 225);
+
+  --shadow-panel: 0 1px 2px 0 oklch(0 0 0 / 0.3);
+  --shadow-overlay: 0 10px 38px -10px oklch(0 0 0 / 0.55), 0 10px 20px -15px oklch(0 0 0 / 0.45);
+}
+
+/* ==========================================================================
+   Tailwind theme mapping
+   ========================================================================== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-inset: var(--surface-inset);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-ember: var(--ember);
+  --color-ember-hover: var(--ember-hover);
+  --color-ember-fg: var(--ember-fg);
+  --color-ember-quiet: var(--ember-quiet);
+  --color-ember-line: var(--ember-line);
+
+  --color-forge: var(--forge);
+  --color-forge-quiet: var(--forge-quiet);
+  --color-forge-line: var(--forge-line);
+
+  --color-success: var(--success);
+  --color-success-quiet: var(--success-quiet);
+  --color-success-line: var(--success-line);
+  --color-warning: var(--warning);
+  --color-warning-quiet: var(--warning-quiet);
+  --color-warning-line: var(--warning-line);
+  --color-danger: var(--danger);
+  --color-danger-quiet: var(--danger-quiet);
+  --color-danger-line: var(--danger-line);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  /* shadcn/Animate UI registry components expect these names. Aliasing them
+     onto our tokens means a registry `add` produces a component that is
+     already on-palette, with no restyling pass. */
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--fg);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--fg);
+  --color-primary: var(--ember);
+  --color-primary-foreground: var(--ember-fg);
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--fg);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--fg-muted);
+  --color-accent: var(--surface-2);
+  --color-accent-foreground: var(--fg);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: oklch(1 0 0);
+  --color-border: var(--line);
+  --color-input: var(--line);
+  --color-ring: var(--ember);
+  --color-sidebar: var(--bg);
+  --color-sidebar-foreground: var(--fg);
+  --color-sidebar-primary: var(--ember);
+  --color-sidebar-primary-foreground: var(--ember-fg);
+  --color-sidebar-accent: var(--surface-2);
+  --color-sidebar-accent-foreground: var(--fg);
+  --color-sidebar-border: var(--line);
+  --color-sidebar-ring: var(--ember);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+
+  --shadow-panel: var(--shadow-panel);
+  --shadow-overlay: var(--shadow-overlay);
+
+  --ease-out: var(--ease-out);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings:
+      "cv02" 1,
+      "cv03" 1,
+      "cv04" 1,
+      "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Focus is never removed and never replaced by a background change alone. */
+  :focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+
+  ::selection {
+    background-color: var(--ember-quiet);
+    color: var(--fg);
+  }
+
+  /* Every figure that can change in place is tabular, so a column never
+     shifts while a value updates. This is load-bearing for the whole
+     "precision" impression the product sells. */
+  .tabular,
+  [data-slot="metric-value"],
+  table td.num,
+  table th.num {
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+  }
+
+  /* Scrollbars, kept in-palette rather than left to the OS. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--line-strong);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--fg-subtle);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* The hairline grid used behind the home hero and empty states. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* Motion is turned down deliberately; this honours the user's stated
+   preference by collapsing everything to a near-instant state change. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
