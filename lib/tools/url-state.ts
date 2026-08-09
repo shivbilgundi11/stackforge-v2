@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useQueryStates, parseAsString } from "nuqs";
 
+import { coerceValues } from "@/lib/tools/coerce";
 import type { ToolSpec } from "@/lib/tools/spec";
 
 /**
@@ -37,7 +38,7 @@ export function useToolUrlState(spec: ToolSpec): [Values, (values: Values) => vo
     clearOnDefault: true,
   });
 
-  const values = useMemo(() => coerce(spec, raw), [spec, raw]);
+  const values = useMemo(() => coerceValues(spec.fields, raw), [spec.fields, raw]);
 
   const write = useCallback(
     (next: Values) => {
@@ -60,40 +61,4 @@ export function useToolUrlState(spec: ToolSpec): [Values, (values: Values) => vo
   );
 
   return [values, write];
-}
-
-/** Query strings are text. Put the field's declared type back on. */
-function coerce(spec: ToolSpec, raw: Record<string, string | null>): Values {
-  const values: Values = {};
-
-  for (const field of spec.fields) {
-    const value = raw[field.name];
-    if (value === null || value === undefined || value === "") continue;
-
-    switch (field.kind) {
-      case "number":
-      case "currency":
-      case "slider": {
-        const parsed = Number(value);
-        if (Number.isFinite(parsed)) values[field.name] = parsed;
-        break;
-      }
-      case "checkbox":
-      case "switch":
-        values[field.name] = value === "true";
-        break;
-      case "multi-select":
-      case "tag-input":
-        values[field.name] = value.split(",").filter(Boolean);
-        break;
-      case "model-select":
-      case "tool-select":
-        values[field.name] = field.multiple ? value.split(",").filter(Boolean) : value;
-        break;
-      default:
-        values[field.name] = value;
-    }
-  }
-
-  return values;
 }

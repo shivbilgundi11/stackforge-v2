@@ -132,6 +132,41 @@ export type ToolPreset = {
   values: Record<string, unknown>;
 };
 
+/**
+ * "Use this result in another tool."
+ *
+ * Declared on the source spec rather than inferred, because only the source
+ * knows what its numbers *mean*. `monthly_cost` from the embedding calculator
+ * and `monthly_cost` from the budget estimator are both money per month and
+ * are not interchangeable, so a generic key-matching handoff would produce
+ * confident nonsense.
+ *
+ * A handoff that cannot be built honestly should not be declared. Carrying a
+ * plausible-looking wrong number into the next tool is worse than carrying
+ * nothing, because the user has no reason to re-check a field that arrived
+ * pre-filled.
+ */
+export type ToolHandoff = {
+  /** Target tool slug. Must be registered — `spec.test.ts` enforces it. */
+  to: string;
+  /** Button label. Says what happens, not where it goes: "Add as a workload". */
+  label: string;
+  description?: string;
+  /**
+   * Build the target's prefill.
+   *
+   * `metrics` are the source run's computed figures, `input` is what produced
+   * them, and `targetDefaults` lets a handoff extend the destination's
+   * defaults rather than replace them — which is how a single model id can
+   * satisfy a target that requires at least two.
+   */
+  values: (context: {
+    metrics: Record<string, unknown>;
+    input: Record<string, unknown>;
+    targetDefaults: Record<string, unknown>;
+  }) => Record<string, unknown>;
+};
+
 export type ToolSpec = {
   slug: string;
   group: ToolGroup;
@@ -156,6 +191,8 @@ export type ToolSpec = {
   presets?: ToolPreset[];
   defaults?: Record<string, unknown>;
   result: ResultSpec;
+  /** Offered beneath a successful result. See `ToolHandoff`. */
+  handoffs?: ToolHandoff[];
   relatedTools?: string[];
   docsHref?: string;
   /** Label for the submit button. Defaults to "Calculate". */

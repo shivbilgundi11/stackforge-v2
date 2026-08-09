@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 
+import { RecentRuns } from "@/components/features/tools/recent-runs";
 import { PageHeader } from "@/components/forge/page-header";
 import { Panel } from "@/components/forge/panel";
 import type { NavGroup } from "@/lib/navigation";
@@ -56,6 +57,10 @@ export function ToolHub({ group }: { group: NavGroup }) {
           );
         })}
       </div>
+
+      {/* Client island. Renders nothing until there is history, so a hub the
+          user has never used looks exactly as it did before. */}
+      <RecentRuns workflow={group.id} />
 
       <Panel className="mt-5">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-4 py-3 text-[12.5px] text-fg-muted">

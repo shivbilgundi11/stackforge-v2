@@ -4,11 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookOpenIcon, PlayIcon, SparklesIcon, ZapIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { FieldControl } from "@/components/features/tools/field-control";
+import {
+  HandoffBar,
+  peekHandoff,
+  useHandoffConsumed,
+} from "@/components/features/tools/handoff-bar";
 import { QuotaDialog } from "@/components/features/tools/quota-dialog";
 import { ResultBlockRenderer } from "@/components/features/tools/result-blocks";
 import { PageHeader } from "@/components/forge/page-header";
@@ -18,12 +24,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/lib/api/errors";
+import { useRun } from "@/lib/api/hooks";
 import { qk } from "@/lib/api/query-keys";
 import { runTool, type ToolRunResult } from "@/lib/api/tools";
+import { coerceValues } from "@/lib/tools/coerce";
 import { useToolUrlState } from "@/lib/tools/url-state";
 import type { ToolSpec } from "@/lib/tools/spec";
 import { duration } from "@/lib/format";
-import { getToolsByGroup } from "@/lib/tools/registry";
+import { getTool, toolHref } from "@/lib/tools/registry";
 
 /**
  * One component, 28 tools.
@@ -39,10 +47,18 @@ type Values = Record<string, unknown>;
 export function ToolPage({ spec }: { spec: ToolSpec }) {
   const queryClient = useQueryClient();
   const [urlState, setUrlState] = useToolUrlState(spec);
+  const [runId] = useQueryState("run");
+
+  // Peeked once, during the first render, so the handoff is part of the form's
+  // initial state rather than a reset that flashes the defaults first. It
+  // ranks above the URL: arriving by handoff means the query string belongs
+  // to whatever was last on this page, not to this visit.
+  const [handoff] = useState(() => peekHandoff(spec.slug));
+  useHandoffConsumed(spec.slug, handoff);
 
   const form = useForm<Values>({
     resolver: zodResolver(spec.input as never),
-    defaultValues: { ...spec.defaults, ...urlState },
+    defaultValues: { ...spec.defaults, ...urlState, ...handoff?.values },
     mode: "onSubmit",
   });
 
@@ -82,10 +98,39 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutation.isSuccess]);
 
+  // `?run=<id>` reopens a stored run from the history feed. The inputs go back
+  // on the form so the figures can be adjusted and re-run, rather than being
+  // a read-only receipt.
+  const reopened = useRun(runId);
+  useEffect(() => {
+    if (!reopened.data) return;
+    // Coerced, not spread raw: a stored `cached_input_ratio` comes back as the
+    // string "0.7" because decimals cross the wire as strings, and a slider
+    // handed a string sits at zero while the result beside it says otherwise.
+    form.reset({ ...spec.defaults, ...coerceValues(spec.fields, reopened.data.input) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reopened.data]);
+
+  useEffect(() => {
+    if (reopened.isError) toast.error("That run could not be opened.");
+  }, [reopened.isError]);
+
+  // A fresh run always wins: once the user presses Calculate, what is on
+  // screen is theirs, not the one they arrived from.
+  const shown = mutation.data ?? (mutation.isPending ? undefined : reopened.data?.output);
+  const shownInput = mutation.data
+    ? (mutation.variables ?? {})
+    : reopened.data
+      ? coerceValues(spec.fields, reopened.data.input)
+      : {};
+
+  // Resolved across the whole registry, not just this tool's group: the
+  // useful neighbour of "compare vector DBs" is "embedding cost", which
+  // lives under cost. A group-scoped lookup drops those silently.
   const related = useMemo(
     () =>
       (spec.relatedTools ?? [])
-        .map((slug) => getToolsByGroup(spec.group).find((tool) => tool.slug === slug))
+        .map((slug) => getTool(slug))
         .filter((tool): tool is ToolSpec => Boolean(tool)),
     [spec],
   );
@@ -173,7 +218,17 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
         {/* The result column reserves its height while pending, so submitting
             does not shove the page around. */}
         <div className="flex min-h-[420px] flex-col gap-4">
-          <ResultArea spec={spec} result={mutation.data} isPending={mutation.isPending} />
+          {/* `isLoading`, not `isPending`: a disabled query reports pending
+              forever, which would pin the skeleton on every tool nobody
+              arrived at through history. */}
+          <ResultArea
+            spec={spec}
+            result={shown}
+            isPending={mutation.isPending || reopened.isLoading}
+          />
+          {shown && !mutation.isPending ? (
+            <HandoffBar spec={spec} result={shown} input={shownInput} />
+          ) : null}
           {related.length ? <RelatedTools tools={related} /> : null}
         </div>
       </div>
@@ -276,7 +331,7 @@ function RelatedTools({ tools }: { tools: ToolSpec[] }) {
         {tools.map((tool) => (
           <li key={tool.slug}>
             <Link
-              href={`/${tool.group}/${tool.slug}`}
+              href={toolHref(tool)}
               className="flex flex-col gap-0.5 px-4 py-2.5 hover:bg-surface-2/60"
             >
               <span className="text-[13px] font-medium text-fg">{tool.title}</span>

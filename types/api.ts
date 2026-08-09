@@ -1715,7 +1715,14 @@ export interface components {
             /** Password */
             password: string;
         };
-        /** RunDetailOut */
+        /**
+         * RunDetailOut
+         * @description A stored run, reopened.
+         *
+         *     `output` is typed as the same `ToolRunOut` a live run returns, so the
+         *     frontend renders a reopened run through exactly the same path as a fresh
+         *     one rather than growing a second, subtly different renderer.
+         */
         RunDetailOut: {
             /** Id */
             id: string;
@@ -1738,10 +1745,7 @@ export interface components {
             input: {
                 [key: string]: unknown;
             };
-            /** Output */
-            output: {
-                [key: string]: unknown;
-            };
+            output: components["schemas"]["ToolRunOut"];
         };
         /** RunSummaryOut */
         RunSummaryOut: {

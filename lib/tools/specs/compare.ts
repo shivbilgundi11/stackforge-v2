@@ -92,6 +92,36 @@ export const compareModelsSpec: ToolSpec = {
   ],
   submitLabel: "Compare",
   result: matrixResult,
+  handoffs: [
+    {
+      to: "llm-pricing",
+      label: "Price the winner",
+      description: "Full projection for the recommended model at this workload.",
+      values: ({ metrics, input }) => ({
+        model_id: metrics.winner,
+        input_tokens: input.input_tokens,
+        output_tokens: input.output_tokens,
+        requests_per_day: input.requests_per_day,
+        cached_input_ratio: input.cached_input_ratio,
+      }),
+    },
+    {
+      to: "budget-estimator",
+      label: "Budget for the winner",
+      description: "Open a budget with the recommended model as its first workload.",
+      values: ({ metrics, input }) => ({
+        lines: [
+          {
+            name: String(metrics.winner_name ?? "Workload"),
+            model_id: metrics.winner,
+            requests_per_day: input.requests_per_day,
+            input_tokens: input.input_tokens,
+            output_tokens: input.output_tokens,
+          },
+        ],
+      }),
+    },
+  ],
   relatedTools: ["compare-vector-db", "compare-stacks"],
 };
 
@@ -220,6 +250,18 @@ export const compareStacksSpec: ToolSpec = {
   ],
   submitLabel: "Compare",
   result: matrixResult,
+  handoffs: [
+    {
+      to: "compare-build-vs-buy",
+      label: "Test build against buy",
+      description: "Carry the engineering rate into a twelve-month build-or-buy case.",
+      // Only the rate. Everything else in build-vs-buy — build hours,
+      // maintenance load, vendor price — is a different question that this
+      // comparison never asked, and inventing answers for them would produce
+      // a TCO nobody entered.
+      values: ({ input }) => ({ blended_hourly_rate: input.blended_hourly_rate }),
+    },
+  ],
   relatedTools: ["compare-build-vs-buy", "compare-models"],
 };
 

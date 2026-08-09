@@ -1,6 +1,10 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 import type { z } from "zod";
 
+import { ALL_TOOLS } from "@/lib/navigation";
 import { ALL_SPECS, TOOL_REGISTRY, searchTools, toolHref } from "@/lib/tools/registry";
 import type { Field } from "@/lib/tools/spec";
 import type { paths } from "@/types/api";
@@ -35,6 +39,71 @@ const KNOWN_ENDPOINTS = [
   "/api/v1/tools/compare/stacks",
   "/api/v1/tools/compare/build-vs-buy",
 ] as const satisfies readonly ApiPath[];
+
+/**
+ * What each tool's `metrics` look like after a real run.
+ *
+ * Written by hand rather than generated, because the point is to pin the
+ * contract between the backend's metric keys and the handoffs that read them.
+ * A fixture that derived itself from the handoff code would agree with it
+ * unconditionally and test nothing.
+ */
+const METRIC_FIXTURES: Record<string, Record<string, unknown>> = {
+  "llm-pricing": {
+    cost_per_request: "0.001850",
+    daily_cost: "1.850000",
+    monthly_cost: "56.309375",
+    annual_cost: "675.712500",
+    requests_per_month: 30_437,
+    tokens_per_month: 76_093_750,
+    model: "GPT-4o mini",
+  },
+  "token-calculator": {
+    tokens: 1842,
+    method: "heuristic",
+    characters: 7368,
+    words: 1204,
+    context_window: 128_000,
+    context_used_pct: "1.44",
+    fits: "yes",
+    overflow_tokens: 0,
+    cost_per_call: "0.000276",
+  },
+  "embedding-cost": {
+    dimensions: 1536,
+    total_tokens: 8_000_000,
+    monthly_tokens: 8_000_000,
+    ingestion_cost: "0.160000",
+    monthly_cost: "0.160000",
+    annual_cost: "1.920000",
+    cost_per_document: "0.000016",
+  },
+  "budget-estimator": {
+    monthly_cost: "97.400000",
+    llm_monthly_cost: "97.400000",
+    infrastructure_monthly_cost: "0.000000",
+    embedding_monthly_cost: "0.000000",
+    month_12_cost: "253.180000",
+    year_1_total: "2084.560000",
+    workload_lines: 1,
+  },
+  "compare-models": {
+    winner: "gpt-4o-mini",
+    winner_name: "GPT-4o mini",
+    confidence: "high",
+    score: 87.4,
+    priority: "balanced",
+    options_compared: 2,
+  },
+  "compare-stacks": {
+    winner: "mvp",
+    winner_name: "MVP",
+    confidence: "medium",
+    score: 74.1,
+    priority: "balanced",
+    options_compared: 3,
+  },
+};
 
 describe("tool registry", () => {
   it("registers every spec under a unique slug", () => {
@@ -152,6 +221,70 @@ describe("spec shape", () => {
           TOOL_REGISTRY[slug],
           `${spec.slug}: related tool "${slug}" is not registered`,
         ).toBeDefined();
+      }
+    }
+  });
+
+  it("agrees with the navigation registry on every route", () => {
+    // Two sources of truth for a URL: `navigation.ts` writes hrefs by hand for
+    // the sidebar and palette, `toolHref` derives them from `group` + `path`.
+    // They drifted once already — a related-tool link built as
+    // `/${group}/${slug}` sent every compare tool to `/compare/compare-models`,
+    // which 404s. Pin them together rather than trusting care.
+    const navHrefs = new Map(ALL_TOOLS.map((tool) => [tool.slug, tool.href]));
+
+    for (const spec of ALL_SPECS) {
+      expect(toolHref(spec), `${spec.slug}: registry route disagrees with navigation.ts`).toBe(
+        navHrefs.get(spec.slug),
+      );
+    }
+  });
+
+  it("routes every live tool to a page that exists on disk", () => {
+    // `toolHref` agreeing with `navigation.ts` still leaves both able to point
+    // at a directory nobody created. The App Router answers that with a 404 at
+    // runtime; this answers it at test time.
+    for (const spec of ALL_SPECS) {
+      const dir = join(process.cwd(), "app", "(app)", toolHref(spec));
+      expect(existsSync(join(dir, "page.tsx")), `${spec.slug}: no page at ${dir}`).toBe(true);
+    }
+  });
+
+  it("points every handoff at a registered tool", () => {
+    for (const spec of ALL_SPECS) {
+      for (const handoff of spec.handoffs ?? []) {
+        expect(
+          TOOL_REGISTRY[handoff.to],
+          `${spec.slug}: handoff target "${handoff.to}" is not registered`,
+        ).toBeDefined();
+      }
+    }
+  });
+
+  it("produces handoff values the destination schema accepts", () => {
+    // The failure this guards is specific and quiet: a handoff builds values
+    // the target rejects, the user lands on a form that fails the moment they
+    // press the button, and nothing points back at the tool that sent them.
+    // Renaming a target's input key breaks here instead.
+    for (const spec of ALL_SPECS) {
+      for (const handoff of spec.handoffs ?? []) {
+        const target = TOOL_REGISTRY[handoff.to];
+        if (!target) continue;
+
+        const metrics = METRIC_FIXTURES[spec.slug];
+        expect(metrics, `${spec.slug}: no metric fixture for its handoffs`).toBeDefined();
+
+        const produced = handoff.values({
+          metrics: metrics ?? {},
+          input: spec.defaults ?? {},
+          targetDefaults: target.defaults ?? {},
+        });
+
+        const result = target.input.safeParse({ ...target.defaults, ...produced });
+        expect(
+          result.success,
+          `${spec.slug} -> ${handoff.to}: ${JSON.stringify(result.error?.issues ?? [])}`,
+        ).toBe(true);
       }
     }
   });

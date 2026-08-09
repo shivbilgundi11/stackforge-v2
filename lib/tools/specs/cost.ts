@@ -128,6 +128,42 @@ export const llmPricingSpec: ToolSpec = {
       { kind: "json" },
     ],
   },
+  handoffs: [
+    {
+      to: "budget-estimator",
+      label: "Add as a workload",
+      description: "Start a budget with this model and volume as its first line.",
+      values: ({ metrics, input }) => ({
+        lines: [
+          {
+            name: String(metrics.model ?? "Workload"),
+            model_id: input.model_id,
+            requests_per_day: input.requests_per_day,
+            input_tokens: input.input_tokens,
+            output_tokens: input.output_tokens,
+          },
+        ],
+      }),
+    },
+    {
+      to: "compare-models",
+      label: "Compare against others",
+      description: "Score this model against alternatives at the same workload.",
+      values: ({ input, targetDefaults }) => {
+        // The target needs at least two ids. Lead with the model just priced
+        // and top up from the destination's own defaults, so the comparison
+        // is always valid without this handoff inventing a rival.
+        const others = (targetDefaults.model_ids as string[] | undefined) ?? [];
+        return {
+          model_ids: [input.model_id, ...others.filter((id) => id !== input.model_id)].slice(0, 3),
+          input_tokens: input.input_tokens,
+          output_tokens: input.output_tokens,
+          requests_per_day: input.requests_per_day,
+          cached_input_ratio: input.cached_input_ratio,
+        };
+      },
+    },
+  ],
   relatedTools: ["token-calculator", "budget-estimator"],
 };
 
@@ -184,6 +220,20 @@ export const tokenCalculatorSpec: ToolSpec = {
       { kind: "json" },
     ],
   },
+  handoffs: [
+    {
+      to: "llm-pricing",
+      label: "Price this at volume",
+      description: "Carry the measured token count into a full cost projection.",
+      values: ({ metrics, input }) => ({
+        model_id: input.model_id,
+        // The counted tokens *are* the input size — that is the whole reason
+        // to come here from the counter rather than guessing a round number.
+        input_tokens: Number(metrics.tokens ?? 0),
+        output_tokens: input.output_tokens ?? 0,
+      }),
+    },
+  ],
   relatedTools: ["llm-pricing", "embedding-cost"],
 };
 
@@ -289,6 +339,20 @@ export const embeddingCostSpec: ToolSpec = {
       { kind: "json" },
     ],
   },
+  handoffs: [
+    {
+      to: "compare-vector-db",
+      label: "Compare vector DBs",
+      description: "Score databases at the dimension count this model produces.",
+      // Dimensions only, on purpose. Storage cost scales with them, and the
+      // backend puts `dimensions` on the response precisely so it can be
+      // carried. Vector count is *not* carried: one document is not one
+      // vector once chunking is applied, and a wrong pre-filled number is
+      // worse than an empty one because nobody re-checks a field they did
+      // not type.
+      values: ({ metrics }) => ({ dimensions: Number(metrics.dimensions ?? 0) || undefined }),
+    },
+  ],
   relatedTools: ["llm-pricing", "budget-estimator"],
 };
 
@@ -419,6 +483,19 @@ export const budgetEstimatorSpec: ToolSpec = {
       { kind: "json" },
     ],
   },
+  handoffs: [
+    {
+      to: "compare-stacks",
+      label: "Compare stack archetypes",
+      description: "Weigh serverless against self-hosted at this level of model spend.",
+      // The LLM line only. Total monthly cost already contains infrastructure,
+      // and the stack comparison adds its own infrastructure estimate — passing
+      // the total would count it twice.
+      values: ({ metrics }) => ({
+        monthly_model_spend: Number(metrics.llm_monthly_cost ?? 0),
+      }),
+    },
+  ],
   relatedTools: ["llm-pricing", "embedding-cost"],
 };
 

@@ -89,3 +89,19 @@ export function useRecentRuns(params: { workflow?: string; limit?: number } = {}
     staleTime: 1000 * 30,
   });
 }
+
+/**
+ * A stored run, for reopening one from history.
+ *
+ * A completed run never changes, so it is cached indefinitely — refetching it
+ * could only ever return the same bytes.
+ */
+export function useRun(runId: string | null) {
+  return useQuery({
+    queryKey: qk.runs.detail(runId ?? ""),
+    queryFn: () => tools.getRun(runId as string),
+    enabled: Boolean(runId),
+    staleTime: Infinity,
+    retry: false,
+  });
+}
