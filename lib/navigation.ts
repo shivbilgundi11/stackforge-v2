@@ -418,6 +418,35 @@ export const ALL_TOOLS: PaletteEntry[] = NAV_GROUPS.flatMap((group) =>
   })),
 );
 
+/**
+ * Routes that genuinely need an account.
+ *
+ * Everything else in the shell — every tool, every hub, the catalog, the
+ * graveyard — is open to anonymous visitors, because the product is built
+ * around that: the backend mints an anonymous session per caller and grants
+ * it 5 runs a day, tool runs are attributed to it, and the quota dialog's
+ * whole anonymous branch offers "create a free account" at the point the
+ * allowance runs out. Gating the tools behind a login makes all of that
+ * unreachable and turns the front door into a signup wall.
+ *
+ * What is listed here is work that belongs to *a person*: saved projects,
+ * team membership, settings, billing. There is nothing to show an anonymous
+ * visitor on those pages.
+ */
+const ACCOUNT_ONLY_PREFIXES = [
+  "/dashboard",
+  "/projects",
+  "/resources",
+  "/team",
+  "/settings",
+] as const;
+
+export function requiresAccount(pathname: string): boolean {
+  return ACCOUNT_ONLY_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 export function findGroupByHref(pathname: string): NavGroup | undefined {
   return NAV_GROUPS.find(
     (group) => pathname === group.href || pathname.startsWith(`${group.href}/`),

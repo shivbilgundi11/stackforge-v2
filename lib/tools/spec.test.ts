@@ -192,6 +192,35 @@ describe("spec shape", () => {
     }
   });
 
+  it("writes its own message for a field left empty", () => {
+    // Zod's `.min(1, "…")` message only fires once the value *is* a string.
+    // Leave the field untouched and the failure is the type check, whose
+    // default message is `Invalid input: expected string, received undefined`
+    // — developer output, rendered to a user, under a form control. The fix
+    // is to give the type check a message too: `z.string("Paste some text.")`.
+    const RAW_ZOD = /^Invalid input: expected/;
+
+    for (const spec of ALL_SPECS) {
+      const shape = shapeOf(spec.input);
+      const defaults = spec.defaults ?? {};
+
+      for (const field of spec.fields) {
+        if (field.name in defaults) continue;
+        const schema = shape[field.name];
+        if (!schema) continue;
+
+        const result = schema.safeParse(undefined);
+        if (result.success) continue;
+
+        const message = result.error.issues[0]?.message ?? "";
+        expect(
+          RAW_ZOD.test(message),
+          `${spec.slug}: "${field.name}" shows Zod's raw message when empty — "${message}"`,
+        ).toBe(false);
+      }
+    }
+  });
+
   it("validates every preset", () => {
     for (const spec of ALL_SPECS) {
       for (const preset of spec.presets ?? []) {

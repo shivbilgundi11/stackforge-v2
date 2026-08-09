@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth/auth-provider";
+import { requiresAccount } from "@/lib/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -17,17 +18,30 @@ import { Skeleton } from "@/components/ui/skeleton";
  * This is a UX guard, not a security boundary. Every request is authorised by
  * the API independently; bypassing this component gets you an empty shell and
  * a page of 401s.
+ *
+ * It guards `requiresAccount` routes only. Guarding the whole shell made the
+ * anonymous tier unreachable: the backend hands every caller an anonymous
+ * session with 5 runs a day, and the quota dialog's anonymous branch exists to
+ * convert them at the point they run out — none of which a visitor can reach
+ * from behind a login redirect.
  */
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const gated = requiresAccount(pathname);
 
   useEffect(() => {
-    if (status === "anonymous") {
+    if (gated && status === "anonymous") {
       router.replace(`/login?next=${encodeURIComponent(pathname)}`);
     }
-  }, [status, router, pathname]);
+  }, [gated, status, router, pathname]);
+
+  if (!gated) {
+    // Still wait out `loading`: rendering as anonymous and then re-rendering
+    // as signed-in makes the quota strip and history feed flicker.
+    return status === "loading" ? <ShellSkeleton /> : <>{children}</>;
+  }
 
   if (status === "authenticated") return <>{children}</>;
 

@@ -30,7 +30,7 @@ export function RecentRuns({ workflow, limit = 5 }: { workflow: string; limit?: 
   if (isError || (!isPending && !data?.length)) return null;
 
   return (
-    <Panel className="mt-5">
+    <Panel className="mt-5" data-testid="recent-runs">
       <PanelHeader
         title="Your recent runs"
         icon={<HistoryIcon className="size-3.5" aria-hidden />}

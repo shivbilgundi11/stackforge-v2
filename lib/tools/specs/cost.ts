@@ -177,7 +177,10 @@ export const tokenCalculatorSpec: ToolSpec = {
   endpoint: "/api/v1/tools/cost/token-calculator",
   tier: "free",
   input: z.object({
-    text: z.string().min(1, "Paste some text to count.").max(2_000_000),
+    // The message is on the type check as well as `.min`: this field has no
+    // default, so an untouched form fails on `undefined` and would otherwise
+    // render "Invalid input: expected string, received undefined".
+    text: z.string("Paste some text to count.").min(1, "Paste some text to count.").max(2_000_000),
     model_id: z.string().min(1, "Pick a model."),
     output_tokens: z.number().int().min(0).max(1_000_000).optional(),
   }),

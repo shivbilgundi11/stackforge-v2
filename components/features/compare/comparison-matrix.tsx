@@ -216,7 +216,9 @@ function WinnerBanner({
       <div className="flex flex-col gap-2 px-4 py-3.5">
         <div className="flex flex-wrap items-center gap-2">
           <TrophyIcon className="size-4 text-ember" aria-hidden />
-          <span className="text-[15px] font-semibold text-fg">{winner.name}</span>
+          <span data-testid="comparison-winner" className="text-[15px] font-semibold text-fg">
+            {winner.name}
+          </span>
           <Badge
             variant="outline"
             className={cn(
@@ -228,7 +230,14 @@ function WinnerBanner({
             {confidence} confidence
           </Badge>
         </div>
-        {why ? <p className="text-[13px] leading-relaxed text-fg-muted">{why}</p> : null}
+        {why ? (
+          <p
+            data-testid="comparison-rationale"
+            className="text-[13px] leading-relaxed text-fg-muted"
+          >
+            {why}
+          </p>
+        ) : null}
       </div>
     </Panel>
   );
