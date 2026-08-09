@@ -18,23 +18,34 @@
 
 :root {
   /* ---- surfaces ---------------------------------------------------------
-     Four steps. The page is warm cream; panels sit *above* it in white.
-     This inversion (page darker than card) is what gives the Claude/Notion
-     calm — a pure-white page with grey cards reads like a form. */
-  --bg: oklch(0.9772 0.0044 84.57); /* #FAF9F5 warm cream page */
-  --surface: oklch(1 0 0); /* #FFFFFF panels, cards */
-  --surface-2: oklch(0.9713 0.0053 84.57); /* nested, hover, popover */
-  --surface-3: oklch(0.9484 0.0072 84.57); /* pressed, selected row */
-  --surface-inset: oklch(0.9614 0.0061 84.57); /* code wells, inputs */
+     White page, white panels, neutral throughout. Separation is carried by
+     the hairline alone — the page and a card are the same colour, and the
+     1px border is the only thing between them.
 
-  /* ---- hairlines — separation without shadow --------------------------- */
-  --line: oklch(0.9114 0.0075 79.1); /* #E8E4DC */
-  --line-strong: oklch(0.8557 0.0096 79.1);
+     This replaces a warm cream page with white panels sitting above it. That
+     inversion was chosen for a Notion-ish calm and read, in practice, as
+     newsprint: a low-chroma tint across every surface with nothing bright to
+     offset it. Zero chroma is the fix. Nothing here is tinted, so the accent
+     is the only colour on screen and it carries.
 
-  /* ---- text — three levels, no more ------------------------------------ */
-  --fg: oklch(0.2393 0.0083 67.6); /* near-black, warm */
-  --fg-muted: oklch(0.5178 0.0119 71.5); /* labels, secondary */
-  --fg-subtle: oklch(0.6634 0.0126 75.3); /* placeholder, disabled */
+     Values are the neutral ramp: #FFFFFF, #F5F5F5, #EBEBEB, #E5E5E5. */
+  --bg: oklch(1 0 0); /* #FFFFFF page */
+  --surface: oklch(1 0 0); /* #FFFFFF panels, cards — same as the page */
+  --surface-2: oklch(0.97 0 0); /* #F5F5F5 nested, hover, popover */
+  --surface-3: oklch(0.94 0 0); /* #EBEBEB pressed, selected row */
+  --surface-inset: oklch(0.955 0 0); /* #F0F0F0 code wells, inputs */
+
+  /* ---- hairlines — now the only separation there is -------------------- */
+  --line: oklch(0.922 0 0); /* #E5E5E5 */
+  --line-strong: oklch(0.87 0 0); /* #D4D4D4 */
+
+  /* ---- text — three levels, no more ------------------------------------
+     Contrast on white: 19.8:1, 6.0:1, 3.6:1. The muted step is deliberately
+     darker than the shadcn default it is modelled on (4.7:1) — this product
+     is small labels over dense tables, not marketing copy. */
+  --fg: oklch(0.145 0 0); /* #0A0A0A */
+  --fg-muted: oklch(0.5 0 0); /* #636363 labels, secondary */
+  --fg-subtle: oklch(0.62 0 0); /* #868686 placeholder, disabled */
 
   /* ---- accent - Orange #ee7c37. Interaction, active nav, focus, primary CTA.
      Saturated on purpose: the previous ember sat near C=0.14 and the whole
@@ -91,10 +102,8 @@
      The shell has no drop shadows; separation is a 1px hairline. Shadows are
      reserved for overlays that are genuinely detached from the page, where
      they carry information rather than decoration. */
-  --shadow-panel: 0 1px 2px 0 oklch(0.2393 0.0083 67.6 / 0.04);
-  --shadow-overlay:
-    0 10px 38px -10px oklch(0.2393 0.0083 67.6 / 0.16),
-    0 10px 20px -15px oklch(0.2393 0.0083 67.6 / 0.12);
+  --shadow-panel: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+  --shadow-overlay: 0 10px 38px -10px oklch(0 0 0 / 0.16), 0 10px 20px -15px oklch(0 0 0 / 0.12);
 
   /* ---- motion — the budget, as tokens, so it cannot creep --------------- */
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
