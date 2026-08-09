@@ -518,10 +518,15 @@ export interface paths {
         put?: never;
         /**
          * Force a verification run (admin)
-         * @description Runs the verification job now.
+         * @description Report what needs an editor's attention.
          *
-         *     Records what the sources currently publish. Does not change a single
-         *     price — accepting a change is a separate, deliberate action.
+         *     Prices are hardcoded and verified by hand (D-16), so this endpoint reads
+         *     rather than writes: it never changes a price, and with no fetchers
+         *     registered it never will. What it returns is the editorial queue — recent
+         *     unapplied drift, and how many rows are past their freshness window.
+         *
+         *     Kept as POST rather than GET because it walks every source and every
+         *     priced row, which is not something to hand a crawler.
          */
         post: operations["refresh_pricing"];
         delete?: never;
@@ -1639,7 +1644,13 @@ export interface components {
             /** Plan */
             plan: string;
         };
-        /** RefreshResultOut */
+        /**
+         * RefreshResultOut
+         * @description The editorial queue.
+         *
+         *     `sources_skipped` is the honest headline while prices are hand-verified:
+         *     it is the count of sources no machine reads, which is all of them.
+         */
         RefreshResultOut: {
             /** Checked */
             checked: number;
@@ -1647,6 +1658,16 @@ export interface components {
             changes_detected: number;
             /** Sources Failed */
             sources_failed: number;
+            /**
+             * Sources Skipped
+             * @default 0
+             */
+            sources_skipped: number;
+            /**
+             * Stale Rows
+             * @default 0
+             */
+            stale_rows: number;
             /** Entries */
             entries?: components["schemas"]["DriftEntryOut"][];
             /**
