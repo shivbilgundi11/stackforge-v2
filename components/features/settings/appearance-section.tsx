@@ -114,8 +114,8 @@ export function AppearanceSection() {
           </div>
 
           <p className="text-xs leading-relaxed text-fg-muted">
-            Indigo is missing on purpose — it marks AI-generated content across the app, and an
-            accent in the same range would blur the one distinction that has to stay legible.
+            Red, green, and violet each sit on a hue that already means something — error, success,
+            and AI-generated. Picking one nudges that colour aside so the two stay tellable apart.
           </p>
         </fieldset>
 
