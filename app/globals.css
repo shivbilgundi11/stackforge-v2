@@ -74,7 +74,7 @@
   --chart-3: oklch(0.5642 0.1131 175);
   --chart-4: oklch(0.6224 0.1224 95);
   --chart-5: oklch(0.5344 0.1489 348);
-  --chart-6: oklch(0.5542 0.1031 225);
+  --chart-6: oklch(0.5542 0.1031 217);
 
   /* ---- shape ------------------------------------------------------------
      Tight. Large radii read consumer; this is a console. */
@@ -143,10 +143,84 @@
   --chart-3: oklch(0.7234 0.1031 175);
   --chart-4: oklch(0.7834 0.1131 95);
   --chart-5: oklch(0.6934 0.1389 348);
-  --chart-6: oklch(0.7034 0.0931 225);
+  --chart-6: oklch(0.7034 0.0931 217);
 
   --shadow-panel: 0 1px 2px 0 oklch(0 0 0 / 0.3);
   --shadow-overlay: 0 10px 38px -10px oklch(0 0 0 / 0.55), 0 10px 20px -15px oklch(0 0 0 / 0.45);
+}
+
+/* ==========================================================================
+   Accent themes
+
+   The accent is one hue rotation. OKLCH was chosen precisely so that this
+   works: L and C are held constant across every option, so switching accent
+   changes the colour and nothing else — no swatch is quietly darker, no
+   button loses contrast against its own label, and the focus ring stays as
+   visible as it was.
+
+   Only `--ember*` is overridden. Everything downstream reads
+   `--color-ember: var(--ember)` through the Tailwind mapping, so a component
+   never needs to know an accent exists.
+
+   The palette is small, and the exclusions are the reason:
+
+     * indigo (~279) is `--forge`, which means "AI-synthesised". An accent
+       there would make the one distinction the product must never blur —
+       computed against generated — a matter of guessing which blue is which.
+     * ~68 is `--warning`, ~26 is `--danger`, ~155 is `--success`. An accent
+       adjacent to any of those turns a semantic colour into decoration.
+
+   Ember itself sits between danger and warning, which is a licence the brand
+   colour earns by being the default everyone learns. Nothing else gets it.
+   ========================================================================== */
+
+[data-accent="azure"] {
+  --ember: oklch(0.5896 0.1372 217);
+  --ember-hover: oklch(0.5423 0.1372 217);
+  --ember-quiet: oklch(0.9503 0.0243 217);
+  --ember-line: oklch(0.8574 0.0623 217);
+}
+
+[data-accent="orchid"] {
+  --ember: oklch(0.5896 0.1372 332);
+  --ember-hover: oklch(0.5423 0.1372 332);
+  --ember-quiet: oklch(0.9503 0.0243 332);
+  --ember-line: oklch(0.8574 0.0623 332);
+}
+
+/* Near-zero chroma at the same lightness. Contrast against `--ember-fg` is a
+   function of L, which is unchanged, so the quiet option is exactly as
+   readable as the loud ones. */
+[data-accent="graphite"] {
+  --ember: oklch(0.5896 0.012 80);
+  --ember-hover: oklch(0.5423 0.012 80);
+  --ember-quiet: oklch(0.9503 0.004 80);
+  --ember-line: oklch(0.8574 0.008 80);
+}
+
+.dark [data-accent="teal"],
+.dark.dark [data-accent="azure"],
+.dark[data-accent="azure"] {
+  --ember: oklch(0.7024 0.1289 217);
+  --ember-hover: oklch(0.7524 0.1289 217);
+  --ember-quiet: oklch(0.2893 0.0453 217);
+  --ember-line: oklch(0.3893 0.0723 217);
+}
+
+.dark [data-accent="orchid"],
+.dark[data-accent="orchid"] {
+  --ember: oklch(0.7024 0.1289 332);
+  --ember-hover: oklch(0.7524 0.1289 332);
+  --ember-quiet: oklch(0.2893 0.0453 332);
+  --ember-line: oklch(0.3893 0.0723 332);
+}
+
+.dark [data-accent="graphite"],
+.dark[data-accent="graphite"] {
+  --ember: oklch(0.7024 0.012 80);
+  --ember-hover: oklch(0.7524 0.012 80);
+  --ember-quiet: oklch(0.2893 0.006 80);
+  --ember-line: oklch(0.3893 0.01 80);
 }
 
 /* ==========================================================================

@@ -389,9 +389,7 @@ export const WORKSPACE_NAV = [
   },
 ];
 
-export const FOOTER_NAV = [
-  { label: "Settings", href: "/settings", icon: SettingsIcon, status: "planned" as const },
-];
+export const FOOTER_NAV = [{ label: "Settings", href: "/settings", icon: SettingsIcon }];
 
 /** Flattened for the command palette and the sitemap. */
 export type PaletteEntry = NavTool & {
@@ -431,7 +429,12 @@ const ACCOUNT_ONLY_PREFIXES = [
   "/projects",
   "/resources",
   "/team",
-  "/settings",
+  // `/settings` itself is deliberately absent. Appearance is a preference
+  // stored in the visitor's own browser, so gating it behind sign-in gates
+  // something the account does not own — and the page already renders its
+  // account sections only when there is an account. Billing is the sub-page
+  // that genuinely belongs to a person.
+  "/settings/billing",
 ] as const;
 
 export function requiresAccount(pathname: string): boolean {
