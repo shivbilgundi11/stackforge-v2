@@ -23,10 +23,9 @@ const MODES = [
  * into a single list of named themes is what forces that coupling.
  */
 export function AppearanceSection() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { accent, setAccent } = useAccent();
   const mounted = useMounted();
-  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <Panel>
@@ -102,10 +101,20 @@ export function AppearanceSection() {
                     className="flex size-5 items-center justify-center rounded-full"
                     // Inline because the value is data, not a class: a swatch
                     // has to render its own colour even when it is not the
-                    // active accent, so it cannot read `--ember`.
-                    style={{ background: isDark ? option.swatchDark : option.swatch }}
+                    // active accent, so it cannot read `--ember`. One value for
+                    // both modes — these are chosen colours, not a ramp.
+                    style={{ background: option.hex }}
                   >
-                    {active ? <CheckIcon className="size-3 text-white" aria-hidden /> : null}
+                    {active ? (
+                      <CheckIcon
+                        className="size-3"
+                        // The tick sits on the swatch, so it needs the same
+                        // label colour the button would use. White on yellow
+                        // is 1.6:1 and simply is not there.
+                        style={{ color: option.labelOn === "white" ? "#FFFFFF" : "#0A0A0A" }}
+                        aria-hidden
+                      />
+                    ) : null}
                   </span>
                   <span className="text-[12.5px] text-fg">{option.label}</span>
                 </button>
@@ -114,8 +123,9 @@ export function AppearanceSection() {
           </div>
 
           <p className="text-xs leading-relaxed text-fg-muted">
-            Red, green, and violet each sit on a hue that already means something — error, success,
-            and AI-generated. Picking one nudges that colour aside so the two stay tellable apart.
+            Each of these sits near a hue that already means something — warning, success, or the
+            indigo that marks AI-generated content. Picking one nudges that colour aside so the two
+            stay tellable apart.
           </p>
         </fieldset>
 

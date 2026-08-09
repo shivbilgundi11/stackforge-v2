@@ -36,14 +36,19 @@
   --fg-muted: oklch(0.5178 0.0119 71.5); /* labels, secondary */
   --fg-subtle: oklch(0.6634 0.0126 75.3); /* placeholder, disabled */
 
-  /* ---- ember — the accent. Interaction, active nav, focus, primary CTA.
-     Named for the forge. Warm enough to sit with the cream, saturated
-     enough to be unambiguous against it. */
-  --ember: oklch(0.5896 0.1372 42.5); /* #C4643C */
-  --ember-hover: oklch(0.5423 0.1372 42.5);
-  --ember-fg: oklch(1 0 0);
-  --ember-quiet: oklch(0.9503 0.0243 55); /* accent-tinted surface */
-  --ember-line: oklch(0.8574 0.0623 48);
+  /* ---- accent - Orange #ee7c37. Interaction, active nav, focus, primary CTA.
+     Saturated on purpose: the previous ember sat near C=0.14 and the whole
+     product read as newsprint. */
+  --ember: oklch(0.7048 0.1617 48.55);
+  --ember-hover: oklch(0.6448 0.1617 48.55);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.955 0.0356 48.55);
+  --ember-line: oklch(0.86 0.0727 48.55);
+
+  /* warning steps aside so the two stay tellable apart. */
+  --warning: oklch(0.6224 0.1224 80);
+  --warning-quiet: oklch(0.9601 0.0374 80);
+  --warning-line: oklch(0.8624 0.0834 80);
 
   /* ---- indigo — the intelligent layer.
      Reserved for Stack Architect and anything AI-synthesised. Its only job
@@ -99,28 +104,34 @@
 }
 
 .dark {
-  /* Warm near-black, not blue-black. The hue stays in the same family as the
-     light theme so the two read as one product in two lightings. */
-  --bg: oklch(0.1822 0.0043 67.6); /* #1A1917 */
-  --surface: oklch(0.2183 0.0052 67.6); /* #221F1D */
-  --surface-2: oklch(0.2593 0.0061 67.6);
-  --surface-3: oklch(0.3072 0.0071 67.6);
-  --surface-inset: oklch(0.1587 0.004 67.6);
+  /* Matte black, neutral rather than warm. A deliberate break from the
+     light theme's cream: asked for as "proper black matte", and the two modes
+     now read as two treatments rather than one hue at two lightnesses. */
+  --bg: oklch(0.1448 0 0); /* #0A0A0A page */
+  --surface: oklch(0.209 0 0); /* #181818 panels, cards */
+  --surface-2: oklch(0.2435 0 0); /* #202020 nested, hover, popover */
+  --surface-3: oklch(0.285 0 0); /* #2A2A2A pressed, selected row */
+  --surface-inset: oklch(0.1822 0 0); /* #121212 code wells, inputs */
 
-  --line: oklch(0.3183 0.0071 67.6); /* #322E2A */
-  --line-strong: oklch(0.4093 0.0084 67.6);
+  --line: oklch(0.2768 0 0); /* #282828 */
+  --line-strong: oklch(0.3485 0 0); /* #3A3A3A */
 
-  --fg: oklch(0.9563 0.0035 84.57);
-  --fg-muted: oklch(0.7134 0.0104 75.3);
-  --fg-subtle: oklch(0.5534 0.0109 71.5);
+  --fg: oklch(0.9461 0 0); /* #EDEDED - 15.2:1 on a card */
+  --fg-muted: oklch(0.7155 0 0); /* #A3A3A3 - 7.0:1 */
+  --fg-subtle: oklch(0.5417 0 0); /* #6F6F6F - 3.5:1, non-text only */
 
-  /* Lifted and slightly desaturated — the light-theme ember is too dense to
-     read as interactive against a dark surface. */
-  --ember: oklch(0.7024 0.1289 45);
-  --ember-hover: oklch(0.7524 0.1289 45);
-  --ember-fg: oklch(0.1822 0.0043 67.6);
-  --ember-quiet: oklch(0.2893 0.0453 45);
-  --ember-line: oklch(0.3893 0.0723 45);
+  /* Orange #ee7c37, unchanged from light: these are chosen colours, not
+     a ramp, so they are not lifted for the dark theme. */
+  --ember: oklch(0.7048 0.1617 48.55);
+  --ember-hover: oklch(0.7648 0.1617 48.55);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.245 0.0453 48.55);
+  --ember-line: oklch(0.345 0.0679 48.55);
+
+  /* warning steps aside so the two stay tellable apart. */
+  --warning: oklch(0.7834 0.1231 80);
+  --warning-quiet: oklch(0.2923 0.0433 80);
+  --warning-line: oklch(0.3893 0.0673 80);
 
   --forge: oklch(0.6884 0.1234 285);
   --forge-quiet: oklch(0.2823 0.0483 285);
@@ -152,145 +163,130 @@
 /* ==========================================================================
    Accent themes
 
-   The accent is one hue rotation. OKLCH was chosen precisely so that this
-   works: L and C are held constant across every option, so switching accent
-   changes the colour and nothing else — no swatch is quietly darker, no
-   button loses contrast against its own label, and the focus ring stays as
-   visible as it was.
+   Five accents, given as exact hex and used exactly. They are chosen colours
+   rather than points on a generated ramp, so unlike the previous palette they
+   do not share a lightness - which means each one picks its own label colour
+   instead of assuming white. Yellow against white is 1.6:1; against near-black
+   it is 12.2:1, and that is not a detail a theme can paper over.
 
-   Four hues already carry meaning: danger, warning, success, and the indigo
-   that marks AI-generated content. Where an accent lands on one of them, the
-   *semantic token moves* rather than the accent being refused — the rule that
-   matters is "these two must not look alike", and either side can satisfy it.
-   Each shift is chosen so the semantic still reads correctly on its own:
+   Orange is the default and lives in `:root`, so it has no block here.
 
-     * red accent    -> danger becomes crimson. Still unmistakably "bad".
-     * green accent  -> success becomes teal-green. Still unmistakably "good".
-     * violet accent -> the AI indigo becomes blue. Still clearly "not
-       computed", which is the only job that colour has.
-
-   Ember is grandfathered. It sits 17° from danger, closer than any new accent
-   is allowed, and it keeps that licence by being the default everyone learns
-   first — moving danger under the default theme would change a colour that
-   has already shipped.
+   Every one of these lands within 20 degrees of a hue that already means
+   something - danger, warning, success, or the indigo that marks AI-generated
+   content. Where that happens the *semantic moves*, not the accent: the rule
+   is "these two must not look alike", and either side can satisfy it.
    ========================================================================== */
 
-[data-accent="red"] {
-  --ember: oklch(0.5896 0.1372 16);
-  --ember-hover: oklch(0.5423 0.1372 16);
-  --ember-quiet: oklch(0.9503 0.0243 16);
-  --ember-line: oklch(0.8574 0.0623 16);
+[data-accent="purple"] {
+  /* #8952ee - white label, 4.7:1 */
+  --ember: oklch(0.5839 0.2221 294.75);
+  --ember-hover: oklch(0.5239 0.2221 294.75);
+  --ember-fg: oklch(1 0 0);
+  --ember-quiet: oklch(0.955 0.0489 294.75);
+  --ember-line: oklch(0.86 0.09 294.75);
 
-  /* danger moves out of the accent's way. */
-  --danger: oklch(0.5344 0.1789 348);
-  --danger-quiet: oklch(0.9531 0.0224 348);
-  --danger-line: oklch(0.8484 0.0721 348);
+  /* forge steps aside so the two stay tellable apart. */
+  --forge: oklch(0.5122 0.1554 240);
+  --forge-quiet: oklch(0.9498 0.0243 240);
+  --forge-line: oklch(0.8395 0.0704 240);
+}
+
+[data-accent="blue"] {
+  /* #3a83f7 - near-black label, 5.4:1 */
+  --ember: oklch(0.6255 0.1884 259.46);
+  --ember-hover: oklch(0.5655 0.1884 259.46);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.955 0.0415 259.46);
+  --ember-line: oklch(0.86 0.0848 259.46);
+
+  /* forge steps aside so the two stay tellable apart. */
+  --forge: oklch(0.5122 0.1554 310);
+  --forge-quiet: oklch(0.9498 0.0243 310);
+  --forge-line: oklch(0.8395 0.0704 310);
 }
 
 [data-accent="green"] {
-  --ember: oklch(0.5896 0.1372 142);
-  --ember-hover: oklch(0.5423 0.1372 142);
-  --ember-quiet: oklch(0.9503 0.0243 142);
-  --ember-line: oklch(0.8574 0.0623 142);
+  /* #53b559 - near-black label, 7.7:1 */
+  --ember: oklch(0.6925 0.1592 144.75);
+  --ember-hover: oklch(0.6325 0.1592 144.75);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.955 0.035 144.75);
+  --ember-line: oklch(0.86 0.0716 144.75);
 
-  /* success moves out of the accent's way. */
-  --success: oklch(0.5459 0.1131 180);
-  --success-quiet: oklch(0.9541 0.0281 180);
-  --success-line: oklch(0.8484 0.0721 180);
+  /* success steps aside so the two stay tellable apart. */
+  --success: oklch(0.5459 0.1131 175);
+  --success-quiet: oklch(0.9541 0.0281 175);
+  --success-line: oklch(0.8484 0.0721 175);
 }
 
-[data-accent="azure"] {
-  --ember: oklch(0.5896 0.1372 217);
-  --ember-hover: oklch(0.5423 0.1372 217);
-  --ember-quiet: oklch(0.9503 0.0243 217);
-  --ember-line: oklch(0.8574 0.0623 217);
-}
+[data-accent="yellow"] {
+  /* #f6c543 - near-black label, 12.2:1 */
+  --ember: oklch(0.845 0.151 87.33);
+  --ember-hover: oklch(0.785 0.151 87.33);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.955 0.0332 87.33);
+  --ember-line: oklch(0.86 0.068 87.33);
 
-[data-accent="violet"] {
-  --ember: oklch(0.5896 0.1372 288);
-  --ember-hover: oklch(0.5423 0.1372 288);
-  --ember-quiet: oklch(0.9503 0.0243 288);
-  --ember-line: oklch(0.8574 0.0623 288);
-
-  /* forge moves out of the accent's way. */
-  --forge: oklch(0.5122 0.1554 220);
-  --forge-quiet: oklch(0.9498 0.0243 220);
-  --forge-line: oklch(0.8395 0.0704 220);
-}
-
-[data-accent="purple"] {
-  --ember: oklch(0.5896 0.1372 330);
-  --ember-hover: oklch(0.5423 0.1372 330);
-  --ember-quiet: oklch(0.9503 0.0243 330);
-  --ember-line: oklch(0.8574 0.0623 330);
-}
-
-.dark [data-accent="red"],
-.dark[data-accent="red"] {
-  --ember: oklch(0.7024 0.1289 16);
-  --ember-hover: oklch(0.7524 0.1289 16);
-  --ember-quiet: oklch(0.2893 0.0453 16);
-  --ember-line: oklch(0.3893 0.0723 16);
-  --danger: oklch(0.6634 0.1731 348);
-  --danger-quiet: oklch(0.2823 0.0503 348);
-  --danger-line: oklch(0.3793 0.0793 348);
-}
-
-.dark [data-accent="green"],
-.dark[data-accent="green"] {
-  --ember: oklch(0.7024 0.1289 142);
-  --ember-hover: oklch(0.7524 0.1289 142);
-  --ember-quiet: oklch(0.2893 0.0453 142);
-  --ember-line: oklch(0.3893 0.0723 142);
-  --success: oklch(0.7234 0.1231 180);
-  --success-quiet: oklch(0.2793 0.0423 180);
-  --success-line: oklch(0.3693 0.0663 180);
-}
-
-.dark [data-accent="azure"],
-.dark[data-accent="azure"] {
-  --ember: oklch(0.7024 0.1289 217);
-  --ember-hover: oklch(0.7524 0.1289 217);
-  --ember-quiet: oklch(0.2893 0.0453 217);
-  --ember-line: oklch(0.3893 0.0723 217);
-}
-
-.dark [data-accent="violet"],
-.dark[data-accent="violet"] {
-  --ember: oklch(0.7024 0.1289 288);
-  --ember-hover: oklch(0.7524 0.1289 288);
-  --ember-quiet: oklch(0.2893 0.0453 288);
-  --ember-line: oklch(0.3893 0.0723 288);
-  --forge: oklch(0.6884 0.1234 220);
-  --forge-quiet: oklch(0.2823 0.0483 220);
-  --forge-line: oklch(0.3793 0.0743 220);
+  /* warning steps aside so the two stay tellable apart. */
+  --warning: oklch(0.6224 0.1224 55);
+  --warning-quiet: oklch(0.9601 0.0374 55);
+  --warning-line: oklch(0.8624 0.0834 55);
 }
 
 .dark [data-accent="purple"],
 .dark[data-accent="purple"] {
-  --ember: oklch(0.7024 0.1289 330);
-  --ember-hover: oklch(0.7524 0.1289 330);
-  --ember-quiet: oklch(0.2893 0.0453 330);
-  --ember-line: oklch(0.3893 0.0723 330);
+  --ember: oklch(0.5839 0.2221 294.75);
+  --ember-hover: oklch(0.6439 0.2221 294.75);
+  --ember-fg: oklch(1 0 0);
+  --ember-quiet: oklch(0.245 0.06 294.75);
+  --ember-line: oklch(0.345 0.09 294.75);
+
+  /* forge steps aside so the two stay tellable apart. */
+  --forge: oklch(0.6884 0.1234 240);
+  --forge-quiet: oklch(0.2823 0.0483 240);
+  --forge-line: oklch(0.3793 0.0743 240);
 }
 
-/* Near-zero chroma at the same lightness. Contrast against `--ember-fg` is a
-   function of L, which is unchanged, so the quiet option is exactly as
-   readable as the loud ones — and with no hue to speak of, it collides with
-   nothing. */
-[data-accent="graphite"] {
-  --ember: oklch(0.5896 0.012 80);
-  --ember-hover: oklch(0.5423 0.012 80);
-  --ember-quiet: oklch(0.9503 0.004 80);
-  --ember-line: oklch(0.8574 0.008 80);
+.dark [data-accent="blue"],
+.dark[data-accent="blue"] {
+  --ember: oklch(0.6255 0.1884 259.46);
+  --ember-hover: oklch(0.6855 0.1884 259.46);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.245 0.0528 259.46);
+  --ember-line: oklch(0.345 0.0791 259.46);
+
+  /* forge steps aside so the two stay tellable apart. */
+  --forge: oklch(0.6884 0.1234 310);
+  --forge-quiet: oklch(0.2823 0.0483 310);
+  --forge-line: oklch(0.3793 0.0743 310);
 }
 
-.dark [data-accent="graphite"],
-.dark[data-accent="graphite"] {
-  --ember: oklch(0.7024 0.012 80);
-  --ember-hover: oklch(0.7524 0.012 80);
-  --ember-quiet: oklch(0.2893 0.006 80);
-  --ember-line: oklch(0.3893 0.01 80);
+.dark [data-accent="green"],
+.dark[data-accent="green"] {
+  --ember: oklch(0.6925 0.1592 144.75);
+  --ember-hover: oklch(0.7525 0.1592 144.75);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.245 0.0446 144.75);
+  --ember-line: oklch(0.345 0.0668 144.75);
+
+  /* success steps aside so the two stay tellable apart. */
+  --success: oklch(0.7234 0.1231 175);
+  --success-quiet: oklch(0.2793 0.0423 175);
+  --success-line: oklch(0.3693 0.0663 175);
+}
+
+.dark [data-accent="yellow"],
+.dark[data-accent="yellow"] {
+  --ember: oklch(0.845 0.151 87.33);
+  --ember-hover: oklch(0.905 0.151 87.33);
+  --ember-fg: oklch(0.1448 0 0);
+  --ember-quiet: oklch(0.245 0.0423 87.33);
+  --ember-line: oklch(0.345 0.0634 87.33);
+
+  /* warning steps aside so the two stay tellable apart. */
+  --warning: oklch(0.7834 0.1231 55);
+  --warning-quiet: oklch(0.2923 0.0433 55);
+  --warning-line: oklch(0.3893 0.0673 55);
 }
 
 /* ==========================================================================

@@ -95,10 +95,10 @@ describe("appearance", () => {
     const user = userEvent.setup();
     renderView();
 
-    await user.click(screen.getByRole("radio", { name: "Violet" }));
+    await user.click(screen.getByRole("radio", { name: "Purple" }));
 
-    expect(document.documentElement.getAttribute("data-accent")).toBe("violet");
-    expect(localStorage.getItem("stackforge-accent")).toBe("violet");
+    expect(document.documentElement.getAttribute("data-accent")).toBe("purple");
+    expect(localStorage.getItem("stackforge-accent")).toBe("purple");
   });
 
   it("removes the attribute for the default rather than naming it", async () => {
@@ -107,11 +107,11 @@ describe("appearance", () => {
     const user = userEvent.setup();
     renderView();
 
-    await user.click(screen.getByRole("radio", { name: "Violet" }));
-    await user.click(screen.getByRole("radio", { name: "Ember" }));
+    await user.click(screen.getByRole("radio", { name: "Purple" }));
+    await user.click(screen.getByRole("radio", { name: "Orange" }));
 
     expect(document.documentElement.hasAttribute("data-accent")).toBe(false);
-    expect(localStorage.getItem("stackforge-accent")).toBe("ember");
+    expect(localStorage.getItem("stackforge-accent")).toBe("orange");
   });
 });
 

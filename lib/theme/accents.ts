@@ -25,19 +25,28 @@
  * crimson, success becomes teal-green, the AI indigo becomes blue.
  */
 
-export type AccentValue = "ember" | "red" | "green" | "azure" | "violet" | "purple" | "graphite";
+export type AccentValue = "orange" | "purple" | "blue" | "green" | "yellow";
 
 /** Semantic tokens an accent is allowed to displace. */
-export type SemanticToken = "danger" | "success" | "forge";
+export type SemanticToken = "danger" | "warning" | "success" | "forge";
 
 export type Accent = {
   value: AccentValue;
   label: string;
   /** Shown in the tooltip. Only where the name alone is not enough. */
   hint?: string;
-  /** Preview only. The applied colour comes from CSS. */
+  /** The colour as specified. The swatch renders this directly. */
+  hex: string;
+  /** The same colour in OKLCH, for the separation assertions. */
   swatch: string;
-  swatchDark: string;
+  /**
+   * Label colour, chosen by contrast rather than assumed.
+   *
+   * These are given colours, not a generated ramp, so they do not share a
+   * lightness. White on yellow is 1.6:1 and unreadable; on purple it is
+   * 4.7:1 and fine. Assuming one answer for all five would ship the other.
+   */
+  labelOn: "white" | "near-black";
   /**
    * Semantic hues this accent displaces, and where they move to.
    *
@@ -56,57 +65,54 @@ export const SEMANTIC_HUES: Record<SemanticToken | "warning", number> = {
   forge: 279,
 };
 
+/** Below this, two colours read as the same thing. */
+export const MIN_SEMANTIC_GAP = 20;
+
 export const ACCENTS: readonly Accent[] = [
   {
-    value: "ember",
-    label: "Ember",
+    value: "orange",
+    label: "Orange",
     hint: "Default",
-    swatch: "oklch(0.5896 0.1372 42.5)",
-    swatchDark: "oklch(0.7024 0.1289 45)",
-  },
-  {
-    value: "red",
-    label: "Red",
-    swatch: "oklch(0.5896 0.1372 16)",
-    swatchDark: "oklch(0.7024 0.1289 16)",
-    shifts: { danger: 348 },
-  },
-  {
-    value: "green",
-    label: "Green",
-    swatch: "oklch(0.5896 0.1372 142)",
-    swatchDark: "oklch(0.7024 0.1289 142)",
-    shifts: { success: 180 },
-  },
-  {
-    value: "azure",
-    label: "Azure",
-    swatch: "oklch(0.5896 0.1372 217)",
-    swatchDark: "oklch(0.7024 0.1289 217)",
-  },
-  {
-    value: "violet",
-    label: "Violet",
-    swatch: "oklch(0.5896 0.1372 288)",
-    swatchDark: "oklch(0.7024 0.1289 288)",
-    shifts: { forge: 220 },
+    hex: "#ee7c37",
+    swatch: "oklch(0.7048 0.1617 48.55)",
+    labelOn: "near-black",
+    shifts: { warning: 80 },
   },
   {
     value: "purple",
     label: "Purple",
-    swatch: "oklch(0.5896 0.1372 330)",
-    swatchDark: "oklch(0.7024 0.1289 330)",
+    hex: "#8952ee",
+    swatch: "oklch(0.5839 0.2221 294.75)",
+    labelOn: "white",
+    shifts: { forge: 240 },
   },
   {
-    value: "graphite",
-    label: "Graphite",
-    hint: "No colour",
-    swatch: "oklch(0.5896 0.012 80)",
-    swatchDark: "oklch(0.7024 0.012 80)",
+    value: "blue",
+    label: "Blue",
+    hex: "#3a83f7",
+    swatch: "oklch(0.6255 0.1884 259.46)",
+    labelOn: "near-black",
+    shifts: { forge: 310 },
+  },
+  {
+    value: "green",
+    label: "Green",
+    hex: "#53b559",
+    swatch: "oklch(0.6925 0.1592 144.75)",
+    labelOn: "near-black",
+    shifts: { success: 175 },
+  },
+  {
+    value: "yellow",
+    label: "Yellow",
+    hex: "#f6c543",
+    swatch: "oklch(0.845 0.151 87.33)",
+    labelOn: "near-black",
+    shifts: { warning: 55 },
   },
 ];
 
-export const DEFAULT_ACCENT: AccentValue = "ember";
+export const DEFAULT_ACCENT: AccentValue = "orange";
 export const ACCENT_STORAGE_KEY = "stackforge-accent";
 
 export function isAccent(value: unknown): value is AccentValue {
