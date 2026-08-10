@@ -16,6 +16,7 @@ import {
   useHandoffConsumed,
 } from "@/components/features/tools/handoff-bar";
 import { QuotaDialog } from "@/components/features/tools/quota-dialog";
+import { SynthesisProgress } from "@/components/features/tools/synthesis-progress";
 import { ResultBlockRenderer } from "@/components/features/tools/result-blocks";
 import { PageHeader } from "@/components/forge/page-header";
 import { EmptyState, Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/forge/panel";
@@ -247,7 +248,7 @@ function ResultArea({
   result: ToolRunResult | undefined;
   isPending: boolean;
 }) {
-  if (isPending) return <ResultSkeleton />;
+  if (isPending) return <ResultSkeleton synthesises={spec.synthesises ?? false} />;
 
   if (!result) {
     return (
@@ -277,9 +278,12 @@ function ResultArea({
   );
 }
 
-function ResultSkeleton() {
+function ResultSkeleton({ synthesises }: { synthesises: boolean }) {
   return (
     <div className="flex flex-col gap-4">
+      {/* Only for the tools that actually call a model. On a 200ms arithmetic
+          tool a staged status line would be theatre. */}
+      {synthesises ? <SynthesisProgress /> : null}
       <div className="grid divide-line overflow-hidden rounded-md border border-line bg-surface sm:grid-cols-4 sm:divide-x">
         {[0, 1, 2, 3].map((index) => (
           <div key={index} className="flex flex-col gap-2 px-4 py-3.5">

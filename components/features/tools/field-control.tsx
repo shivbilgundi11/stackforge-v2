@@ -4,6 +4,10 @@ import { PlusIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, type Control, type FieldErrors } from "react-hook-form";
 
+import {
+  ToolDefinitionsInput,
+  type ToolValue,
+} from "@/components/features/agents/tool-definitions-input";
 import { ArchitectureSelect } from "@/components/features/catalog/architecture-select";
 import { GpuSelect } from "@/components/features/catalog/gpu-select";
 import { ModelSelect } from "@/components/features/catalog/model-select";
@@ -424,6 +428,16 @@ function Renderer({ field, value, onChange, onBlur, invalid, describedBy }: Rend
           field={field}
           value={Array.isArray(value) ? (value as Record<string, unknown>[]) : []}
           onChange={onChange}
+        />
+      );
+
+    case "tool-definitions":
+      return (
+        <ToolDefinitionsInput
+          value={Array.isArray(value) ? (value as ToolValue[]) : []}
+          onChange={onChange}
+          max={field.max}
+          maxParameters={field.maxParameters}
         />
       );
   }

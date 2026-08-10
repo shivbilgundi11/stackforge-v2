@@ -83,9 +83,13 @@ export type Field =
   | (FieldBase & { kind: "architecture-select" })
   /**
    * A repeating group of typed sub-fields — budget workload lines, infra
-   * nodes, agent tool definitions. Generic rather than one-off because three
-   * tools in this program need the same shape, and the third one discovering
-   * that is how a bespoke component becomes three bespoke components.
+   * nodes, agent roles. Generic rather than one-off because three tools in
+   * this program need the same shape, and the third one discovering that is
+   * how a bespoke component becomes three bespoke components.
+   *
+   * One level deep. A repeater inside a repeater is a data model, not a form,
+   * and `spec.test.ts` enforces that — see `tool-definitions` for the case
+   * that needed two.
    */
   | (FieldBase & {
       kind: "repeater";
@@ -94,7 +98,18 @@ export type Field =
       min?: number;
       max?: number;
       newItem: () => Record<string, unknown>;
-    });
+    })
+  /**
+   * MCP and function-calling tool definitions: a list of tools, each with its
+   * own list of typed parameters.
+   *
+   * A dedicated kind rather than a nested `repeater`, for the reason the
+   * nesting rule exists — two levels of generic rows is unreadable, and the
+   * inner rows here are a fixed shape (name, type, description, requiredness)
+   * that benefits from being laid out as one dense line rather than four
+   * labelled controls. Two tools share it, which is what earns it a kind.
+   */
+  | (FieldBase & { kind: "tool-definitions"; max?: number; maxParameters?: number });
 
 export type FieldKind = Field["kind"];
 
@@ -218,4 +233,13 @@ export type ToolSpec = {
   docsHref?: string;
   /** Label for the submit button. Defaults to "Calculate". */
   submitLabel?: string;
+  /**
+   * This tool calls a model after its rule engine runs.
+   *
+   * Drives the staged progress indicator, and nothing else — the result is
+   * complete either way, and `result.ai` is what says whether synthesis
+   * actually happened on a given run. Declared rather than inferred because
+   * the indicator has to appear *before* the response arrives.
+   */
+  synthesises?: boolean;
 };

@@ -45,6 +45,13 @@ const KNOWN_ENDPOINTS = [
   "/api/v1/tools/rag/pipeline-cost",
   "/api/v1/tools/rag/chunking-strategy",
   "/api/v1/tools/rag/architecture",
+  "/api/v1/architect/recommend",
+  "/api/v1/architect/score",
+  "/api/v1/tools/agents/mcp-config",
+  "/api/v1/tools/agents/agent-cost",
+  "/api/v1/tools/agents/workflow-plan",
+  "/api/v1/tools/agents/function-schema",
+  "/api/v1/tools/agents/rate-limits",
   "/api/v1/tools/infra/vram-estimate",
   "/api/v1/tools/infra/gpu-cost",
   "/api/v1/tools/infra/cloud-cost",
@@ -214,6 +221,64 @@ const METRIC_FIXTURES: Record<string, Record<string, unknown>> = {
     ongoing_monthly: "0.00",
     duration_months: 4,
   },
+  "mcp-config": {
+    server: "Ops Toolkit",
+    tools: 2,
+    files: 6,
+    transport: "stdio",
+    auth: "none",
+    server_lines: 74,
+    spec_version: "2025-06-18",
+  },
+  "agent-cost": {
+    cost_per_task: "0.040000",
+    cost_per_day: "4.00",
+    cost_per_month: "121.75",
+    cost_per_year: "1461.00",
+    tokens_per_task: 24_000,
+    schema_overhead_pct: "40.0",
+    retry_premium_monthly: "24.35",
+    biggest_contributor: "Model output",
+  },
+  "workflow-plan": {
+    topology: "handoff",
+    agents: 5,
+    handoffs: 6,
+    cost_per_task: "0.021500",
+    cost_per_day: "4.30",
+    cost_per_month: "130.88",
+    framework: "LangGraph",
+    summary: "5 agents arranged as a triage step routing to one specialist at a time.",
+  },
+  "function-schema": {
+    tools: 2,
+    target: "anthropic",
+    parameters: 3,
+    valid: "yes",
+  },
+  "stack-architect": {
+    score: "87.4",
+    components: 6,
+    candidates: 5,
+    excluded: 41,
+    compatibility: 78,
+    deprecated_components: 0,
+    summary: "A rag stack for medium scale on a $2,000/month budget, scoring 87.4/100.",
+  },
+  "stack-score": {
+    score: "81.2",
+    components: 3,
+    compatibility: 75,
+    deprecated_components: 0,
+  },
+  "rate-limits": {
+    binding_constraint: "Output tokens per minute",
+    headroom_pct: "-20.0",
+    max_sustainable_rpm: 8,
+    queue_depth: 120,
+    recommended_tier: "Tier 2",
+    tier: "Tier 1",
+  },
 };
 
 describe("tool registry", () => {
@@ -239,9 +304,17 @@ describe("tool registry", () => {
     }
   });
 
-  it("declares every endpoint as POST", () => {
+  it("points every endpoint at a versioned API route", () => {
+    // Was `startsWith("/api/v1/tools/")`, which encoded a path prefix rather
+    // than an invariant — the architect endpoints legitimately live under
+    // `/api/v1/architect/` per the API contract. The real guarantee is that
+    // the endpoint is a versioned route in the generated schema, and the
+    // `satisfies ApiPath` on KNOWN_ENDPOINTS is what enforces the rest at
+    // compile time.
     for (const spec of ALL_SPECS) {
-      expect(spec.endpoint.startsWith("/api/v1/tools/")).toBe(true);
+      expect(spec.endpoint, `${spec.slug} is not a versioned API route`).toMatch(
+        /^\/api\/v1\/[a-z-]+\//,
+      );
     }
   });
 });

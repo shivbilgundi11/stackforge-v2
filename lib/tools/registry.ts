@@ -1,3 +1,6 @@
+import { NAV_GROUPS } from "@/lib/navigation";
+import { AGENT_SPECS } from "@/lib/tools/specs/agents";
+import { ARCHITECT_SPECS } from "@/lib/tools/specs/architect";
 import { COMPARE_SPECS } from "@/lib/tools/specs/compare";
 import { COST_SPECS } from "@/lib/tools/specs/cost";
 import { INFRA_SPECS } from "@/lib/tools/specs/infra";
@@ -18,8 +21,10 @@ const ALL: ToolSpec[] = [
   ...COST_SPECS,
   ...COMPARE_SPECS,
   ...RAG_SPECS,
+  ...AGENT_SPECS,
   ...INFRA_SPECS,
   ...ROI_SPECS,
+  ...ARCHITECT_SPECS,
 ];
 
 export const TOOL_REGISTRY: Record<string, ToolSpec> = Object.fromEntries(
@@ -36,8 +41,18 @@ export function getToolsByGroup(group: ToolGroup): ToolSpec[] {
   return ALL.filter((spec) => spec.group === group);
 }
 
+/**
+ * A tool's route.
+ *
+ * The group's base path comes from `navigation.ts` rather than from the group
+ * id, because one of them differs: the architect group is `architect` and
+ * lives at `/stack-architect`. Deriving `/${group}/…` worked only while every
+ * id happened to equal its path, and `spec.test.ts` was pinning the two
+ * together by hand to catch the day that stopped being true.
+ */
 export function toolHref(spec: ToolSpec): string {
-  return `/${spec.group}/${spec.path ?? spec.slug}`;
+  const base = NAV_GROUPS.find((group) => group.id === spec.group)?.href ?? `/${spec.group}`;
+  return `${base}/${spec.path ?? spec.slug}`;
 }
 
 /** Powers ⌘K: title, slug, summary, and any extra keywords all match. */

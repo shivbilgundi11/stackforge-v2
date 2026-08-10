@@ -531,6 +531,7 @@ export const ragArchitectureSpec: ToolSpec = {
   keywords: ["architecture", "design", "pipeline", "diagram", "mermaid", "rag"],
   endpoint: "/api/v1/tools/rag/architecture",
   tier: "free",
+  synthesises: true,
   input: z.object({
     use_case: z.enum(["docs", "support", "code", "research", "policy", "mixed"]),
     corpus_documents: z.number().int().min(1).max(1_000_000_000),
