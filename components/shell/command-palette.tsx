@@ -1,11 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Command } from "cmdk";
+import {
+  FolderIcon,
+  LaptopIcon,
+  LayersIcon,
+  MoonIcon,
+  SearchIcon,
+  SunIcon,
+  ZapIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { LaptopIcon, MoonIcon, SearchIcon, SunIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
+import { qk } from "@/lib/api/query-keys";
+import { searchWorkspace } from "@/lib/api/workspace";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { ALL_TOOLS, NAV_GROUPS, WORKSPACE_NAV } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +30,25 @@ import { cn } from "@/lib/utils";
  */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const router = useRouter();
   const { setTheme } = useTheme();
+  const { status } = useAuth();
+
+  /**
+   * Saved work, searched server-side (M17).
+   *
+   * The tool list is static and filtered by cmdk on the client; a user's own
+   * projects, stacks, and saved runs are not, and shipping them all to the
+   * browser to filter would be both slower and a way to leak them. Two
+   * characters minimum so opening the palette does not fire a request.
+   */
+  const { data: savedWork = [] } = useQuery({
+    queryKey: qk.workspace.search(query),
+    queryFn: () => searchWorkspace(query),
+    enabled: open && status === "authenticated" && query.trim().length >= 2,
+    staleTime: 10_000,
+  });
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -53,7 +82,9 @@ export function CommandPalette() {
       <div className="flex items-center gap-2.5 border-b border-line px-3.5">
         <SearchIcon className="size-4 shrink-0 text-fg-subtle" />
         <Command.Input
-          placeholder="Search tools, workflows, and actions…"
+          value={query}
+          onValueChange={setQuery}
+          placeholder="Search tools, saved work, and actions…"
           className="h-12 w-full bg-transparent text-[13.5px] text-fg outline-none placeholder:text-fg-subtle"
         />
         <kbd className="hidden rounded-xs border border-line px-1.5 py-0.5 font-mono text-[10px] text-fg-subtle sm:block">
@@ -65,6 +96,33 @@ export function CommandPalette() {
         <Command.Empty className="px-3 py-8 text-center text-[13px] text-fg-muted">
           No matches. Try a provider name, a metric, or a workflow.
         </Command.Empty>
+
+        {savedWork.length > 0 ? (
+          <Command.Group heading="Your work" className={groupClass}>
+            {savedWork.map((hit) => (
+              <Command.Item
+                key={`${hit.kind}-${hit.id}`}
+                // cmdk filters on `value`; the server already decided these
+                // match, so the value carries the query itself to stop the
+                // client filtering out a server-side hit whose title does not
+                // contain the term literally (a stack found by its components).
+                value={`${query} ${hit.title} ${hit.subtitle}`}
+                onSelect={() => run(() => router.push(hit.href))}
+                className={itemClass}
+              >
+                {hit.kind === "project" ? (
+                  <FolderIcon className="size-4 shrink-0 text-fg-subtle" />
+                ) : hit.kind === "stack" ? (
+                  <LayersIcon className="size-4 shrink-0 text-fg-subtle" />
+                ) : (
+                  <ZapIcon className="size-4 shrink-0 text-fg-subtle" />
+                )}
+                <span className="flex-1 truncate">{hit.title}</span>
+                <span className="truncate text-[11px] text-fg-subtle">{hit.subtitle}</span>
+              </Command.Item>
+            ))}
+          </Command.Group>
+        ) : null}
 
         <Command.Group heading="Workspace" className={groupClass}>
           {WORKSPACE_NAV.map((item) => (

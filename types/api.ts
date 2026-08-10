@@ -1299,6 +1299,207 @@ export interface paths {
         get: operations["get_run"];
         put?: never;
         post?: never;
+        /** Delete Run */
+        delete: operations["delete_run"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runs/{run_id}/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save Run
+         * @description Keep this run past the 30-day purge.
+         *
+         *     Requires an account. Running and exporting are free and anonymous;
+         *     *keeping* is what the account is for, and asking at this moment is asking
+         *     someone who has already decided the result is worth something.
+         */
+        post: operations["save_run"];
+        /**
+         * Unsave Run
+         * @description Drop back to ephemeral. The row stays — it is still real history.
+         */
+        delete: operations["unsave_run"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Projects */
+        get: operations["list_projects"];
+        put?: never;
+        /** Create Project */
+        post: operations["create_project"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Project */
+        get: operations["get_project"];
+        put?: never;
+        post?: never;
+        /** Delete Project */
+        delete: operations["delete_project"];
+        options?: never;
+        head?: never;
+        /** Update Project */
+        patch: operations["update_project"];
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Project Items */
+        get: operations["list_project_items"];
+        put?: never;
+        /** Add Project Item */
+        post: operations["add_project_item"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/items/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Project Item */
+        delete: operations["remove_project_item"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/items/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Project Items */
+        patch: operations["reorder_project_items"];
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/items/{item_id}/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Pin Project Item */
+        patch: operations["pin_project_item"];
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Session */
+        get: operations["get_session"];
+        put?: never;
+        post?: never;
+        /** Clear Session */
+        delete: operations["clear_session"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Session
+         * @description Merge, never replace.
+         *
+         *     A tool handing its two figures forward must not wipe the six a previous
+         *     tool contributed.
+         */
+        patch: operations["update_session"];
+        trace?: never;
+    };
+    "/api/v1/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Dashboard
+         * @description Every panel in one request.
+         *
+         *     Seven panels, seven round trips would be seven loading states on the first
+         *     screen after signing in. The aggregate is small and its parts are all
+         *     owner-scoped reads of the same user's rows.
+         */
+        get: operations["get_dashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Workspace */
+        get: operations["search_workspace"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1498,6 +1699,35 @@ export interface components {
             embedding_monthly: number | string;
             /** User Count */
             user_count?: number | null;
+        };
+        /**
+         * CarriedSessionOut
+         * @description Named `Carried…` rather than `SessionOut`.
+         *
+         *     Auth already owns `SessionOut` for a signed-in device session, and two
+         *     schemas with one name collide in the generated TypeScript — both get
+         *     mangled to fully-qualified aliases, and the existing auth client stops
+         *     compiling. Two different things should not share a name anyway.
+         */
+        CarriedSessionOut: {
+            /** Session State */
+            session_state: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * CarriedSessionPatch
+         * @description Values a tool is handing forward.
+         *
+         *     Free-form because the carried set grows with the tools — pinning a schema
+         *     here would mean a migration every time a workflow learns to hand something
+         *     on.
+         */
+        CarriedSessionPatch: {
+            /** Values */
+            values?: {
+                [key: string]: unknown;
+            };
         };
         /** CatalogStatsOut */
         CatalogStatsOut: {
@@ -1779,6 +2009,21 @@ export interface components {
             /** Warnings */
             warnings?: string[];
         };
+        /** DashboardOut */
+        DashboardOut: {
+            /** Recent Runs */
+            recent_runs: components["schemas"]["RecentRunOut"][];
+            /** Saved Stacks */
+            saved_stacks: components["schemas"]["SavedStackOut"][];
+            /** Projects */
+            projects: components["schemas"]["ProjectCardOut"][];
+            /** Stale Alerts */
+            stale_alerts: components["schemas"]["StaleAlertOut"][];
+            /** Quick Start */
+            quick_start: string[];
+            usage: components["schemas"]["UsageOut"];
+            plan: components["schemas"]["PlanOut"];
+        };
         /** DockerComposeIn */
         DockerComposeIn: {
             /**
@@ -1857,6 +2102,14 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[CarriedSessionOut] */
+        Envelope_CarriedSessionOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["CarriedSessionOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[CatalogStatsOut] */
         Envelope_CatalogStatsOut_: {
             /** Success */
@@ -1889,6 +2142,14 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[DashboardOut] */
+        Envelope_DashboardOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["DashboardOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[FlagOut] */
         Envelope_FlagOut_: {
             /** Success */
@@ -1910,6 +2171,22 @@ export interface components {
             /** Success */
             success: boolean;
             data?: components["schemas"]["ModelOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[ProjectItemOut] */
+        Envelope_ProjectItemOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["ProjectItemOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[ProjectOut] */
+        Envelope_ProjectOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["ProjectOut"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -1942,6 +2219,14 @@ export interface components {
             /** Success */
             success: boolean;
             data?: components["schemas"]["RunDetailOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[RunSummaryOut] */
+        Envelope_RunSummaryOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["RunSummaryOut"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2054,12 +2339,39 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[list[ProjectItemOut]] */
+        Envelope_list_ProjectItemOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["ProjectItemOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[list[ProjectOut]] */
+        Envelope_list_ProjectOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["ProjectOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[list[RunSummaryOut]] */
         Envelope_list_RunSummaryOut__: {
             /** Success */
             success: boolean;
             /** Data */
             data?: components["schemas"]["RunSummaryOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[list[SearchHitOut]] */
+        Envelope_list_SearchHitOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["SearchHitOut"][] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2284,6 +2596,13 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HeadlineOut */
+        HeadlineOut: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: string;
         };
         /** HoursSavedIn */
         HoursSavedIn: {
@@ -2556,6 +2875,11 @@ export interface components {
             /** Total */
             total?: number | null;
         };
+        /** PinIn */
+        PinIn: {
+            /** Pinned */
+            pinned: boolean;
+        };
         /** PipelineCostIn */
         PipelineCostIn: {
             /** Document Count */
@@ -2606,6 +2930,13 @@ export interface components {
          * @enum {string}
          */
         Plan: "free" | "pro" | "team" | "enterprise";
+        /** PlanOut */
+        PlanOut: {
+            /** Plan */
+            plan: string;
+            /** Source */
+            source: string;
+        };
         /** PricingHistoryOut */
         PricingHistoryOut: {
             /** Id */
@@ -2629,6 +2960,117 @@ export interface components {
              * Format: date-time
              */
             detected_at: string;
+        };
+        /** ProjectCardOut */
+        ProjectCardOut: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Use Case */
+            use_case: string | null;
+            /** Items */
+            items: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProjectIn */
+        ProjectIn: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Use Case */
+            use_case?: string | null;
+        };
+        /** ProjectItemIn */
+        ProjectItemIn: {
+            /**
+             * Item Type
+             * @enum {string}
+             */
+            item_type: "run" | "stack" | "artifact" | "template";
+            /** Item Id */
+            item_id: string;
+            /** Note */
+            note?: string | null;
+            /**
+             * Pinned
+             * @default false
+             */
+            pinned: boolean;
+        };
+        /** ProjectItemOut */
+        ProjectItemOut: {
+            /** Id */
+            id: string;
+            /** Item Type */
+            item_type: string;
+            /** Item Id */
+            item_id: string;
+            /** Position */
+            position: number;
+            /** Pinned */
+            pinned: boolean;
+            /** Note */
+            note: string | null;
+            /** Title */
+            title?: string | null;
+            /** Subtitle */
+            subtitle?: string | null;
+            /** Href */
+            href?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ProjectOut */
+        ProjectOut: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Use Case */
+            use_case: string | null;
+            /** Session State */
+            session_state: {
+                [key: string]: unknown;
+            };
+            /**
+             * Item Count
+             * @default 0
+             */
+            item_count: number;
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProjectPatch */
+        ProjectPatch: {
+            /** Name */
+            name?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Use Case */
+            use_case?: string | null;
+            /** Archived */
+            archived?: boolean | null;
         };
         /** PromptIn */
         PromptIn: {
@@ -2837,6 +3279,25 @@ export interface components {
             /** Completed */
             completed?: string[];
         };
+        /** RecentRunOut */
+        RecentRunOut: {
+            /** Run Id */
+            run_id: string;
+            /** Tool Slug */
+            tool_slug: string;
+            /** Workflow */
+            workflow: string;
+            /** Saved */
+            saved: boolean;
+            /** Source */
+            source: string;
+            headline: components["schemas"]["HeadlineOut"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /**
          * RecommendIn
          * @description The eight inputs from `PRD.md` §8.1.
@@ -2952,6 +3413,11 @@ export interface components {
              * @default Check your email to finish setting up your account.
              */
             message: string;
+        };
+        /** ReorderIn */
+        ReorderIn: {
+            /** Item Ids */
+            item_ids: string[];
         };
         /** ResetPasswordRequest */
         ResetPasswordRequest: {
@@ -3076,6 +3542,24 @@ export interface components {
              */
             created_at: string;
         };
+        /** SavedStackOut */
+        SavedStackOut: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Components */
+            components: number;
+            /** Version */
+            version: number;
+            /** Deprecated */
+            deprecated: string[];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /**
          * ScoreIn
          * @description Score a stack the user assembled themselves.
@@ -3100,6 +3584,27 @@ export interface components {
              * @enum {string}
              */
             sensitivity: "public" | "internal" | "confidential" | "restricted" | "regulated";
+        };
+        /** SearchHitOut */
+        SearchHitOut: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "project" | "stack" | "run";
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Subtitle */
+            subtitle: string;
+            /** Href */
+            href: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** SessionListOut */
         SessionListOut: {
@@ -3276,6 +3781,21 @@ export interface components {
              */
             created_at: string;
         };
+        /** StaleAlertOut */
+        StaleAlertOut: {
+            /** Stack Id */
+            stack_id: string;
+            /** Stack Name */
+            stack_name: string;
+            /** Tool */
+            tool: string;
+            /** Status */
+            status: string;
+            /** Reason */
+            reason: string;
+            /** Alternatives */
+            alternatives: string[];
+        };
         /** TokenCalculatorIn */
         TokenCalculatorIn: {
             /** Text */
@@ -3442,6 +3962,19 @@ export interface components {
             timezone?: string | null;
             /** Avatar Url */
             avatar_url?: string | null;
+        };
+        /** UsageOut */
+        UsageOut: {
+            /** Total */
+            total: number;
+            /** Saved */
+            saved: number;
+            /** Today */
+            today: number;
+            /** Projects */
+            projects: number;
+            /** Project Limit */
+            project_limit: number;
         };
         /** UserOut */
         UserOut: {
@@ -5817,6 +6350,9 @@ export interface operations {
         parameters: {
             query?: {
                 workflow?: string | null;
+                tool_slug?: string | null;
+                /** @description Only runs the user chose to keep. */
+                saved?: boolean;
                 limit?: number;
             };
             header?: never;
@@ -5883,6 +6419,572 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_RunDetailOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_run: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_run: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_RunSummaryOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unsave_run: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_RunSummaryOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_projects: {
+        parameters: {
+            query?: {
+                include_archived?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_ProjectOut__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_project: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ProjectOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_project: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ProjectOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_project: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ProjectOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_project_items: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_ProjectItemOut__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_project_item: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectItemIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ProjectItemOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_project_item: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_project_items: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_ProjectItemOut__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pin_project_item: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PinIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ProjectItemOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_session: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_CarriedSessionOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clear_session: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_CarriedSessionOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_session: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CarriedSessionPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_CarriedSessionOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_dashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_DashboardOut_"];
+                };
+            };
+        };
+    };
+    search_workspace: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_SearchHitOut__"];
                 };
             };
             /** @description Validation Error */

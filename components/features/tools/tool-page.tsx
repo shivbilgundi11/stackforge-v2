@@ -17,6 +17,7 @@ import {
 } from "@/components/features/tools/handoff-bar";
 import { QuotaDialog } from "@/components/features/tools/quota-dialog";
 import { SynthesisProgress } from "@/components/features/tools/synthesis-progress";
+import { SaveRun } from "@/components/features/workspace/save-run";
 import { ResultBlockRenderer } from "@/components/features/tools/result-blocks";
 import { PageHeader } from "@/components/forge/page-header";
 import { EmptyState, Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/forge/panel";
@@ -228,7 +229,12 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
             isPending={mutation.isPending || reopened.isLoading}
           />
           {shown && !mutation.isPending ? (
-            <HandoffBar spec={spec} result={shown} input={shownInput} />
+            <>
+              {/* Every run is logged and survives 30 days; this is what
+                  exempts it from the purge (M17). */}
+              <SaveRun key={shown.run_id} runId={shown.run_id} />
+              <HandoffBar spec={spec} result={shown} input={shownInput} />
+            </>
           ) : null}
           {related.length ? <RelatedTools tools={related} /> : null}
         </div>

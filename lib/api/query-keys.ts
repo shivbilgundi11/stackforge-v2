@@ -33,4 +33,12 @@ export const qk = {
     /** A completed run is seeded here so a share or save is instant. */
     result: (id: string) => ["runs", "result", id] as const,
   },
+  workspace: {
+    dashboard: () => ["workspace", "dashboard"] as const,
+    projects: () => ["workspace", "projects"] as const,
+    project: (id: string) => ["workspace", "project", id] as const,
+    items: (id: string) => ["workspace", "project", id, "items"] as const,
+    session: (id: string) => ["workspace", "project", id, "session"] as const,
+    search: (query: string) => ["workspace", "search", query] as const,
+  },
 } as const;

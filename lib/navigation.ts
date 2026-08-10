@@ -48,7 +48,9 @@ export type NavGroup = {
   tools: NavTool[];
 };
 
-const planned = { status: "planned" as const };
+// The `planned` spread that used to mark unbuilt tools is gone: as of M17
+// every entry in NAV_GROUPS resolves to a live page. `status` stays on the
+// type — WORKSPACE_NAV still uses it, and the next unbuilt surface will too.
 
 export const NAV_GROUPS: NavGroup[] = [
   {
@@ -79,7 +81,6 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/stack-architect/my-stacks",
         summary: "Saved stacks, versions, and diffs.",
         keywords: ["saved", "versions"],
-        ...planned,
       },
       {
         slug: "graveyard",
@@ -363,7 +364,6 @@ export const WORKSPACE_NAV = [
     href: "/projects",
     icon: FolderIcon,
     summary: "Group related runs, stacks, and artifacts.",
-    status: "planned" as const,
   },
   {
     label: "Resources",
