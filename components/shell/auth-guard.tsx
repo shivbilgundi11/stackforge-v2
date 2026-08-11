@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth/auth-provider";
-import { requiresAccount } from "@/lib/navigation";
+import { isPublicContent, requiresAccount } from "@/lib/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -38,8 +38,16 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [gated, status, router, pathname]);
 
   if (!gated) {
-    // Still wait out `loading`: rendering as anonymous and then re-rendering
-    // as signed-in makes the quota strip and history feed flicker.
+    // Public content renders immediately, even while the session is
+    // resolving. The server render always sees `loading` — the provider
+    // refreshes after mount — so withholding children here means the initial
+    // HTML is a skeleton, and on the template library that is the HTML a
+    // crawler receives. Nothing on those pages is user-specific, so there is
+    // nothing to flicker (M19).
+    if (isPublicContent(pathname)) return <>{children}</>;
+
+    // Everywhere else, wait out `loading`: rendering as anonymous and then
+    // re-rendering as signed-in makes the quota strip and history feed flicker.
     return status === "loading" ? <ShellSkeleton /> : <>{children}</>;
   }
 

@@ -1541,6 +1541,111 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Template Library
+         * @description The hub, in one request.
+         *
+         *     Category counts, the featured set, and the newest templates together —
+         *     three round trips to render one page is three chances for it to paint half
+         *     populated.
+         */
+        get: operations["get_template_library"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/templates/facets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Template Facets */
+        get: operations["get_template_facets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/templates/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Templates
+         * @description Search and filter.
+         *
+         *     `/list` rather than the collection root because the root is the hub, and a
+         *     hub that changed shape when a query string appeared would be two endpoints
+         *     wearing one URL.
+         */
+        get: operations["list_templates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/templates/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Template */
+        get: operations["get_template"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/templates/{slug}/copy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Template Copy
+         * @description Counted on copy or download, never on view.
+         *
+         *     A separate endpoint rather than a flag on the GET, because the signal is
+         *     "someone took this" and only the client knows when that happened.
+         */
+        post: operations["record_template_copy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/shares": {
         parameters: {
             query?: never;
@@ -1907,6 +2012,20 @@ export interface components {
             oldest_verification?: string | null;
             /** Stale Rows */
             stale_rows: number;
+        };
+        /** CategoryOut */
+        CategoryOut: {
+            /**
+             * Key
+             * @enum {string}
+             */
+            key: "stack" | "blueprint" | "code-starter" | "prompt" | "config" | "checklist" | "business";
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Count */
+            count: number;
         };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
@@ -2330,6 +2449,14 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[FacetsOut] */
+        Envelope_FacetsOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["FacetsOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[FlagOut] */
         Envelope_FlagOut_: {
             /** Success */
@@ -2343,6 +2470,14 @@ export interface components {
             /** Success */
             success: boolean;
             data?: components["schemas"]["IdentityOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[LibraryOut] */
+        Envelope_LibraryOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["LibraryOut"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2463,6 +2598,14 @@ export interface components {
             /** Success */
             success: boolean;
             data?: components["schemas"]["StackVersionOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[TemplateDetailOut] */
+        Envelope_TemplateDetailOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["TemplateDetailOut"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2618,6 +2761,15 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[list[TemplateSummaryOut]] */
+        Envelope_list_TemplateSummaryOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["TemplateSummaryOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[list[ToolOut]] */
         Envelope_list_ToolOut__: {
             /** Success */
@@ -2723,6 +2875,23 @@ export interface components {
             completed_at: string | null;
             /** Download Url */
             download_url: string;
+        };
+        /**
+         * FacetsOut
+         * @description Filter values that exist in the data.
+         *
+         *     Served rather than hardcoded in the client, so a control never offers a
+         *     value that returns nothing.
+         */
+        FacetsOut: {
+            /** Categories */
+            categories?: string[];
+            /** Use Cases */
+            use_cases?: string[];
+            /** Difficulties */
+            difficulties?: string[];
+            /** Tags */
+            tags?: string[];
         };
         /** FlagIn */
         FlagIn: {
@@ -3054,6 +3223,20 @@ export interface components {
              * @default 8
              */
             max_replicas: number;
+        };
+        /**
+         * LibraryOut
+         * @description The hub. One request — category counts, featured, and newest.
+         */
+        LibraryOut: {
+            /** Total */
+            total: number;
+            /** Categories */
+            categories: components["schemas"]["CategoryOut"][];
+            /** Featured */
+            featured?: components["schemas"]["TemplateSummaryOut"][];
+            /** Recent */
+            recent?: components["schemas"]["TemplateSummaryOut"][];
         };
         /** LlmPricingIn */
         LlmPricingIn: {
@@ -4219,6 +4402,137 @@ export interface components {
             reason: string;
             /** Alternatives */
             alternatives: string[];
+        };
+        /**
+         * TemplateDetailOut
+         * @description The page. `content_markdown` is whatever the caller is entitled to.
+         */
+        TemplateDetailOut: {
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "stack" | "blueprint" | "code-starter" | "prompt" | "config" | "checklist" | "business";
+            /**
+             * Difficulty
+             * @enum {string}
+             */
+            difficulty: "beginner" | "intermediate" | "advanced";
+            /** Summary */
+            summary: string;
+            /** Use Cases */
+            use_cases?: string[];
+            /** Tags */
+            tags?: string[];
+            /** Is Premium */
+            is_premium: boolean;
+            /**
+             * File Count
+             * @default 0
+             */
+            file_count: number;
+            /**
+             * Is Stack Template
+             * @default false
+             */
+            is_stack_template: boolean;
+            /**
+             * View Count
+             * @default 0
+             */
+            view_count: number;
+            /**
+             * Copy Count
+             * @default 0
+             */
+            copy_count: number;
+            /** Published At */
+            published_at?: string | null;
+            /** Content Markdown */
+            content_markdown: string;
+            /** Files */
+            files?: components["schemas"]["TemplateFileOut"][];
+            /**
+             * Locked
+             * @default false
+             */
+            locked: boolean;
+            /**
+             * Truncated
+             * @default false
+             */
+            truncated: boolean;
+            /** Stack Input */
+            stack_input?: {
+                [key: string]: unknown;
+            };
+            /** Related Tools */
+            related_tools?: string[];
+            /** Related */
+            related?: components["schemas"]["TemplateSummaryOut"][];
+        };
+        /** TemplateFileOut */
+        TemplateFileOut: {
+            /** Path */
+            path: string;
+            /** Language */
+            language: string;
+            /** Content */
+            content: string;
+        };
+        /**
+         * TemplateSummaryOut
+         * @description A card in the grid. No body, by construction.
+         */
+        TemplateSummaryOut: {
+            /** Slug */
+            slug: string;
+            /** Title */
+            title: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "stack" | "blueprint" | "code-starter" | "prompt" | "config" | "checklist" | "business";
+            /**
+             * Difficulty
+             * @enum {string}
+             */
+            difficulty: "beginner" | "intermediate" | "advanced";
+            /** Summary */
+            summary: string;
+            /** Use Cases */
+            use_cases?: string[];
+            /** Tags */
+            tags?: string[];
+            /** Is Premium */
+            is_premium: boolean;
+            /**
+             * File Count
+             * @default 0
+             */
+            file_count: number;
+            /**
+             * Is Stack Template
+             * @default false
+             */
+            is_stack_template: boolean;
+            /**
+             * View Count
+             * @default 0
+             */
+            view_count: number;
+            /**
+             * Copy Count
+             * @default 0
+             */
+            copy_count: number;
+            /** Published At */
+            published_at?: string | null;
         };
         /** TokenCalculatorIn */
         TokenCalculatorIn: {
@@ -7516,6 +7830,145 @@ export interface operations {
                 };
                 content: {
                     "application/octet-stream": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_template_library: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_LibraryOut_"];
+                };
+            };
+        };
+    };
+    get_template_facets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_FacetsOut_"];
+                };
+            };
+        };
+    };
+    list_templates: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                category?: string | null;
+                use_case?: string | null;
+                difficulty?: string | null;
+                premium?: boolean | null;
+                tag?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_TemplateSummaryOut__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_template: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_TemplateDetailOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_template_copy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_dict_str__int__"];
                 };
             };
             /** @description Validation Error */

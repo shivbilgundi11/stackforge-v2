@@ -370,7 +370,6 @@ export const WORKSPACE_NAV = [
     href: "/resources",
     icon: LibraryIcon,
     summary: "Templates, blueprints, starters, and checklists.",
-    status: "planned" as const,
   },
   {
     label: "Team",
@@ -419,7 +418,11 @@ export const ALL_TOOLS: PaletteEntry[] = NAV_GROUPS.flatMap((group) =>
 const ACCOUNT_ONLY_PREFIXES = [
   "/dashboard",
   "/projects",
-  "/resources",
+  // `/resources` is deliberately absent. The template library is the product's
+  // strongest organic acquisition surface (M19, `PRD.md` §15), and a page
+  // behind a login cannot be crawled, cannot be shared, and cannot be the
+  // thing that brings someone in. Premium templates are gated on their *body*
+  // by the API, which is a gate a search engine can still index around.
   "/team",
   // `/settings` itself is deliberately absent. Appearance is a preference
   // stored in the visitor's own browser, so gating it behind sign-in gates
@@ -428,6 +431,27 @@ const ACCOUNT_ONLY_PREFIXES = [
   // that genuinely belongs to a person.
   "/settings/billing",
 ] as const;
+
+/**
+ * Routes whose content must be in the server-rendered HTML.
+ *
+ * The shell normally withholds children until the auth status resolves, so the
+ * quota strip and the history feed do not flicker from anonymous to signed-in.
+ * That wait costs nothing on a tool page — nobody is indexing a calculator —
+ * and costs everything on the template library, where the initial HTML is what
+ * a crawler receives and the prose *is* the product (M19, `PRD.md` §15).
+ *
+ * These pages render immediately at the cost of a possible re-render when the
+ * session lands. Nothing on them is user-specific, so there is nothing to
+ * flicker.
+ */
+const PUBLIC_CONTENT_PREFIXES = ["/resources"] as const;
+
+export function isPublicContent(pathname: string): boolean {
+  return PUBLIC_CONTENT_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
 
 export function requiresAccount(pathname: string): boolean {
   return ACCOUNT_ONLY_PREFIXES.some(

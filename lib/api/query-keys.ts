@@ -44,6 +44,12 @@ export const qk = {
   shares: {
     list: (includeRevoked: boolean) => ["shares", "list", includeRevoked] as const,
   },
+  templates: {
+    library: () => ["templates", "library"] as const,
+    facets: () => ["templates", "facets"] as const,
+    list: (filters: Record<string, unknown>) => ["templates", "list", filters] as const,
+    detail: (slug: string) => ["templates", "detail", slug] as const,
+  },
   workspace: {
     dashboard: () => ["workspace", "dashboard"] as const,
     projects: () => ["workspace", "projects"] as const,
