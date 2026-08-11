@@ -33,6 +33,17 @@ export const qk = {
     /** A completed run is seeded here so a share or save is instant. */
     result: (id: string) => ["runs", "result", id] as const,
   },
+  exports: {
+    /** Keyed by source, because the tray is per result — and because the lock
+     *  states inside depend on the plan, which changes on upgrade. */
+    options: (sourceType: string, sourceId: string) =>
+      ["exports", "options", sourceType, sourceId] as const,
+    list: () => ["exports", "list"] as const,
+    detail: (id: string) => ["exports", "detail", id] as const,
+  },
+  shares: {
+    list: (includeRevoked: boolean) => ["shares", "list", includeRevoked] as const,
+  },
   workspace: {
     dashboard: () => ["workspace", "dashboard"] as const,
     projects: () => ["workspace", "projects"] as const,

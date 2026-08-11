@@ -65,7 +65,10 @@ export function listProjectItems(id: string) {
 
 export function addProjectItem(
   id: string,
-  body: { item_type: "run" | "stack"; item_id: string; note?: string },
+  // `artifact` resolves to an `exports` row (M18). `template` is still refused
+  // by the server until M19 gives it a table, so it is absent here rather than
+  // accepted and rejected on the wire.
+  body: { item_type: "run" | "stack" | "artifact"; item_id: string; note?: string },
 ) {
   return apiFetch<ProjectItem>(`/api/v1/projects/${id}/items`, { method: "POST", body });
 }

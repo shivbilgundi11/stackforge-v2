@@ -7,6 +7,7 @@ import { useQueryState } from "nuqs";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+import { ArtifactTray } from "@/components/features/exports/artifact-tray";
 import { EmptyState, Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,14 @@ export function MyStacks() {
         </PanelBody>
       </Panel>
 
-      {selected ? <VersionHistory stackId={selected} /> : null}
+      {selected ? (
+        <>
+          <VersionHistory stackId={selected} />
+          {/* The stack plan is what the bundle, the PDF, and the share link are
+              all *for* — this is the surface M18 was built around. */}
+          <ArtifactTray key={selected} sourceType="stack" sourceId={selected} />
+        </>
+      ) : null}
     </div>
   );
 }

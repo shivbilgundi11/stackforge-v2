@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 
+import { ArtifactTray } from "@/components/features/exports/artifact-tray";
 import { FieldControl } from "@/components/features/tools/field-control";
 import {
   HandoffBar,
@@ -234,6 +235,10 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
                   exempts it from the purge (M17). */}
               <SaveRun key={shown.run_id} runId={shown.run_id} />
               <HandoffBar spec={spec} result={shown} input={shownInput} />
+              {/* Below the handoff, above nothing: the tray is sticky, so it
+                  stays reachable while the reader scrolls the result rather
+                  than sitting at the bottom of a long page (M18). */}
+              <ArtifactTray key={shown.run_id} sourceType="run" sourceId={shown.run_id} />
             </>
           ) : null}
           {related.length ? <RelatedTools tools={related} /> : null}

@@ -1465,6 +1465,152 @@ export interface paths {
         patch: operations["update_session"];
         trace?: never;
     };
+    "/api/v1/exports/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Export Options
+         * @description What this result can produce, and what the caller's plan unlocks.
+         *
+         *     One request rather than one per format. The tray needs every button and
+         *     every lock state at once, and three round trips to render a toolbar is
+         *     three chances for it to render half-populated.
+         */
+        get: operations["get_export_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Exports */
+        get: operations["list_exports"];
+        put?: never;
+        /** Create Export */
+        post: operations["create_export"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exports/{export_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Export */
+        get: operations["get_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/exports/{export_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Export */
+        get: operations["download_export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/shares": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Shares */
+        get: operations["list_shares"];
+        put?: never;
+        /** Create Share */
+        post: operations["create_share"];
+        /**
+         * Revoke All Shares
+         * @description Bulk revoke, for Settings → Shares.
+         *
+         *     Returns the count rather than 204: "12 links revoked" is a confirmation
+         *     the user can check against what they thought they had out there.
+         */
+        delete: operations["revoke_all_shares"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/shares/{share_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Revoke Share
+         * @description The row survives revocation, so the owner keeps the view count and the
+         *     record that the link existed. Only the capability dies.
+         */
+        delete: operations["revoke_share"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/s/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Shared
+         * @description Unauthenticated, `noindex`, and 404 for anything that is not live.
+         *
+         *     No dependency on `CurrentUser` or `CallerIdentity` at all: the handler has
+         *     no way to know who is asking, which is the strongest form of "no owner
+         *     identity is exposed" available — there is nothing here to leak.
+         */
+        get: operations["get_shared"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dashboard": {
         parameters: {
             query?: never;
@@ -1654,6 +1800,24 @@ export interface components {
             content: string;
             /** Language */
             language?: string | null;
+        };
+        /**
+         * ArtifactOptionOut
+         * @description One row in the artifact tray.
+         */
+        ArtifactOptionOut: {
+            /** Type */
+            type: string;
+            /** Label */
+            label: string;
+            /** Description */
+            description: string;
+            /** Filename */
+            filename: string;
+            /** Format */
+            format: string;
+            /** Emitted */
+            emitted: boolean;
         };
         /** AuthResult */
         AuthResult: {
@@ -2150,6 +2314,22 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[ExportOptionsOut] */
+        Envelope_ExportOptionsOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["ExportOptionsOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[ExportOut] */
+        Envelope_ExportOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["ExportOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[FlagOut] */
         Envelope_FlagOut_: {
             /** Success */
@@ -2238,6 +2418,22 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[ShareOut] */
+        Envelope_ShareOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["ShareOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[SharePayloadOut] */
+        Envelope_SharePayloadOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["SharePayloadOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[SimpleMessage] */
         Envelope_SimpleMessage_: {
             /** Success */
@@ -2294,12 +2490,32 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[dict[str, int]] */
+        Envelope_dict_str__int__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: {
+                [key: string]: number;
+            } | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[list[ArchitectureOut]] */
         Envelope_list_ArchitectureOut__: {
             /** Success */
             success: boolean;
             /** Data */
             data?: components["schemas"]["ArchitectureOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[list[ExportOut]] */
+        Envelope_list_ExportOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["ExportOut"][] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2375,6 +2591,15 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[list[ShareOut]] */
+        Envelope_list_ShareOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["ShareOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[list[StackOut]] */
         Envelope_list_StackOut__: {
             /** Success */
@@ -2415,6 +2640,89 @@ export interface components {
             details?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** ExportIn */
+        ExportIn: {
+            /**
+             * Source Type
+             * @enum {string}
+             */
+            source_type: "run" | "stack";
+            /** Source Id */
+            source_id: string;
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "markdown" | "json" | "yaml" | "csv" | "pdf" | "zip";
+            /** Artifact Type */
+            artifact_type?: string | null;
+            /** Table */
+            table?: string | null;
+        };
+        /** ExportOptionsOut */
+        ExportOptionsOut: {
+            /**
+             * Source Type
+             * @enum {string}
+             */
+            source_type: "run" | "stack";
+            /** Source Id */
+            source_id: string;
+            /** Title */
+            title: string;
+            /** Artifacts */
+            artifacts: components["schemas"]["ArtifactOptionOut"][];
+            /** Formats */
+            formats: components["schemas"]["FormatOptionOut"][];
+            /** Tables */
+            tables?: string[];
+        };
+        /** ExportOut */
+        ExportOut: {
+            /** Id */
+            id: string;
+            /**
+             * Source Type
+             * @enum {string}
+             */
+            source_type: "run" | "stack";
+            /** Source Id */
+            source_id: string;
+            /** Artifact Type */
+            artifact_type: string | null;
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "markdown" | "json" | "yaml" | "csv" | "pdf" | "zip";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "ready" | "failed";
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Error */
+            error: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Completed At */
+            completed_at: string | null;
+            /** Download Url */
+            download_url: string;
         };
         /** FlagIn */
         FlagIn: {
@@ -2457,6 +2765,29 @@ export interface components {
              * Format: email
              */
             email: string;
+        };
+        /**
+         * FormatOptionOut
+         * @description A format button, with its lock state.
+         *
+         *     `available: false` is rendered as a visible badge rather than a hidden
+         *     button. The gate has to be seen to convert — a user who never learns PDF
+         *     export exists never upgrades for it.
+         */
+        FormatOptionOut: {
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "markdown" | "json" | "yaml" | "csv" | "pdf" | "zip";
+            /** Label */
+            label: string;
+            /** Extension */
+            extension: string;
+            /** Required Plan */
+            required_plan: string;
+            /** Available */
+            available: boolean;
         };
         /** FunctionSchemaIn */
         FunctionSchemaIn: {
@@ -3655,6 +3986,99 @@ export interface components {
             token_type: string;
             /** Expires In */
             expires_in: number;
+        };
+        /** ShareIn */
+        ShareIn: {
+            /**
+             * Target Type
+             * @enum {string}
+             */
+            target_type: "run" | "stack";
+            /** Target Id */
+            target_id: string;
+            /** Artifact Type */
+            artifact_type?: string | null;
+            /** Expires In Days */
+            expires_in_days?: number | null;
+        };
+        /**
+         * ShareOut
+         * @description The owner's view. Includes the token, because the owner has to be able
+         *     to re-copy the URL (D-14).
+         */
+        ShareOut: {
+            /** Id */
+            id: string;
+            /** Url */
+            url: string;
+            /** Title */
+            title: string;
+            /**
+             * Target Type
+             * @enum {string}
+             */
+            target_type: "run" | "stack";
+            /** Target Id */
+            target_id: string;
+            /** Artifact Type */
+            artifact_type: string | null;
+            /** View Count */
+            view_count: number;
+            /** Last Viewed At */
+            last_viewed_at: string | null;
+            /** Expires At */
+            expires_at: string | null;
+            /** Revoked At */
+            revoked_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * SharePayloadOut
+         * @description The public view. No owner field exists on this model, by construction.
+         *
+         *     Adding one would be a deliberate edit rather than an accident of
+         *     serialising a row — which is the point of assembling it field by field in
+         *     `share_service` instead of dumping the source.
+         */
+        SharePayloadOut: {
+            /** Title */
+            title: string;
+            /** Subtitle */
+            subtitle: string;
+            /** Kind */
+            kind: string;
+            /** Markdown */
+            markdown: string;
+            /** Artifacts */
+            artifacts?: {
+                [key: string]: unknown;
+            }[];
+            /** Metrics */
+            metrics?: {
+                [key: string]: unknown;
+            };
+            /** Tables */
+            tables?: {
+                [key: string]: {
+                    [key: string]: unknown;
+                }[];
+            };
+            /** Warnings */
+            warnings?: {
+                [key: string]: unknown;
+            }[];
+            /** Provenance */
+            provenance?: {
+                [key: string]: unknown;
+            };
+            /** Created At */
+            created_at: string;
+            /** Expires At */
+            expires_at?: string | null;
         };
         /** SimpleMessage */
         SimpleMessage: {
@@ -6933,6 +7357,311 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_CarriedSessionOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_export_options: {
+        parameters: {
+            query: {
+                /** @description run or stack */
+                source_type: string;
+                source_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ExportOptionsOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_exports: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_ExportOut__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ExportOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ExportOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_shares: {
+        parameters: {
+            query?: {
+                include_revoked?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_ShareOut__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_share: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShareIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ShareOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_all_shares: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_dict_str__int__"];
+                };
+            };
+        };
+    };
+    revoke_share: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                share_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ShareOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_shared: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SharePayloadOut_"];
                 };
             };
             /** @description Validation Error */

@@ -3,6 +3,7 @@
 import { AppearanceSection } from "@/components/features/settings/appearance-section";
 import { ProfileSection } from "@/components/features/settings/profile-section";
 import { DangerSection, SecuritySection } from "@/components/features/settings/security-section";
+import { SharesSection } from "@/components/features/settings/shares-section";
 import { PageHeader } from "@/components/forge/page-header";
 import { Panel, PanelBody } from "@/components/forge/panel";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ export function SettingsView() {
       ) : user ? (
         <>
           <ProfileSection user={user} />
+          <SharesSection />
           <SecuritySection user={user} />
           <DangerSection user={user} />
         </>
