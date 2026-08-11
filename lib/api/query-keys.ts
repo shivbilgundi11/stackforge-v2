@@ -44,6 +44,15 @@ export const qk = {
   shares: {
     list: (includeRevoked: boolean) => ["shares", "list", includeRevoked] as const,
   },
+  billing: {
+    /** Public and stable — the pricing table changes with a deploy, not with
+     *  a session. */
+    plans: () => ["billing", "plans"] as const,
+    subscription: () => ["billing", "subscription"] as const,
+    /** Invalidated after every run, so the meter moves as the user works. */
+    usage: () => ["billing", "usage"] as const,
+    invoices: () => ["billing", "invoices"] as const,
+  },
   templates: {
     library: () => ["templates", "library"] as const,
     facets: () => ["templates", "facets"] as const,

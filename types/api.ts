@@ -1278,7 +1278,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Quota */
+        /**
+         * Get Quota
+         * @description Just the run counter. `GET /billing/usage` returns every meter.
+         */
         get: operations["get_quota"];
         put?: never;
         post?: never;
@@ -1646,6 +1649,178 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Plans
+         * @description The pricing table, limits included.
+         *
+         *     Read from `plan_quotas` rather than from the copy in `data/plans.py`, so
+         *     raising the free tier with an `UPDATE` changes the page too. That is the
+         *     whole reason the limits live in a table: a marketing number and an enforced
+         *     number that can disagree eventually will.
+         */
+        get: operations["list_plans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Subscription */
+        get: operations["get_subscription"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Usage
+         * @description Every meter, for an anonymous caller as much as a paying one.
+         *
+         *     Anonymous is not an error case here. They are metered too, and the sidebar
+         *     meter is the thing that makes the limit visible before it is hit — which is
+         *     the only moment the gate can convert rather than annoy.
+         */
+        get: operations["get_usage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/checkout-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Checkout */
+        post: operations["create_checkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/portal-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Portal Session */
+        post: operations["create_portal_session"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/cancellation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Cancellation
+         * @description Cancel at period end, or undo it.
+         *
+         *     Never an immediate cutoff: the period is paid for and stays. Undo is the
+         *     same endpoint because "I changed my mind" happens far more often than the
+         *     cancellation itself, and it should not require finding a different button.
+         */
+        post: operations["set_cancellation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Invoices */
+        get: operations["list_invoices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stripe Webhook
+         * @description The one endpoint authenticated by a signature rather than a session.
+         *
+         *     Reads the raw body, because the signature covers the exact bytes Stripe
+         *     sent — re-serialising parsed JSON changes them and every delivery fails
+         *     verification.
+         *
+         *     Always answers 200 once the signature checks out, including when a handler
+         *     raised. The failure is written onto the event row and retried by the
+         *     scheduled job; returning a 500 would ask Stripe to retry work that has
+         *     already been recorded, and after enough failures Stripe disables the
+         *     endpoint entirely — which is a far worse state than a row with an error on
+         *     it that a job will pick up in an hour.
+         */
+        post: operations["stripe_webhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/shares": {
         parameters: {
             query?: never;
@@ -1969,6 +2144,14 @@ export interface components {
             /** User Count */
             user_count?: number | null;
         };
+        /** CancellationIn */
+        CancellationIn: {
+            /**
+             * Cancel
+             * @default true
+             */
+            cancel: boolean;
+        };
         /**
          * CarriedSessionOut
          * @description Named `Carried…` rather than `SessionOut`.
@@ -2033,6 +2216,26 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** CheckoutIn */
+        CheckoutIn: {
+            /** Plan */
+            plan: string;
+            /**
+             * Interval
+             * @default monthly
+             */
+            interval: string;
+            /**
+             * Seats
+             * @default 1
+             */
+            seats: number;
+        };
+        /** CheckoutOut */
+        CheckoutOut: {
+            /** Url */
+            url: string;
         };
         /** ChunkEstimateIn */
         ChunkEstimateIn: {
@@ -2401,6 +2604,14 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[CheckoutOut] */
+        Envelope_CheckoutOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["CheckoutOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[ClaimResult] */
         Envelope_ClaimResult_: {
             /** Success */
@@ -2486,6 +2697,14 @@ export interface components {
             /** Success */
             success: boolean;
             data?: components["schemas"]["ModelOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[PortalOut] */
+        Envelope_PortalOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["PortalOut"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2601,6 +2820,14 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[SubscriptionOut] */
+        Envelope_SubscriptionOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["SubscriptionOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[TemplateDetailOut] */
         Envelope_TemplateDetailOut_: {
             /** Success */
@@ -2625,11 +2852,27 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[UsageSummaryOut] */
+        Envelope_UsageSummaryOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["UsageSummaryOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[UserOut] */
         Envelope_UserOut_: {
             /** Success */
             success: boolean;
             data?: components["schemas"]["UserOut"] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[WebhookOut] */
+        Envelope_WebhookOut_: {
+            /** Success */
+            success: boolean;
+            data?: components["schemas"]["WebhookOut"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -2680,6 +2923,15 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
+        /** Envelope[list[InvoiceOut]] */
+        Envelope_list_InvoiceOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["InvoiceOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
         /** Envelope[list[ModelOut]] */
         Envelope_list_ModelOut__: {
             /** Success */
@@ -2695,6 +2947,15 @@ export interface components {
             success: boolean;
             /** Data */
             data?: components["schemas"]["PricingHistoryOut"][] | null;
+            error?: components["schemas"]["ErrorBody"] | null;
+            meta: components["schemas"]["Meta"];
+        };
+        /** Envelope[list[PricingPlanOut]] */
+        Envelope_list_PricingPlanOut__: {
+            /** Success */
+            success: boolean;
+            /** Data */
+            data?: components["schemas"]["PricingPlanOut"][] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -3181,6 +3442,30 @@ export interface components {
              */
             ongoing_monthly: number | string;
         };
+        /** InvoiceOut */
+        InvoiceOut: {
+            /** Id */
+            id: string;
+            /** Number */
+            number: string | null;
+            /** Status */
+            status: string | null;
+            /** Amount Due */
+            amount_due: number;
+            /** Amount Paid */
+            amount_paid: number;
+            /** Currency */
+            currency: string;
+            /**
+             * Created
+             * Format: date-time
+             */
+            created: string;
+            /** Hosted Invoice Url */
+            hosted_invoice_url: string | null;
+            /** Invoice Pdf */
+            invoice_pdf: string | null;
+        };
         /** K8sEstimateIn */
         K8sEstimateIn: {
             /**
@@ -3444,12 +3729,37 @@ export interface components {
          * @enum {string}
          */
         Plan: "free" | "pro" | "team" | "enterprise";
+        /** PlanFeatureOut */
+        PlanFeatureOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Included */
+            included: boolean;
+            /** Pitch */
+            pitch: string;
+        };
+        /** PlanLimitOut */
+        PlanLimitOut: {
+            /** Metric */
+            metric: string;
+            /** Label */
+            label: string;
+            /** Limit */
+            limit: number | null;
+        };
         /** PlanOut */
         PlanOut: {
             /** Plan */
             plan: string;
             /** Source */
             source: string;
+        };
+        /** PortalOut */
+        PortalOut: {
+            /** Url */
+            url: string;
         };
         /** PricingHistoryOut */
         PricingHistoryOut: {
@@ -3474,6 +3784,39 @@ export interface components {
              * Format: date-time
              */
             detected_at: string;
+        };
+        /** PricingPlanOut */
+        PricingPlanOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Tagline */
+            tagline: string;
+            /** Monthly Cents */
+            monthly_cents: number | null;
+            /** Annual Cents */
+            annual_cents: number | null;
+            /** Annual Saving Cents */
+            annual_saving_cents: number;
+            /** Currency */
+            currency: string;
+            /** Per Seat */
+            per_seat: boolean;
+            /** Trial Days */
+            trial_days: number;
+            /** Highlights */
+            highlights: string[];
+            /** Cta */
+            cta: string;
+            /** Checkout */
+            checkout: boolean;
+            /** Current */
+            current: boolean;
+            /** Features */
+            features: components["schemas"]["PlanFeatureOut"][];
+            /** Limits */
+            limits: components["schemas"]["PlanLimitOut"][];
         };
         /** ProjectCardOut */
         ProjectCardOut: {
@@ -3674,23 +4017,25 @@ export interface components {
          *
          *     "You have hit your limit" with no figures is a dead end; "42 of 42 runs
          *     used, resets in 6 hours" tells the user whether to upgrade or wait.
+         *
+         *     `limit` and `remaining` are null on an unlimited plan, and `resets_at` is
+         *     null for a metric that counts rows rather than a period (M20). Null rather
+         *     than a large sentinel: a meter reading "3 of 999999" is a meter nobody
+         *     believes, and the client has to branch on the unlimited case regardless.
          */
         QuotaOut: {
             /** Metric */
             metric: string;
             /** Limit */
-            limit: number;
+            limit: number | null;
             /** Used */
             used: number;
             /** Remaining */
-            remaining: number;
+            remaining: number | null;
             /** Period */
             period: string;
-            /**
-             * Resets At
-             * Format: date-time
-             */
-            resets_at: string;
+            /** Resets At */
+            resets_at: string | null;
             /** Plan */
             plan: string;
         };
@@ -4403,6 +4748,27 @@ export interface components {
             /** Alternatives */
             alternatives: string[];
         };
+        /** SubscriptionOut */
+        SubscriptionOut: {
+            /** Plan */
+            plan: string;
+            /** Status */
+            status: string | null;
+            /** Checkout Available */
+            checkout_available: boolean;
+            /** Seats */
+            seats: number;
+            /** Cancel At Period End */
+            cancel_at_period_end: boolean;
+            /** Current Period End */
+            current_period_end: string | null;
+            /** Trial Ends At */
+            trial_ends_at: string | null;
+            /** Past Due Since */
+            past_due_since: string | null;
+            /** Grace Days Left */
+            grace_days_left: number | null;
+        };
         /**
          * TemplateDetailOut
          * @description The page. `content_markdown` is whatever the caller is entitled to.
@@ -4712,7 +5078,17 @@ export interface components {
             /** Projects */
             projects: number;
             /** Project Limit */
-            project_limit: number;
+            project_limit: number | null;
+        };
+        /**
+         * UsageSummaryOut
+         * @description Every meter at once. One call rather than six from the client.
+         */
+        UsageSummaryOut: {
+            /** Plan */
+            plan: string;
+            /** Quotas */
+            quotas: components["schemas"]["QuotaOut"][];
         };
         /** UserOut */
         UserOut: {
@@ -4829,6 +5205,18 @@ export interface components {
              * @default false
              */
             lora_finetune: boolean;
+        };
+        /**
+         * WebhookOut
+         * @description Deliberately uninformative to the caller.
+         *
+         *     A webhook response is read by Stripe's retry logic and by anyone probing
+         *     the endpoint. `received` is all either needs; whether an event applied,
+         *     was a duplicate, or failed is in the logs and the `stripe_events` table.
+         */
+        WebhookOut: {
+            /** Received */
+            received: boolean;
         };
         /** WorkflowPlanIn */
         WorkflowPlanIn: {
@@ -7969,6 +8357,203 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_dict_str__int__"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_plans: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_PricingPlanOut__"];
+                };
+            };
+        };
+    };
+    get_subscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubscriptionOut_"];
+                };
+            };
+        };
+    };
+    get_usage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_UsageSummaryOut_"];
+                };
+            };
+        };
+    };
+    create_checkout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_CheckoutOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_portal_session: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_PortalOut_"];
+                };
+            };
+        };
+    };
+    set_cancellation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancellationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubscriptionOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invoices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_InvoiceOut__"];
+                };
+            };
+        };
+    };
+    stripe_webhook: {
+        parameters: {
+            query?: never;
+            header?: {
+                "Stripe-Signature"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_WebhookOut_"];
                 };
             };
             /** @description Validation Error */

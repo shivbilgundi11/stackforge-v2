@@ -39,6 +39,7 @@ export function SettingsView() {
       ) : user ? (
         <>
           <ProfileSection user={user} />
+          <BillingLink plan={user.plan} />
           <SharesSection />
           <SecuritySection user={user} />
           <DangerSection user={user} />
@@ -47,6 +48,33 @@ export function SettingsView() {
         <SignedOutNotice />
       )}
     </div>
+  );
+}
+
+/**
+ * Billing lives on its own page, not in a panel here.
+ *
+ * It carries three panels of its own — plan, usage meters, invoices — and
+ * folding them into this page would bury the meters, which are the surface
+ * that has to be *seen* for the gate to convert rather than annoy (M20).
+ */
+function BillingLink({ plan }: { plan: string }) {
+  return (
+    <Panel>
+      <PanelBody className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <p className="text-[13.5px] font-medium text-fg">
+            Billing · <span className="capitalize">{plan}</span> plan
+          </p>
+          <p className="text-[13px] text-fg-muted">
+            Usage against your limits, invoices, and your payment method.
+          </p>
+        </div>
+        <Button asChild size="sm" variant="outline">
+          <Link href="/settings/billing">Manage billing</Link>
+        </Button>
+      </PanelBody>
+    </Panel>
   );
 }
 

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { formatLimit, usagePercent, usageTone } from "@/lib/api/billing";
+import { useUsage } from "@/lib/api/hooks";
 import { cn } from "@/lib/utils";
 
 /**
@@ -11,51 +13,60 @@ import { cn } from "@/lib/utils";
  * approaching never upgrades for it. Placement here rather than buried in
  * billing settings is deliberate.
  *
- * Wired to real data in M20; the shape is fixed now so the surface exists.
+ * Wired to `GET /billing/usage` in M20. It shows the run counter, which is the
+ * meter that moves while someone is working; the other five live on the billing
+ * page, where there is room to explain them.
+ *
+ * Renders nothing while loading rather than a placeholder: this sits at the
+ * bottom of the sidebar, and a skeleton that resolves into a bar is more
+ * movement than a number nobody was waiting for deserves.
  */
-export function PlanCard({
-  plan = "Free",
-  used = 2,
-  limit = 5,
-}: {
-  plan?: string;
-  used?: number;
-  limit?: number;
-}) {
-  const pct = Math.min(100, Math.round((used / limit) * 100));
-  const tone = pct >= 100 ? "danger" : pct >= 70 ? "warning" : "ember";
+export function PlanCard() {
+  const usage = useUsage();
+
+  const quota = usage.data?.quotas.find((row) => row.metric === "tool_runs_per_day");
+  if (!quota) return null;
+
+  const plan = usage.data?.plan ?? "free";
+  const unlimited = quota.limit === null || quota.limit === undefined;
+  const percent = usagePercent(quota);
+  const tone = usageTone(quota);
 
   return (
     <div className="rounded-md border border-line bg-surface p-2.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11.5px] font-medium text-fg">{plan} plan</span>
+        <span className="text-[11.5px] font-medium text-fg capitalize">{plan} plan</span>
         <span className="font-mono text-[11px] text-fg-subtle tabular-nums">
-          {used}/{limit}
+          {unlimited ? formatLimit(quota.limit) : `${quota.used}/${quota.limit}`}
         </span>
       </div>
 
-      <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-surface-3">
-        <div
-          className={cn(
-            "h-full rounded-full transition-[width] duration-300",
-            tone === "ember" && "bg-ember",
-            tone === "warning" && "bg-warning",
-            tone === "danger" && "bg-danger",
-          )}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+      {unlimited ? null : (
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-surface-3">
+          <div
+            className={cn(
+              "h-full rounded-full transition-[width] duration-300",
+              tone === "ember" && "bg-ember",
+              tone === "warning" && "bg-warning",
+              tone === "danger" && "bg-danger",
+            )}
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+      )}
 
       <p className="mt-1.5 text-[10.5px] leading-snug text-fg-subtle">
-        Tool runs today. Resets at midnight UTC.
+        {unlimited ? "Tool runs. No daily cap." : "Tool runs today. Resets at midnight UTC."}
       </p>
 
-      <Link
-        href="/pricing"
-        className="mt-2 inline-block text-[11px] font-medium text-ember hover:text-ember-hover"
-      >
-        Upgrade for unlimited →
-      </Link>
+      {unlimited ? null : (
+        <Link
+          href="/pricing"
+          className="mt-2 inline-block text-[11px] font-medium text-ember hover:text-ember-hover"
+        >
+          Upgrade for unlimited →
+        </Link>
+      )}
     </div>
   );
 }

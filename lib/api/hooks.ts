@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import * as billing from "@/lib/api/billing";
 import * as catalog from "@/lib/api/catalog";
 import { qk } from "@/lib/api/query-keys";
 import * as tools from "@/lib/api/tools";
@@ -112,5 +113,57 @@ export function useRun(runId: string | null) {
     enabled: Boolean(runId),
     staleTime: Infinity,
     retry: false,
+  });
+}
+
+// ── Billing (M20) ───────────────────────────────────────────────────────────
+
+/**
+ * The pricing table.
+ *
+ * Long `staleTime` and no refetch on focus: plans change with a deploy, and the
+ * public pricing page is the most-loaded route in the app. Its limits still
+ * come from the server rather than a constant here, so a tuned limit reaches
+ * the page on the next load.
+ */
+export function usePlans() {
+  return useQuery({
+    queryKey: qk.billing.plans(),
+    queryFn: () => billing.listPlans(),
+    staleTime: 1000 * 60 * 15,
+  });
+}
+
+/** Signed-in only. `enabled` rather than a 401 the error boundary would toast. */
+export function useSubscription(enabled = true) {
+  return useQuery({
+    queryKey: qk.billing.subscription(),
+    queryFn: () => billing.getSubscription(),
+    enabled,
+    staleTime: 1000 * 60,
+  });
+}
+
+/**
+ * Every meter at once.
+ *
+ * Short `staleTime`: the point of the sidebar meter is to be visibly moving
+ * before the limit is hit, which is the only moment the gate converts rather
+ * than annoys. Works signed out — anonymous callers are metered too.
+ */
+export function useUsage() {
+  return useQuery({
+    queryKey: qk.billing.usage(),
+    queryFn: () => billing.getUsage(),
+    staleTime: 1000 * 20,
+  });
+}
+
+export function useInvoices(enabled = true) {
+  return useQuery({
+    queryKey: qk.billing.invoices(),
+    queryFn: () => billing.listInvoices(),
+    enabled,
+    staleTime: 1000 * 60 * 5,
   });
 }

@@ -228,7 +228,8 @@ export function DashboardPanels() {
                     : "Group related runs and stacks into a project."
                 }
                 action={
-                  data.usage.project_limit > 0 ? (
+                  // `null` is unlimited (M20), which is emphatically not zero.
+                  data.usage.project_limit === null || data.usage.project_limit > 0 ? (
                     <Button asChild size="sm">
                       <Link href="/projects">Create one</Link>
                     </Button>
