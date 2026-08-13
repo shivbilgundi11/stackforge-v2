@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon, MailCheckIcon } from "lucide-react";
@@ -15,6 +16,24 @@ import { passwordStrength, signupSchema, type SignupValues } from "@/lib/auth/sc
 import { cn } from "@/lib/utils";
 
 export default function SignupPage() {
+  // useSearchParams must sit under Suspense so the static shell can prerender.
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
+  const router = useRouter();
+  const params = useSearchParams();
+  // Signup-from-invite (M21): the invite page hands over the token and the
+  // invited address. The email field locks to it — the server refuses a
+  // mismatch anyway, but a field the user can edit into an error is worse
+  // than one that says why it is fixed.
+  const inviteToken = params.get("invite");
+  const invitedEmail = inviteToken ? params.get("email") : null;
+
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -26,7 +45,7 @@ export default function SignupPage() {
     formState: { errors },
   } = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: invitedEmail ?? "", password: "" },
   });
 
   const { formError, clearFormError, handleError } = useFormErrors<SignupValues>(setError);
@@ -39,7 +58,13 @@ export default function SignupPage() {
     clearFormError();
     setSubmitting(true);
     try {
-      await authApi.register(values);
+      await authApi.register(inviteToken ? { ...values, invite_token: inviteToken } : values);
+      if (inviteToken) {
+        // The invite already proved the inbox, so there is no verification
+        // round-trip — straight to sign-in and back to the accept page.
+        router.push(`/login?next=${encodeURIComponent(`/invite?token=${inviteToken}`)}`);
+        return;
+      }
       // The response is identical whether or not the address already existed,
       // so this screen is shown either way. That is the point.
       setSentTo(values.email);
@@ -77,12 +102,23 @@ export default function SignupPage() {
 
   return (
     <AuthShell
-      title="Create an account"
-      description="Save your work, export artifacts, and keep a project history."
+      title={inviteToken ? "Join your team" : "Create an account"}
+      description={
+        inviteToken
+          ? "Create your account to accept the invitation."
+          : "Save your work, export artifacts, and keep a project history."
+      }
       footer={
         <>
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-ember hover:text-ember-hover">
+          <Link
+            href={
+              inviteToken
+                ? `/login?next=${encodeURIComponent(`/invite?token=${inviteToken}`)}`
+                : "/login"
+            }
+            className="font-medium text-ember hover:text-ember-hover"
+          >
             Sign in
           </Link>
         </>
@@ -105,6 +141,8 @@ export default function SignupPage() {
           autoComplete="email"
           placeholder="you@company.com"
           error={errors.email?.message}
+          readOnly={invitedEmail !== null}
+          hint={invitedEmail !== null ? "Locked to the invited address." : undefined}
           {...register("email")}
         />
 
@@ -148,7 +186,7 @@ export default function SignupPage() {
           className="h-9 w-full bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
         >
           {submitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
-          Create account
+          {inviteToken ? "Create account and continue" : "Create account"}
         </Button>
 
         <p className="text-center text-[11px] leading-relaxed text-fg-subtle">

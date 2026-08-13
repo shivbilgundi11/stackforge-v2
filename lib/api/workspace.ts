@@ -59,6 +59,11 @@ export function deleteProject(id: string) {
   return apiFetch<void>(`/api/v1/projects/${id}`, { method: "DELETE" });
 }
 
+/** Author-only; `team` needs the acting-org header the client attaches (M21). */
+export function updateProjectVisibility(id: string, visibility: "private" | "team" | "public") {
+  return apiFetch<Project>(`/api/v1/projects/${id}`, { method: "PATCH", body: { visibility } });
+}
+
 export function listProjectItems(id: string) {
   return apiFetch<ProjectItem[]>(`/api/v1/projects/${id}/items`);
 }

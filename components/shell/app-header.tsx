@@ -7,6 +7,7 @@ import { ChevronRightIcon } from "lucide-react";
 
 import { SidebarTrigger } from "@/components/animate-ui/components/radix/sidebar";
 import { CommandTrigger } from "@/components/shell/command-palette";
+import { OrgSwitcher } from "@/components/shell/org-switcher";
 import { ThemeToggle } from "@/components/shell/theme-toggle";
 import { UserMenu } from "@/components/shell/user-menu";
 import { Separator } from "@/components/ui/separator";
@@ -19,6 +20,8 @@ export function AppHeader() {
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-bg/85 px-3 backdrop-blur-md sm:px-4">
       <SidebarTrigger className="-ml-1 text-fg-muted hover:text-fg" />
       <Separator orientation="vertical" className="h-5 bg-line" />
+
+      <OrgSwitcher />
 
       <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
         <ol className="flex items-center gap-1 text-[13px]">
@@ -70,7 +73,16 @@ function useBreadcrumbs(): { label: string; href: string }[] {
   const workspace = WORKSPACE_NAV.find(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
   );
-  if (workspace) return [{ label: workspace.label, href: workspace.href }];
+  if (workspace) {
+    const crumbs = [{ label: workspace.label, href: workspace.href }];
+    // Sub-pages (Team → Members) get their own crumb; a deep link that
+    // renders a single collapsed crumb reads as the wrong page.
+    if (pathname !== workspace.href) {
+      const tail = pathname.split("/").filter(Boolean).at(-1);
+      if (tail) crumbs.push({ label: titleCase(tail), href: pathname });
+    }
+    return crumbs;
+  }
 
   const group = findGroupByHref(pathname);
   if (!group) {

@@ -352,7 +352,13 @@ export const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-export const WORKSPACE_NAV = [
+export const WORKSPACE_NAV: {
+  label: string;
+  href: string;
+  icon: NavGroup["icon"];
+  summary: string;
+  status?: "ready" | "planned";
+}[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
@@ -376,7 +382,6 @@ export const WORKSPACE_NAV = [
     href: "/team",
     icon: UsersIcon,
     summary: "Members, invitations, and shared work.",
-    status: "planned" as const,
   },
 ];
 

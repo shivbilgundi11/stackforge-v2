@@ -59,6 +59,20 @@ export const qk = {
     list: (filters: Record<string, unknown>) => ["templates", "list", filters] as const,
     detail: (slug: string) => ["templates", "detail", slug] as const,
   },
+  team: {
+    orgs: () => ["team", "orgs"] as const,
+    org: (id: string) => ["team", "org", id] as const,
+    members: (id: string) => ["team", "org", id, "members"] as const,
+    invitations: (id: string) => ["team", "org", id, "invitations"] as const,
+    /** The public accept page, keyed by token. */
+    invitePreview: (token: string) => ["team", "invite", token] as const,
+    /** The acting organization's shared work. */
+    sharedStacks: (id: string) => ["team", "org", id, "stacks"] as const,
+    comments: (resourceType: string, resourceId: string) =>
+      ["team", "comments", resourceType, resourceId] as const,
+    approvals: (resourceType: string, resourceId: string) =>
+      ["team", "approvals", resourceType, resourceId] as const,
+  },
   workspace: {
     dashboard: () => ["workspace", "dashboard"] as const,
     projects: () => ["workspace", "projects"] as const,

@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/auth/auth-provider";
+import { OrgProvider } from "@/lib/team/org-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Created in state, not at module scope: a module-level client would be
@@ -47,10 +48,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
           {/* Inside QueryClientProvider: the provider clears cached user data
               on sign-out, and inside NuqsAdapter so it can read the router. */}
           <AuthProvider>
-            <TooltipProvider delayDuration={200}>
-              {children}
-              <Toaster />
-            </TooltipProvider>
+            {/* Inside AuthProvider: the acting org exists only for a
+                signed-in user, and clears itself on sign-out. */}
+            <OrgProvider>
+              <TooltipProvider delayDuration={200}>
+                {children}
+                <Toaster />
+              </TooltipProvider>
+            </OrgProvider>
           </AuthProvider>
         </NuqsAdapter>
       </QueryClientProvider>

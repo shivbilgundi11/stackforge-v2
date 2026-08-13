@@ -1,11 +1,13 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeftIcon, FolderIcon, PinIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftIcon, FolderIcon, PinIcon, Trash2Icon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import toast from "react-hot-toast";
 
+import { ApprovalPanel } from "@/components/features/team/approval-panel";
+import { CommentThread } from "@/components/features/team/comment-thread";
 import { EmptyState, Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,9 +21,11 @@ import {
   listProjectItems,
   pinProjectItem,
   removeProjectItem,
+  updateProjectVisibility,
 } from "@/lib/api/workspace";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { relativeAge } from "@/lib/format";
+import { useOrg } from "@/lib/team/org-provider";
 
 /**
  * One project: what is in it, and what it carries between tools.
@@ -32,6 +36,7 @@ import { relativeAge } from "@/lib/format";
  */
 export function ProjectDetail({ projectId }: { projectId: string }) {
   const { status } = useAuth();
+  const { currentOrg } = useOrg();
   const client = useQueryClient();
   const signedIn = status === "authenticated";
 
@@ -79,6 +84,20 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
     },
   });
 
+  const share = useMutation({
+    mutationFn: (visibility: "private" | "team") =>
+      updateProjectVisibility(projectId, visibility),
+    onSuccess: (updated) => {
+      toast.success(
+        updated.visibility === "team"
+          ? "Shared — every team member can now see it"
+          : "Private again — only you can see it",
+      );
+      invalidate();
+    },
+    onError: () => toast.error("Could not change the visibility."),
+  });
+
   if (!signedIn) {
     return (
       <Panel>
@@ -119,10 +138,35 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
       <Panel>
         <PanelHeader
           icon={<FolderIcon className="size-4" aria-hidden />}
-          title={project.data.name}
+          title={
+            project.data.visibility === "team" ? (
+              <span className="flex items-center gap-2">
+                {project.data.name}
+                <Badge variant="outline">team</Badge>
+              </span>
+            ) : (
+              project.data.name
+            )
+          }
           description={
             project.data.description ??
             `${rows.length} item${rows.length === 1 ? "" : "s"} · updated ${relativeAge(project.data.updated_at)}`
+          }
+          actions={
+            currentOrg && project.data.is_yours ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={share.isPending}
+                onClick={() =>
+                  share.mutate(project.data.visibility === "team" ? "private" : "team")
+                }
+              >
+                <UsersIcon className="size-3.5" aria-hidden />
+                {project.data.visibility === "team" ? "Make private" : "Share with team"}
+              </Button>
+            ) : null
           }
         />
         <PanelBody className="flex flex-col gap-1.5">
@@ -221,6 +265,10 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           )}
         </PanelBody>
       </Panel>
+
+      {/* Team surfaces (M21). Both render nothing on a private project. */}
+      <ApprovalPanel resourceType="project" resourceId={projectId} />
+      <CommentThread resourceType="project" resourceId={projectId} />
     </div>
   );
 }

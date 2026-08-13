@@ -1,13 +1,22 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CopyIcon, GitCompareIcon, LayersIcon, SkullIcon, Trash2Icon } from "lucide-react";
+import {
+  CopyIcon,
+  GitCompareIcon,
+  LayersIcon,
+  SkullIcon,
+  Trash2Icon,
+  UsersIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 import { ArtifactTray } from "@/components/features/exports/artifact-tray";
+import { ApprovalPanel } from "@/components/features/team/approval-panel";
+import { CommentThread } from "@/components/features/team/comment-thread";
 import { EmptyState, Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +25,7 @@ import { apiFetch } from "@/lib/api/client";
 import { qk } from "@/lib/api/query-keys";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { relativeAge } from "@/lib/format";
+import { useOrg } from "@/lib/team/org-provider";
 import type { components } from "@/types/api";
 
 /**
@@ -40,6 +50,7 @@ const diffVersions = (id: string, from: number, to: number) =>
 
 export function MyStacks() {
   const { status } = useAuth();
+  const { currentOrg } = useOrg();
   const client = useQueryClient();
   // In the URL, not in local state: the dashboard links here as
   // `?stack=<id>`, and a deep link that lands on the list without opening the
@@ -50,6 +61,27 @@ export function MyStacks() {
     queryKey: ["stacks", "list"],
     queryFn: listStacks,
     enabled: status === "authenticated",
+  });
+
+  const share = useMutation({
+    mutationFn: ({ id, visibility }: { id: string; visibility: "private" | "team" }) =>
+      apiFetch<Stack>(`/api/v1/stacks/${id}`, {
+        method: "PATCH",
+        body: {
+          visibility,
+          change_summary:
+            visibility === "team" ? "Shared with the team" : "Moved back to private",
+        },
+      }),
+    onSuccess: (stack) => {
+      toast.success(
+        stack.visibility === "team"
+          ? "Shared — every team member can now see it"
+          : "Private again — only you can see it",
+      );
+      void client.invalidateQueries({ queryKey: ["stacks", "list"] });
+    },
+    onError: () => toast.error("Could not change the visibility."),
   });
 
   const remove = useMutation({
@@ -131,6 +163,7 @@ export function MyStacks() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-medium text-fg">{stack.name}</span>
                 <Badge variant="outline">v{stack.current_version}</Badge>
+                {stack.visibility === "team" ? <Badge variant="outline">team</Badge> : null}
                 <span className="font-mono text-xs text-fg tabular-nums">{stack.score}</span>
                 {stack.deprecated_components.length > 0 ? (
                   <Badge variant="destructive">
@@ -166,6 +199,23 @@ export function MyStacks() {
                   <CopyIcon className="size-3.5" aria-hidden />
                   Clone
                 </Button>
+                {currentOrg && stack.is_yours ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    disabled={share.isPending}
+                    onClick={() =>
+                      share.mutate({
+                        id: stack.id,
+                        visibility: stack.visibility === "team" ? "private" : "team",
+                      })
+                    }
+                  >
+                    <UsersIcon className="size-3.5" aria-hidden />
+                    {stack.visibility === "team" ? "Make private" : "Share with team"}
+                  </Button>
+                ) : null}
                 <Button
                   type="button"
                   size="sm"
@@ -188,6 +238,10 @@ export function MyStacks() {
           {/* The stack plan is what the bundle, the PDF, and the share link are
               all *for* — this is the surface M18 was built around. */}
           <ArtifactTray key={selected} sourceType="stack" sourceId={selected} />
+          {/* Team surfaces (M21). Both render nothing on a private stack —
+              the API's 404 is the signal that there is no thread here. */}
+          <ApprovalPanel key={`approval-${selected}`} resourceType="stack" resourceId={selected} />
+          <CommentThread key={`comments-${selected}`} resourceType="stack" resourceId={selected} />
         </>
       ) : null}
     </div>

@@ -1,5 +1,6 @@
 import { ApiError, type ApiErrorCode } from "@/lib/api/errors";
 import { tokenStore } from "@/lib/auth/token-store";
+import { orgStore } from "@/lib/team/org-store";
 
 const BASE_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:8000";
 
@@ -114,6 +115,10 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     const headers: Record<string, string> = {};
     const token = tokenStore.get();
     if (token) headers["Authorization"] = `Bearer ${token}`;
+    // The acting organization (M21). The switcher scopes every request from
+    // here, which is what makes "switch team" mean something.
+    const orgId = orgStore.get();
+    if (orgId) headers["X-Organization-Id"] = orgId;
     if (!formData && body !== undefined) headers["Content-Type"] = "application/json";
 
     return fetch(buildUrl(path, query), {

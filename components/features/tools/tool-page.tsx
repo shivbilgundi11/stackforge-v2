@@ -10,6 +10,7 @@ import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { ArtifactTray } from "@/components/features/exports/artifact-tray";
+import { CommentThread } from "@/components/features/team/comment-thread";
 import { FieldControl } from "@/components/features/tools/field-control";
 import {
   HandoffBar,
@@ -239,6 +240,13 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
                   stays reachable while the reader scrolls the result rather
                   than sitting at the bottom of a long page (M18). */}
               <ArtifactTray key={shown.run_id} sourceType="run" sourceId={shown.run_id} />
+              {/* Team discussion (M21). A run has a thread only when it sits
+                  inside a team-shared project; otherwise this renders nothing. */}
+              <CommentThread
+                key={`comments-${shown.run_id}`}
+                resourceType="run"
+                resourceId={shown.run_id}
+              />
             </>
           ) : null}
           {related.length ? <RelatedTools tools={related} /> : null}

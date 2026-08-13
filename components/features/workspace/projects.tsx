@@ -174,7 +174,11 @@ function ProjectCard({
     <Panel>
       <PanelHeader
         icon={<FolderIcon className="size-4" aria-hidden />}
-        title={project.name}
+        title={
+          <Link href={`/projects/${project.id}`} className="hover:underline">
+            {project.name}
+          </Link>
+        }
         description={`${project.item_count} item${project.item_count === 1 ? "" : "s"} · updated ${relativeAge(project.updated_at)}`}
         actions={
           <Button type="button" size="sm" variant="ghost" onClick={onDelete}>
