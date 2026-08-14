@@ -1765,23 +1765,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/billing/portal-session": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Portal Session */
-        post: operations["create_portal_session"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/billing/cancellation": {
         parameters: {
             query?: never;
@@ -1854,21 +1837,25 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Stripe Webhook
+         * Razorpay Webhook
          * @description The one endpoint authenticated by a signature rather than a session.
          *
-         *     Reads the raw body, because the signature covers the exact bytes Stripe
+         *     Reads the raw body, because the signature covers the exact bytes Razorpay
          *     sent — re-serialising parsed JSON changes them and every delivery fails
          *     verification.
          *
+         *     The event id comes from `X-Razorpay-Event-Id`, not the body. It is the
+         *     idempotency key, so a delivery without one is rejected rather than given a
+         *     generated id that would make every redelivery look new.
+         *
          *     Always answers 200 once the signature checks out, including when a handler
          *     raised. The failure is written onto the event row and retried by the
-         *     scheduled job; returning a 500 would ask Stripe to retry work that has
-         *     already been recorded, and after enough failures Stripe disables the
+         *     scheduled job; returning a 500 would ask Razorpay to retry work that has
+         *     already been recorded, and after enough failures a provider disables the
          *     endpoint entirely — which is a far worse state than a row with an error on
          *     it that a job will pick up in an hour.
          */
-        post: operations["stripe_webhook"];
+        post: operations["razorpay_webhook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3219,14 +3206,6 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
-        /** Envelope[PortalOut] */
-        Envelope_PortalOut_: {
-            /** Success */
-            success: boolean;
-            data?: components["schemas"]["PortalOut"] | null;
-            error?: components["schemas"]["ErrorBody"] | null;
-            meta: components["schemas"]["Meta"];
-        };
         /** Envelope[ProjectItemOut] */
         Envelope_ProjectItemOut_: {
             /** Success */
@@ -4493,11 +4472,6 @@ export interface components {
              */
             interval: string;
         };
-        /** PortalOut */
-        PortalOut: {
-            /** Url */
-            url: string;
-        };
         /** PricingHistoryOut */
         PricingHistoryOut: {
             /** Id */
@@ -4530,12 +4504,12 @@ export interface components {
             label: string;
             /** Tagline */
             tagline: string;
-            /** Monthly Cents */
-            monthly_cents: number | null;
-            /** Annual Cents */
-            annual_cents: number | null;
-            /** Annual Saving Cents */
-            annual_saving_cents: number;
+            /** Monthly Minor */
+            monthly_minor: number | null;
+            /** Annual Minor */
+            annual_minor: number | null;
+            /** Annual Saving Minor */
+            annual_saving_minor: number;
             /** Currency */
             currency: string;
             /** Per Seat */
@@ -6035,9 +6009,9 @@ export interface components {
          * WebhookOut
          * @description Deliberately uninformative to the caller.
          *
-         *     A webhook response is read by Stripe's retry logic and by anyone probing
+         *     A webhook response is read by Razorpay's retry logic and by anyone probing
          *     the endpoint. `received` is all either needs; whether an event applied,
-         *     was a duplicate, or failed is in the logs and the `stripe_events` table.
+         *     was a duplicate, or failed is in the logs and the `billing_events` table.
          */
         WebhookOut: {
             /** Received */
@@ -9323,26 +9297,6 @@ export interface operations {
             };
         };
     };
-    create_portal_session: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope_PortalOut_"];
-                };
-            };
-        };
-    };
     set_cancellation: {
         parameters: {
             query?: never;
@@ -9429,11 +9383,12 @@ export interface operations {
             };
         };
     };
-    stripe_webhook: {
+    razorpay_webhook: {
         parameters: {
             query?: never;
             header?: {
-                "Stripe-Signature"?: string | null;
+                "X-Razorpay-Signature"?: string | null;
+                "X-Razorpay-Event-Id"?: string | null;
             };
             path?: never;
             cookie?: never;

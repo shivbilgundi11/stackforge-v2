@@ -71,9 +71,9 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     key: "pro",
     label: "Pro",
     tagline: "For the person who has to defend the number.",
-    monthly_cents: 1900,
-    annual_cents: 19000,
-    annual_saving_cents: 3800,
+    monthly_minor: 1900,
+    annual_minor: 19000,
+    annual_saving_minor: 3800,
     currency: "usd",
     per_seat: false,
     trial_days: 7,
@@ -153,7 +153,7 @@ describe("UsageMeter", () => {
 describe("PricingTable", () => {
   it("renders prices and limits from the API rather than its own copy", () => {
     data.plans = [
-      plan({ key: "free", label: "Free", monthly_cents: 0, checkout: false, trial_days: 0 }),
+      plan({ key: "free", label: "Free", monthly_minor: 0, checkout: false, trial_days: 0 }),
       plan(),
     ];
 
@@ -191,7 +191,7 @@ describe("PricingTable", () => {
   it("still sends a signed-out visitor to signup when billing is unconfigured", () => {
     authStatus.current = "anonymous";
     // The regression this pins: reading `checkout` before `authenticated`
-    // meant an environment with no Stripe key sent every visitor to the
+    // meant an environment with no payment keys sent every visitor to the
     // resources page. Whether *this deployment* can take a card has no bearing
     // on where somebody with no account belongs.
     data.plans = [plan({ checkout: false })];
@@ -221,8 +221,8 @@ describe("PricingTable", () => {
       plan({
         key: "enterprise",
         label: "Enterprise",
-        monthly_cents: null,
-        annual_cents: null,
+        monthly_minor: null,
+        annual_minor: null,
         self_serve: false,
         checkout: false,
         cta: "Talk to us",
@@ -281,16 +281,21 @@ describe("BillingSection", () => {
     expect(screen.getByText(/5 more days/)).toBeInTheDocument();
   });
 
-  it("counts down a trial and says what happens if you do nothing", () => {
+  it("counts down a trial and says it will charge, not lapse", () => {
     const endsAt = new Date(Date.now() + 3 * 86_400_000).toISOString();
     data.subscription = subscription({ status: "trialing", trial_ends_at: endsAt });
 
     renderWith(<BillingSection />);
 
     expect(screen.getByText(/3 days left in your trial/)).toBeInTheDocument();
-    // The reassuring half, in the banner's own words — "nothing is deleted"
-    // appears in the footer too, which is the point rather than a duplicate.
-    expect(screen.getByText(/If you do nothing you move to Free/)).toBeInTheDocument();
+    // The banner has to say the opposite of what it said under Stripe. That
+    // trial collected no card, so doing nothing dropped you to Free; Razorpay
+    // authorizes a mandate up front (D-50), so doing nothing charges you.
+    // Telling someone their plan will lapse when it will renew is the worse
+    // of the two ways to get this wrong.
+    expect(screen.getByText(/continues automatically/)).toBeInTheDocument();
+    expect(screen.getByText(/Cancel before it ends and you are not charged/)).toBeInTheDocument();
+    expect(screen.queryByText(/If you do nothing you move to Free/)).not.toBeInTheDocument();
   });
 
   it("cancels at period end and offers to undo it", async () => {

@@ -5,12 +5,11 @@ import { run, signUpAndIn, uniqueEmail } from "./helpers";
 /**
  * M20 — pricing, quota, and the gate, against the real backend.
  *
- * What is *not* here: completing a Stripe checkout. That needs a test-mode key
- * this environment does not have, and asserting against a mocked redirect would
- * prove the button navigates and nothing more. The backend suite covers the
- * checkout-to-upgrade path end to end with a fake client and hand-built webhook
- * deliveries, which is where the interesting failure — a duplicate delivery
- * applying twice — actually lives.
+ * What is *not* here: authorizing a mandate on Razorpay's hosted page. Driving
+ * a third party's page from a browser test asserts their markup, not ours. The
+ * backend suite covers the checkout-to-upgrade path end to end with a fake
+ * client and hand-built webhook deliveries, which is where the interesting
+ * failure — a duplicate delivery applying twice — actually lives.
  *
  * What is here is everything a browser is needed for: that the pricing page
  * renders real limits from the API, that hitting the anonymous cap produces the
@@ -27,7 +26,7 @@ test("the pricing page renders every plan, signed out", async ({ page }) => {
   }
 
   // The price comes from the server, not from copy in the page.
-  await expect(page.getByText("$19", { exact: true })).toBeVisible();
+  await expect(page.getByText("₹1,599", { exact: true })).toBeVisible();
   // And so do the limits, including the unlimited ones.
   await expect(page.getByText("Unlimited").first()).toBeVisible();
 });
@@ -37,8 +36,8 @@ test("annual billing shows the discounted price", async ({ page }) => {
 
   await page.getByRole("button", { name: "annual" }).click();
 
-  await expect(page.getByText("$190", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Save \$38 a year/)).toBeVisible();
+  await expect(page.getByText("₹15,999", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Save ₹3,189 a year/)).toBeVisible();
 });
 
 test("an anonymous visitor is offered an account rather than a card", async ({ page }) => {

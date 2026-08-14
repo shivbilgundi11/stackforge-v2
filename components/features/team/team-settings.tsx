@@ -300,7 +300,10 @@ function SeatsSection({ org }: { org: Organization }) {
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: qk.team.orgs() });
       void queryClient.invalidateQueries({ queryKey: qk.billing.subscription() });
-      notify.success(`Seats set to ${result.seats}. The change is prorated on the next invoice.`);
+      // Razorpay does not prorate, so the charge moves at the cycle boundary
+      // rather than immediately (D-51). Saying "prorated" here would promise a
+      // refund that never arrives.
+      notify.success(`Seats set to ${result.seats}. Billing changes at your next cycle.`);
     },
     onError: () =>
       notify.error("Could not change seats. Seat billing needs a live Team subscription."),

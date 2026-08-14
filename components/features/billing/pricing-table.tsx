@@ -50,7 +50,7 @@ export function PricingTable() {
   });
 
   const rows = plans.data ?? [];
-  const saving = rows.find((plan) => plan.annual_saving_cents > 0);
+  const saving = rows.find((plan) => plan.annual_saving_minor > 0);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col">
@@ -63,7 +63,7 @@ export function PricingTable() {
             onChange={setInterval}
             savingLabel={
               saving
-                ? `Save ${formatPrice(saving.annual_saving_cents, saving.currency)}`
+                ? `Save ${formatPrice(saving.annual_saving_minor, saving.currency)}`
                 : undefined
             }
           />
@@ -152,8 +152,8 @@ function PlanColumn({
   pending: boolean;
   onBuy: () => void;
 }) {
-  const cents = interval === "annual" ? plan.annual_cents : plan.monthly_cents;
-  const suffix = plan.monthly_cents === null ? "" : interval === "annual" ? "/year" : "/month";
+  const cents = interval === "annual" ? plan.annual_minor : plan.monthly_minor;
+  const suffix = plan.monthly_minor === null ? "" : interval === "annual" ? "/year" : "/month";
   const featured = plan.key === "pro";
 
   return (
@@ -182,7 +182,7 @@ function PlanColumn({
             {formatPrice(cents, plan.currency)}
           </span>
           {suffix ? <span className="text-[12.5px] text-fg-subtle">{suffix}</span> : null}
-          {plan.per_seat && plan.monthly_cents !== null ? (
+          {plan.per_seat && plan.monthly_minor !== null ? (
             <span className="text-[12.5px] text-fg-subtle">per seat</span>
           ) : null}
         </div>
@@ -243,7 +243,7 @@ function PlanAction({
 
   // A signed-out visitor is offered an account, not a card — they cannot buy
   // without one either way. Checked *before* `checkout`, because whether this
-  // environment has a Stripe key has no bearing on where someone with no
+  // environment has payment keys has no bearing on where someone with no
   // account should be sent; reading the key first sent every visitor to the
   // resources page whenever billing was unconfigured.
   if (!authenticated) {

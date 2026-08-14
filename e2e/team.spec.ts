@@ -15,11 +15,11 @@ import { E2E_PASSWORD, signUpAndIn, uniqueEmail } from "./helpers";
  * shared project — comment, approval, decision.
  *
  * Two backend CLI commands stand in for what a browser cannot do: `set-plan`
- * (reaching the Team tier without walking a card through Stripe's hosted
- * checkout, which a browser test has no business driving — the plan-choice
- * and payment-wall halves live in `checkout.spec.ts`) and `invite-link` (the
- * token lives only in an email; the CLI rotates it and prints the link,
- * exactly like an operator handling "the invite never arrived").
+ * (reaching the Team tier without authorizing a mandate on Razorpay's hosted
+ * page, which a browser test has no business driving — the plan-choice and
+ * payment-wall halves live in `checkout.spec.ts`) and `invite-link` (the token
+ * lives only in an email; the CLI rotates it and prints the link, exactly like
+ * an operator handling "the invite never arrived").
  */
 
 const BACKEND_DIR = path.resolve(__dirname, "..", "..", "backend");

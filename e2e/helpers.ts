@@ -99,9 +99,9 @@ export function uniqueEmail(label: string, unique = false) {
  * which is the argument for it having been one function all along.
  *
  * Free by default. A spec that wants a paid tier reaches it with the `set-plan`
- * CLI command instead: there is no test-mode Stripe key in this environment, so
- * choosing Pro here would park the account on the payment wall rather than on
- * the dashboard, which is asserted separately in `billing.spec.ts`.
+ * CLI command instead: choosing Pro here parks the account on the payment wall
+ * rather than on the dashboard, which is asserted separately in
+ * `checkout.spec.ts`.
  */
 export async function signUpAndIn(
   page: Page,

@@ -11,21 +11,21 @@ import { Button } from "@/components/ui/button";
 import { getSubscription } from "@/lib/api/billing";
 import { qk } from "@/lib/api/query-keys";
 
-/** How long to wait for the webhook before offering a way out. Stripe is
- *  usually inside two seconds; this is the ceiling before the screen stops
+/** How long to wait for the webhook before offering a way out. Razorpay is
+ *  usually inside a few seconds; this is the ceiling before the screen stops
  *  pretending it knows what is happening. */
 const GIVE_UP_MS = 20_000;
 const POLL_MS = 1_500;
 
 /**
- * Where Stripe sends the browser back to.
+ * Where Razorpay sends the browser back to.
  *
  * This page exists because the redirect and the webhook are a race, and the
- * redirect usually wins. Stripe hands the browser back the instant the card
- * clears; the `checkout.session.completed` delivery that actually writes the
- * subscription arrives a moment later. Landing straight on `/dashboard` in
- * that gap means the app still believes the account is unpaid and bounces it
- * back to the wall — the user pays and is immediately asked to pay again.
+ * redirect usually wins. Razorpay hands the browser back the instant the
+ * mandate is authorized; the `subscription.activated` delivery that grants the
+ * plan arrives a moment later. Landing straight on `/dashboard` in that gap
+ * means the app still believes the account is unpaid and bounces it back to
+ * the wall — the user pays and is immediately asked to pay again.
  *
  * So: poll the summary until it stops saying payment is required, then
  * forward. The success redirect is never treated as proof of payment; it is
@@ -81,8 +81,8 @@ export function CheckoutReturn() {
               </span>
               <h1 className="text-[15px] font-semibold text-fg">Payment received</h1>
               <p className="max-w-[38ch] text-[12.5px] leading-relaxed text-pretty text-fg-muted">
-                Your card went through, but the confirmation from Stripe is taking longer than usual
-                to reach us. Nothing is lost — your plan will switch over on its own, normally
+                Your payment went through, but the confirmation from Razorpay is taking longer than
+                usual to reach us. Nothing is lost — your plan will switch over on its own, normally
                 within a few minutes.
               </p>
               <Button asChild size="sm" variant="outline" className="mt-1">
@@ -94,7 +94,7 @@ export function CheckoutReturn() {
               <Loader2Icon className="size-6 animate-spin text-ember" aria-hidden />
               <h1 className="text-[15px] font-semibold text-fg">Confirming your payment</h1>
               <p className="max-w-[38ch] text-[12.5px] leading-relaxed text-pretty text-fg-muted">
-                Waiting for Stripe to confirm the charge. This usually takes a second or two.
+                Waiting for Razorpay to confirm the payment. This usually takes a moment.
               </p>
             </>
           )}

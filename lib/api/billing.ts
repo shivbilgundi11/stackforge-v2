@@ -50,11 +50,16 @@ export function listInvoices() {
 }
 
 /**
- * Start checkout and hand the browser to Stripe.
+ * Start checkout and hand the browser to Razorpay.
  *
  * Returns the URL rather than navigating, so the caller decides when the
  * redirect happens — a component that navigated from inside the mutation would
  * leave its own loading state hanging on a page that is about to unmount.
+ *
+ * The URL is a Razorpay subscription's hosted authorization page. There is no
+ * checkout session on this provider: the subscription already exists in
+ * `created` state by the time this resolves, and the customer authorizes a
+ * mandate on the page it points at.
  */
 export function createCheckoutSession(body: { plan: PlanKey; interval: Interval; seats?: number }) {
   return apiFetch<{ url: string }>("/api/v1/billing/checkout-session", {
@@ -79,10 +84,6 @@ export function selectPlan(body: { plan: PlanKey | null; interval?: Interval }) 
   });
 }
 
-export function createPortalSession() {
-  return apiFetch<{ url: string }>("/api/v1/billing/portal-session", { method: "POST" });
-}
-
 export function setCancellation(cancel: boolean) {
   return apiFetch<Subscription>("/api/v1/billing/cancellation", {
     method: "POST",
@@ -93,16 +94,21 @@ export function setCancellation(cancel: boolean) {
 // ── Formatting ──────────────────────────────────────────────────────────────
 
 /**
- * Minor units to a price string.
+ * Minor units (paise) to a price string.
  *
- * `$19` rather than `$19.00` when the cents are zero: every price this product
- * charges is a whole number of dollars, and trailing zeros on a pricing page
- * read as precision nobody asked for.
+ * `₹1,599` rather than `₹1,599.00`: every price this product charges is a
+ * whole number of rupees, and trailing zeros on a pricing page read as
+ * precision nobody asked for.
+ *
+ * Forced to `en-IN` for INR so the grouping is lakh-style (`₹15,999`, and
+ * `₹1,00,000` above a lakh). The browser's own locale would render an Indian
+ * price with Western grouping for most visitors, which reads as a foreign
+ * price on a page charging rupees.
  */
-export function formatPrice(cents: number | null | undefined, currency = "usd"): string {
-  if (cents === null || cents === undefined) return "Custom";
-  const amount = cents / 100;
-  return new Intl.NumberFormat(undefined, {
+export function formatPrice(minor: number | null | undefined, currency = "inr"): string {
+  if (minor === null || minor === undefined) return "Custom";
+  const amount = minor / 100;
+  return new Intl.NumberFormat(currency.toLowerCase() === "inr" ? "en-IN" : undefined, {
     style: "currency",
     currency: currency.toUpperCase(),
     minimumFractionDigits: 0,

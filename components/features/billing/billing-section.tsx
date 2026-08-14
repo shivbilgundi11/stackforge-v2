@@ -16,12 +16,7 @@ import { EmptyState, Panel, PanelBody, PanelFooter, PanelHeader } from "@/compon
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  createPortalSession,
-  formatPrice,
-  setCancellation,
-  type Subscription,
-} from "@/lib/api/billing";
+import { formatPrice, setCancellation, type Subscription } from "@/lib/api/billing";
 import { useInvoices, useSubscription, useUsage } from "@/lib/api/hooks";
 import { qk } from "@/lib/api/query-keys";
 
@@ -29,14 +24,17 @@ import { qk } from "@/lib/api/query-keys";
  * Settings → Billing (M20).
  *
  * Three panels: what you are on, what you have used, and what you have paid.
- * Payment method and cancellation live in Stripe's own portal — card
- * collection is the one thing worth handing to a provider wholesale, and
- * rebuilding it would import PCI scope, 3DS, and every card-update edge case
- * for no product gain.
  *
- * The one control kept in-app is cancel-at-period-end, because it is also the
- * moment to say what cancelling does *not* do: nothing is deleted, and the
- * period already paid for is kept.
+ * Everything is in-app since D-50. Razorpay has no hosted billing portal, so
+ * the two things a portal was for are here instead: invoices are read live
+ * from the API, and cancel-at-period-end is a button — which is also the
+ * moment to say what cancelling does *not* do, since nothing is deleted and
+ * the period already paid for is kept.
+ *
+ * Card details are still never handled here. Changing a saved card means
+ * authorizing a new mandate on Razorpay's own page, which is what
+ * re-subscribing does, so the past-due banner links to checkout rather than
+ * collecting anything.
  */
 export function BillingSection() {
   const subscription = useSubscription();
@@ -76,7 +74,7 @@ export function BillingSection() {
       <Panel id="invoices">
         <PanelHeader
           title="Invoices"
-          description="Read live from Stripe, so this is the same record your finance team sees."
+          description="Read live from Razorpay, so this is the same record your finance team sees."
           icon={<ReceiptIcon className="size-3.5" aria-hidden />}
         />
         {invoices.isLoading ? (
@@ -142,14 +140,6 @@ export function BillingSection() {
 function PlanPanel({ subscription }: { subscription: Subscription | undefined }) {
   const client = useQueryClient();
 
-  const portal = useMutation({
-    mutationFn: createPortalSession,
-    onSuccess: ({ url }) => {
-      window.location.href = url;
-    },
-    onError: () => toast.error("Could not open the billing portal."),
-  });
-
   const cancel = useMutation({
     mutationFn: (value: boolean) => setCancellation(value),
     onSuccess: (updated) => {
@@ -196,16 +186,9 @@ function PlanPanel({ subscription }: { subscription: Subscription | undefined })
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          {isPaid && subscription?.checkout_available ? (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={portal.isPending}
-              onClick={() => portal.mutate()}
-            >
-              Manage payment <ExternalLinkIcon className="size-3.5" aria-hidden />
-            </Button>
-          ) : null}
+          {/* No "manage payment" button. Razorpay has no portal to send them
+              to, and the things it would have offered are already on this
+              page: the invoice list below, and the cancel control beside it. */}
           <Button asChild size="sm" variant={isPaid ? "ghost" : "default"}>
             <Link href="/pricing">
               {isPaid ? "Compare plans" : "Upgrade"}
@@ -278,10 +261,14 @@ function StateBanner({ subscription }: { subscription: Subscription }) {
             {typeof days === "number"
               ? ` and we will keep retrying for ${days} more ${days === 1 ? "day" : "days"}`
               : ""}
-            . Update your payment method to keep it.
+            . Re-authorizing a payment method keeps it.
           </p>
         </div>
-        <PortalButton label="Update card" />
+        <Button asChild size="sm">
+          <Link href="/checkout">
+            Re-authorize <ArrowRightIcon className="size-3.5" aria-hidden />
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -297,30 +284,21 @@ function StateBanner({ subscription }: { subscription: Subscription }) {
               ? "Your trial ends today"
               : `${days} ${days === 1 ? "day" : "days"} left in your trial`}
           </p>
+          {/* The card was authorized when the trial started (D-50), so this
+              converts on its own. Saying "add a card to keep your plan" would
+              be telling the user nothing will be charged when something
+              will. */}
           <p className="text-[12.5px] text-fg-muted">
-            Add a card to keep your plan. If you do nothing you move to Free — nothing is deleted.
+            Your payment method is already authorized, so your plan continues automatically. Cancel
+            before it ends and you are not charged — nothing is deleted either way.
           </p>
         </div>
-        <PortalButton label="Add a card" />
+        <Button asChild size="sm" variant="outline">
+          <Link href="/settings/billing#plan">Review plan</Link>
+        </Button>
       </div>
     );
   }
 
   return null;
-}
-
-function PortalButton({ label }: { label: string }) {
-  const portal = useMutation({
-    mutationFn: createPortalSession,
-    onSuccess: ({ url }) => {
-      window.location.href = url;
-    },
-    onError: () => toast.error("Could not open the billing portal."),
-  });
-
-  return (
-    <Button size="sm" disabled={portal.isPending} onClick={() => portal.mutate()}>
-      {label} <ExternalLinkIcon className="size-3.5" aria-hidden />
-    </Button>
-  );
 }

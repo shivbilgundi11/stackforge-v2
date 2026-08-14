@@ -5,11 +5,11 @@ import { E2E_PASSWORD, signUpAndIn, uniqueEmail } from "./helpers";
 /**
  * Choosing a plan at signup, and the wall that follows it.
  *
- * What is *not* here: walking a card through Stripe's hosted checkout. Driving
+ * What is *not* here: authorizing a mandate on Razorpay's hosted page. Driving
  * a third party's page from a browser test asserts their markup, not ours, and
- * it breaks when they redesign it. The half that follows the card — the signed
- * webhook, the upgrade it applies, and the duplicate delivery that must apply
- * once — is covered by the backend suite.
+ * it breaks when they redesign it. The half that follows the mandate — the
+ * signed webhook, the upgrade it applies, and the duplicate delivery that must
+ * apply once — is covered by the backend suite.
  *
  * What is here is the half a browser is needed for, and it is the half most
  * likely to break: that the choice made on the form survives the round trip

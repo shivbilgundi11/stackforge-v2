@@ -99,7 +99,7 @@ export function PaymentWall() {
   });
 
   const row = (plans.data ?? []).find((entry) => entry.key === plan);
-  const saving = (plans.data ?? []).find((entry) => entry.annual_saving_cents > 0);
+  const saving = (plans.data ?? []).find((entry) => entry.annual_saving_minor > 0);
   const buyable = row?.checkout === true;
 
   if (subscription.isLoading) {
@@ -142,7 +142,7 @@ export function PaymentWall() {
             }}
             savingLabel={
               saving
-                ? `save ${formatPrice(saving.annual_saving_cents, saving.currency)}`
+                ? `save ${formatPrice(saving.annual_saving_minor, saving.currency)}`
                 : undefined
             }
           />
@@ -173,14 +173,14 @@ export function PaymentWall() {
               {row && row.trial_days > 0 && !pastDue
                 ? `Start ${row.trial_days}-day trial`
                 : `Pay ${formatPrice(
-                    interval === "annual" ? row?.annual_cents : row?.monthly_cents,
+                    interval === "annual" ? row?.annual_minor : row?.monthly_minor,
                     row?.currency,
                   )}`}
               <ArrowRightIcon className="size-3.5" aria-hidden />
             </Button>
           ) : (
-            // No Stripe key in this environment. Saying so beats a button that
-            // returns a 402 and a toast that blames the network.
+            // No Razorpay keys in this environment. Saying so beats a button
+            // that returns a 402 and a toast that blames the network.
             <div className="rounded-md border border-line bg-surface-2 px-3.5 py-3">
               <p className="text-[12.5px] leading-relaxed text-fg-muted">
                 Card payments are not available in this environment yet. Continue on the free plan
@@ -193,9 +193,9 @@ export function PaymentWall() {
           <div className="flex items-center gap-1.5 text-[11.5px] text-fg-subtle">
             <ShieldCheckIcon className="size-3.5 shrink-0" aria-hidden />
             <span>
-              Card details go to Stripe, never to StackForge.
+              Card and UPI details go to Razorpay, never to StackForge.
               {row && row.trial_days > 0 && !pastDue
-                ? ` You are not charged until the ${row.trial_days}-day trial ends.`
+                ? ` You authorize a payment method now and are not charged until the ${row.trial_days}-day trial ends.`
                 : null}
             </span>
           </div>

@@ -74,8 +74,8 @@ function PlanOption({
   interval: Interval;
   selected: boolean;
 }) {
-  const cents = interval === "annual" ? plan.annual_cents : plan.monthly_cents;
-  const free = plan.monthly_cents === 0;
+  const cents = interval === "annual" ? plan.annual_minor : plan.monthly_minor;
+  const free = plan.monthly_minor === 0;
   const suffix = free ? "" : interval === "annual" ? "/year" : "/month";
 
   return (

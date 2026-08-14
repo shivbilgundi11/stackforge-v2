@@ -44,9 +44,9 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     key: "pro",
     label: "Pro",
     tagline: "For the person who has to defend the number.",
-    monthly_cents: 1900,
-    annual_cents: 19000,
-    annual_saving_cents: 3800,
+    monthly_minor: 1900,
+    annual_minor: 19000,
+    annual_saving_minor: 3800,
     currency: "usd",
     per_seat: false,
     trial_days: 7,
@@ -90,7 +90,7 @@ function renderWall() {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  data.plans = [plan(), plan({ key: "team", label: "Team", monthly_cents: 4900, per_seat: true })];
+  data.plans = [plan(), plan({ key: "team", label: "Team", monthly_minor: 4900, per_seat: true })];
   data.subscription = subscription();
 });
 
@@ -106,7 +106,7 @@ describe("PaymentWall", () => {
 
   it("never offers the free plan as a purchase", () => {
     data.plans = [
-      plan({ key: "free", label: "Free", monthly_cents: 0, self_serve: false }),
+      plan({ key: "free", label: "Free", monthly_minor: 0, self_serve: false }),
       plan(),
     ];
 

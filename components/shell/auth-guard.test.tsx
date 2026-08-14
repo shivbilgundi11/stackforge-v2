@@ -123,7 +123,7 @@ describe("AuthGuard", () => {
     expect(replace).not.toHaveBeenCalled();
   });
 
-  it("renders Stripe's return page too, for the same reason", () => {
+  it("renders the provider's return page too, for the same reason", () => {
     state.pathname = "/checkout/done";
     state.subscription = subscription();
 

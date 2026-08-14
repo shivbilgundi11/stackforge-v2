@@ -435,7 +435,7 @@ const ACCOUNT_ONLY_PREFIXES = [
   // account sections only when there is an account. Billing is the sub-page
   // that genuinely belongs to a person.
   "/settings/billing",
-  // The payment wall and Stripe's return page. Both need an account and
+  // The payment wall and the provider's return page. Both need an account and
   // neither means anything without one — but see `isPaymentWall` below: they
   // are the one pair of account-only routes the wall must never redirect
   // *away* from, or it redirects to itself.

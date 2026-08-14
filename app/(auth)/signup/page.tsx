@@ -62,7 +62,7 @@ function SignupForm() {
   const [submitting, setSubmitting] = useState(false);
 
   const plans = usePlans();
-  const saving = (plans.data ?? []).find((row) => row.annual_saving_cents > 0);
+  const saving = (plans.data ?? []).find((row) => row.annual_saving_minor > 0);
 
   const {
     register,
@@ -151,7 +151,7 @@ function SignupForm() {
       <AuthShell
         wide
         title="Choose a plan"
-        description="Start free, or take a trial of a paid plan — no card until the trial ends. You can change this at any time."
+        description="Start free, or take a trial of a paid plan — nothing is charged until the trial ends. You can change this at any time."
         footer={
           <>
             Already have an account?{" "}
@@ -167,7 +167,7 @@ function SignupForm() {
             onChange={setInterval}
             savingLabel={
               saving
-                ? `save ${formatPrice(saving.annual_saving_cents, saving.currency)}`
+                ? `save ${formatPrice(saving.annual_saving_minor, saving.currency)}`
                 : undefined
             }
           />
