@@ -187,7 +187,13 @@ function PlanColumn({
           ) : null}
         </div>
 
-        <PlanAction plan={plan} authenticated={authenticated} pending={pending} onBuy={onBuy} />
+        <PlanAction
+          plan={plan}
+          interval={interval}
+          authenticated={authenticated}
+          pending={pending}
+          onBuy={onBuy}
+        />
 
         <ul className="flex flex-col gap-1.5">
           {plan.highlights.map((line) => (
@@ -204,11 +210,13 @@ function PlanColumn({
 
 function PlanAction({
   plan,
+  interval,
   authenticated,
   pending,
   onBuy,
 }: {
   plan: Plan;
+  interval: Interval;
   authenticated: boolean;
   pending: boolean;
   onBuy: () => void;
@@ -221,10 +229,9 @@ function PlanAction({
     );
   }
 
-  // Enterprise has no self-serve price, and any plan is unbuyable in an
-  // environment with no Stripe key. Both send the reader somewhere they can
-  // actually act rather than at a button that returns a 402.
-  if (!plan.checkout) {
+  // Free is the default rather than a purchase, and Enterprise is a
+  // conversation. Neither is ever a checkout button, whatever is configured.
+  if (!plan.self_serve) {
     return (
       <Button asChild size="sm" variant={plan.key === "free" ? "outline" : "default"}>
         <Link href={plan.key === "free" ? "/signup" : "/resources"}>
@@ -234,13 +241,28 @@ function PlanAction({
     );
   }
 
+  // A signed-out visitor is offered an account, not a card — they cannot buy
+  // without one either way. Checked *before* `checkout`, because whether this
+  // environment has a Stripe key has no bearing on where someone with no
+  // account should be sent; reading the key first sent every visitor to the
+  // resources page whenever billing was unconfigured.
   if (!authenticated) {
     return (
       <Button asChild size="sm">
-        <Link href={`/signup?next=/pricing`}>
+        <Link href={`/signup?plan=${plan.key}&interval=${interval}`}>
           {plan.trial_days > 0 ? `Start ${plan.trial_days}-day trial` : plan.cta}
           <ArrowRightIcon className="size-3.5" aria-hidden />
         </Link>
+      </Button>
+    );
+  }
+
+  // Self-serve, signed in, and no price configured here. Say so rather than
+  // offering a button that returns a 402 and a toast blaming the network.
+  if (!plan.checkout) {
+    return (
+      <Button size="sm" variant="outline" disabled>
+        Not available yet
       </Button>
     );
   }

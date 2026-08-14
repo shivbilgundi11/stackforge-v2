@@ -5,13 +5,16 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon, MailCheckIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, Loader2Icon, MailCheckIcon } from "lucide-react";
 
 import { AuthShell } from "@/components/features/auth/auth-shell";
 import { FormError, FormField } from "@/components/features/auth/form-field";
 import { useFormErrors } from "@/components/features/auth/use-form-errors";
+import { IntervalChoice, PlanChoice } from "@/components/features/billing/plan-choice";
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/api/auth";
+import { formatPrice, type Interval, type ChoosablePlanKey } from "@/lib/api/billing";
+import { usePlans } from "@/lib/api/hooks";
 import { passwordStrength, signupSchema, type SignupValues } from "@/lib/auth/schemas";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +27,17 @@ export default function SignupPage() {
   );
 }
 
+/**
+ * Which half of signup is on screen.
+ *
+ * Plan first, details second. The alternative — collect the account, then ask
+ * what they want — creates an account for someone who then decides the price
+ * is wrong, and the row is left behind either way. Asking first also means the
+ * pricing page's CTA lands on a form that already agrees with the button that
+ * was clicked.
+ */
+type Step = "plan" | "account";
+
 function SignupForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -34,8 +48,21 @@ function SignupForm() {
   const inviteToken = params.get("invite");
   const invitedEmail = inviteToken ? params.get("email") : null;
 
+  // An invitee is taking a seat the inviting organization already pays for, so
+  // there is no plan to choose and the server ignores the field on that path.
+  // Sending them through a pricing step would ask them to buy what they have
+  // just been given.
+  const [step, setStep] = useState<Step>(inviteToken ? "account" : "plan");
+  const [plan, setPlan] = useState<ChoosablePlanKey>(readPlanParam(params.get("plan")));
+  const [interval, setInterval] = useState<Interval>(
+    params.get("interval") === "annual" ? "annual" : "monthly",
+  );
+
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const plans = usePlans();
+  const saving = (plans.data ?? []).find((row) => row.annual_saving_cents > 0);
 
   const {
     register,
@@ -54,15 +81,34 @@ function SignupForm() {
   const password = useWatch({ control, name: "password" });
   const strength = passwordStrength(password ?? "");
 
+  const paid = plan !== "free" && !inviteToken;
+
   const onSubmit = handleSubmit(async (values) => {
     clearFormError();
     setSubmitting(true);
     try {
-      await authApi.register(inviteToken ? { ...values, invite_token: inviteToken } : values);
+      // `plan` rides along on the invite path too, always as Free. The server
+      // ignores it there — an invitee takes a seat somebody else has paid for
+      // — and sending it unconditionally keeps one call site instead of two
+      // that can drift.
+      await authApi.register({
+        ...values,
+        plan: inviteToken ? "free" : plan,
+        interval,
+        ...(inviteToken ? { invite_token: inviteToken } : {}),
+      });
       if (inviteToken) {
         // The invite already proved the inbox, so there is no verification
         // round-trip — straight to sign-in and back to the accept page.
         router.push(`/login?next=${encodeURIComponent(`/invite?token=${inviteToken}`)}`);
+        return;
+      }
+      if (paid) {
+        // A chosen plan is recorded as owed, and the wall is where it gets
+        // paid. Verification is not in the way of that: the address is proven
+        // by the card, and holding a paying customer at an email link is the
+        // easiest way to lose one. They still get the verification mail.
+        router.push(`/login?next=${encodeURIComponent("/checkout")}`);
         return;
       }
       // The response is identical whether or not the address already existed,
@@ -100,6 +146,60 @@ function SignupForm() {
     );
   }
 
+  if (step === "plan") {
+    return (
+      <AuthShell
+        wide
+        title="Choose a plan"
+        description="Start free, or take a trial of a paid plan — no card until the trial ends. You can change this at any time."
+        footer={
+          <>
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-ember hover:text-ember-hover">
+              Sign in
+            </Link>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <IntervalChoice
+            interval={interval}
+            onChange={setInterval}
+            savingLabel={
+              saving
+                ? `save ${formatPrice(saving.annual_saving_cents, saving.currency)}`
+                : undefined
+            }
+          />
+
+          <PlanChoice
+            plans={plans.data ?? []}
+            loading={plans.isLoading}
+            value={plan}
+            onChange={setPlan}
+            interval={interval}
+          />
+
+          <Button
+            type="button"
+            onClick={() => setStep("account")}
+            className="h-9 w-full bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
+          >
+            Continue <ArrowRightIcon className="size-3.5" aria-hidden />
+          </Button>
+
+          <p className="text-center text-[11.5px] text-fg-subtle">
+            Want the full comparison?{" "}
+            <Link href="/pricing" className="underline hover:text-fg-muted">
+              See every plan side by side
+            </Link>
+            .
+          </p>
+        </div>
+      </AuthShell>
+    );
+  }
+
   return (
     <AuthShell
       title={inviteToken ? "Join your team" : "Create an account"}
@@ -126,6 +226,8 @@ function SignupForm() {
     >
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <FormError message={formError} />
+
+        {inviteToken ? null : <ChosenPlan plan={plan} onChange={() => setStep("plan")} />}
 
         <FormField
           label="Name"
@@ -186,7 +288,11 @@ function SignupForm() {
           className="h-9 w-full bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
         >
           {submitting ? <Loader2Icon className="size-4 animate-spin" /> : null}
-          {inviteToken ? "Create account and continue" : "Create account"}
+          {inviteToken
+            ? "Create account and continue"
+            : paid
+              ? "Create account and continue to payment"
+              : "Create account"}
         </Button>
 
         <p className="text-center text-[11px] leading-relaxed text-fg-subtle">
@@ -203,4 +309,36 @@ function SignupForm() {
       </form>
     </AuthShell>
   );
+}
+
+/**
+ * What was picked on the previous step, and the way back to it.
+ *
+ * A two-step form that does not show step one's answer on step two makes the
+ * reader either remember it or guess — and the answer here is what they are
+ * about to be charged.
+ */
+function ChosenPlan({ plan, onChange }: { plan: ChoosablePlanKey; onChange: () => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md border border-line bg-surface-2 px-3 py-2">
+      <span className="text-[12.5px] text-fg-muted">
+        Plan: <span className="font-medium text-fg capitalize">{plan}</span>
+      </span>
+      <button
+        type="button"
+        onClick={onChange}
+        className="flex items-center gap-1 text-[12px] font-medium text-ember hover:text-ember-hover"
+      >
+        <ArrowLeftIcon className="size-3" aria-hidden />
+        Change
+      </button>
+    </div>
+  );
+}
+
+/** Only the plans the form can actually sell. Anything else — a stale link, a
+ *  hand-typed `?plan=enterprise` — falls back to Free rather than to a step
+ *  that cannot be completed. */
+function readPlanParam(value: string | null): ChoosablePlanKey {
+  return value === "pro" || value === "team" ? value : "free";
 }

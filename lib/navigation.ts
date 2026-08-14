@@ -435,7 +435,24 @@ const ACCOUNT_ONLY_PREFIXES = [
   // account sections only when there is an account. Billing is the sub-page
   // that genuinely belongs to a person.
   "/settings/billing",
+  // The payment wall and Stripe's return page. Both need an account and
+  // neither means anything without one — but see `isPaymentWall` below: they
+  // are the one pair of account-only routes the wall must never redirect
+  // *away* from, or it redirects to itself.
+  "/checkout",
 ] as const;
+
+/**
+ * The payment wall's own routes.
+ *
+ * `AuthGuard` sends an account that owes a checkout to `/checkout`. Without
+ * this exemption that rule applies to `/checkout` too, and the app replaces
+ * the route with itself on every render — a loop that presents as a page which
+ * never finishes loading.
+ */
+export function isPaymentWall(pathname: string): boolean {
+  return pathname === "/checkout" || pathname.startsWith("/checkout/");
+}
 
 /**
  * Routes whose content must be in the server-rendered HTML.

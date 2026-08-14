@@ -7,11 +7,15 @@ export function AuthShell({
   description,
   children,
   footer,
+  /** The plan step needs room for three side-by-side figures per row; the
+   *  form steps do not, and a 460px-wide password field looks unfinished. */
+  wide = false,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  wide?: boolean;
 }) {
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
@@ -22,7 +26,7 @@ export function AuthShell({
       </header>
 
       <main className="flex flex-1 items-start justify-center px-5 pt-6 pb-16 sm:items-center sm:pt-0 sm:pb-24">
-        <div className="w-full max-w-[400px]">
+        <div className={wide ? "w-full max-w-[460px]" : "w-full max-w-[400px]"}>
           <h1 className="font-serif text-[28px] leading-tight tracking-[-0.01em] text-fg">
             {title}
           </h1>

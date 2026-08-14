@@ -45,6 +45,9 @@ export const qk = {
     list: (includeRevoked: boolean) => ["shares", "list", includeRevoked] as const,
   },
   billing: {
+    /** The whole namespace. Invalidated after an upgrade lands, where every
+     *  cached answer below it — plan, limits, meters — is now wrong at once. */
+    all: () => ["billing"] as const,
     /** Public and stable — the pricing table changes with a deploy, not with
      *  a session. */
     plans: () => ["billing", "plans"] as const,

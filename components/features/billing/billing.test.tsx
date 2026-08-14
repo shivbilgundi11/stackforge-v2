@@ -79,6 +79,7 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     trial_days: 7,
     highlights: ["Unlimited tool runs"],
     cta: "Start 7-day trial",
+    self_serve: true,
     checkout: true,
     current: false,
     features: [
@@ -100,6 +101,9 @@ function subscription(overrides: Partial<Subscription> = {}): Subscription {
     trial_ends_at: null,
     past_due_since: null,
     grace_days_left: null,
+    pending_plan: null,
+    pending_interval: null,
+    payment_required: false,
     ...overrides,
   };
 }
@@ -177,9 +181,27 @@ describe("PricingTable", () => {
 
     renderWith(<PricingTable />);
 
+    // The plan travels with them, so the signup form opens already agreeing
+    // with the button that was clicked.
     const cta = screen.getByRole("link", { name: /Start 7-day trial/ });
-    expect(cta).toHaveAttribute("href", "/signup?next=/pricing");
+    expect(cta).toHaveAttribute("href", "/signup?plan=pro&interval=monthly");
     expect(createCheckoutSession).not.toHaveBeenCalled();
+  });
+
+  it("still sends a signed-out visitor to signup when billing is unconfigured", () => {
+    authStatus.current = "anonymous";
+    // The regression this pins: reading `checkout` before `authenticated`
+    // meant an environment with no Stripe key sent every visitor to the
+    // resources page. Whether *this deployment* can take a card has no bearing
+    // on where somebody with no account belongs.
+    data.plans = [plan({ checkout: false })];
+
+    renderWith(<PricingTable />);
+
+    expect(screen.getByRole("link", { name: /Start 7-day trial/ })).toHaveAttribute(
+      "href",
+      "/signup?plan=pro&interval=monthly",
+    );
   });
 
   it("starts checkout for a signed-in visitor", async () => {
@@ -194,13 +216,14 @@ describe("PricingTable", () => {
     );
   });
 
-  it("does not offer a buy button for a plan with no configured price", () => {
+  it("sends a plan that is not self-serve to a conversation, not a checkout", () => {
     data.plans = [
       plan({
         key: "enterprise",
         label: "Enterprise",
         monthly_cents: null,
         annual_cents: null,
+        self_serve: false,
         checkout: false,
         cta: "Talk to us",
       }),
@@ -210,6 +233,17 @@ describe("PricingTable", () => {
 
     expect(screen.getByText("Custom")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Talk to us/ })).toBeInTheDocument();
+  });
+
+  it("disables a self-serve plan that has no price configured here", () => {
+    // Signed in, so signup is not the answer, and there is nothing to charge
+    // against. Saying so beats a button that returns a 402.
+    authStatus.current = "authenticated";
+    data.plans = [plan({ checkout: false })];
+
+    renderWith(<PricingTable />);
+
+    expect(screen.getByRole("button", { name: "Not available yet" })).toBeDisabled();
   });
 
   it("marks the current plan instead of selling it again", () => {

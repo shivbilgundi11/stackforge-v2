@@ -22,6 +22,15 @@ export type Quota = Schemas["QuotaOut"];
 export type Invoice = Schemas["InvoiceOut"];
 
 export type PlanKey = "free" | "pro" | "team" | "enterprise";
+/**
+ * The plans a form can actually submit.
+ *
+ * Enterprise is a conversation, not a radio button — it has no self-serve
+ * price, so a signup form or a payment wall offering it would be offering a
+ * step that cannot be completed. Narrowing it out in the type means that is
+ * caught at the call site rather than by the server's 422.
+ */
+export type ChoosablePlanKey = "free" | "pro" | "team";
 export type Interval = "monthly" | "annual";
 
 export function listPlans() {
@@ -49,6 +58,22 @@ export function listInvoices() {
  */
 export function createCheckoutSession(body: { plan: PlanKey; interval: Interval; seats?: number }) {
   return apiFetch<{ url: string }>("/api/v1/billing/checkout-session", {
+    method: "POST",
+    body,
+  });
+}
+
+/**
+ * Record — or clear — the plan this account intends to buy.
+ *
+ * Separate from checkout because choosing and paying are separated in time:
+ * the choice is made on the signup form, and the card arrives at the wall,
+ * possibly on another device days later. `plan: null` is the decline, and it is
+ * a real value here rather than an omission — a wall that can only be left by
+ * paying converts worse than one that can be turned down.
+ */
+export function selectPlan(body: { plan: PlanKey | null; interval?: Interval }) {
+  return apiFetch<Subscription>("/api/v1/billing/plan-selection", {
     method: "POST",
     body,
   });

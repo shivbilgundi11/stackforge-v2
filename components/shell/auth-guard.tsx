@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth/auth-provider";
-import { isPublicContent, requiresAccount } from "@/lib/navigation";
+import { useSubscription } from "@/lib/api/hooks";
+import { isPaymentWall, isPublicContent, requiresAccount } from "@/lib/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -24,6 +25,12 @@ import { Skeleton } from "@/components/ui/skeleton";
  * session with 5 runs a day, and the quota dialog's anonymous branch exists to
  * convert them at the point they run out — none of which a visitor can reach
  * from behind a login redirect.
+ *
+ * The payment wall rides on the same list, for the same reason: a user who
+ * chose a paid plan and never paid for it is held at `/checkout` on the
+ * account-only surfaces and nowhere else. The tools keep working at the free
+ * tier while they decide — a wall across the whole product tells a hesitating
+ * buyer that declining costs them everything, which is how they decline.
  */
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -31,11 +38,40 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const gated = requiresAccount(pathname);
 
+  // Only asked for on the routes that could redirect. An anonymous visitor on
+  // a tool page has no subscription to fetch and should not be issued a 401
+  // for one.
+  const authenticated = status === "authenticated";
+  const wall = isPaymentWall(pathname);
+  const asking = authenticated && gated && !wall;
+  const subscription = useSubscription(asking);
+  // `enabled: false` does not mean "no data" — react-query still serves
+  // whatever the key already holds. On the wall's own routes that cached
+  // answer is `payment_required: true`, so a guard that read it without the
+  // `!wall` term held a skeleton over the very page it had just redirected to.
+  const owesPayment = !wall && subscription.data?.payment_required === true;
+  // The answer is not in yet. Distinct from "does not owe": rendering the
+  // dashboard on the strength of a query that has not returned means showing
+  // it for half a second and then yanking it, which on a slow connection reads
+  // as the app having lost the payment.
+  //
+  // An *errored* query is not undecided, it is unanswerable, and it fails open
+  // — the same rule the backend applies to Redis and to the breach check. The
+  // wall is a nudge toward a checkout, not a permission; every quota and
+  // feature decision is enforced server-side against `user.plan` regardless.
+  // Holding the skeleton on an error would turn one failed billing call into a
+  // user who cannot reach any of their own work.
+  const undecided = asking && subscription.data === undefined && !subscription.isError;
+
   useEffect(() => {
     if (gated && status === "anonymous") {
       router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+      return;
     }
-  }, [gated, status, router, pathname]);
+    if (gated && authenticated && owesPayment) {
+      router.replace("/checkout");
+    }
+  }, [gated, status, authenticated, owesPayment, router, pathname]);
 
   if (!gated) {
     // Public content renders immediately, even while the session is
@@ -51,7 +87,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return status === "loading" ? <ShellSkeleton /> : <>{children}</>;
   }
 
-  if (status === "authenticated") return <>{children}</>;
+  if (authenticated && !undecided && !owesPayment) return <>{children}</>;
 
   return <ShellSkeleton />;
 }

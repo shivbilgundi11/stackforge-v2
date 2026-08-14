@@ -1699,6 +1699,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/plan-selection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Select Plan
+         * @description Choose the plan this account intends to buy, or decline and stay free.
+         *
+         *     Separate from `checkout-session` because choosing and paying are separated
+         *     in time: the choice is made on the signup form, and the card arrives at the
+         *     wall — possibly on a different device, days later. Storing the choice is
+         *     what lets the second half of that happen at all.
+         */
+        post: operations["select_plan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/billing/usage": {
         parameters: {
             query?: never;
@@ -4452,6 +4477,22 @@ export interface components {
             /** Source */
             source: string;
         };
+        /**
+         * PlanSelectionIn
+         * @description The wall's two buttons: pick a paid plan, or decline and stay free.
+         *
+         *     `null` is a first-class value here, not an omission — declining has to be
+         *     an explicit, recordable action, or the only way off the wall is to pay.
+         */
+        PlanSelectionIn: {
+            /** Plan */
+            plan?: string | null;
+            /**
+             * Interval
+             * @default monthly
+             */
+            interval: string;
+        };
         /** PortalOut */
         PortalOut: {
             /** Url */
@@ -4505,6 +4546,8 @@ export interface components {
             highlights: string[];
             /** Cta */
             cta: string;
+            /** Self Serve */
+            self_serve: boolean;
             /** Checkout */
             checkout: boolean;
             /** Current */
@@ -4968,6 +5011,18 @@ export interface components {
             name: string;
             /** Invite Token */
             invite_token?: string | null;
+            /**
+             * Plan
+             * @default free
+             * @enum {string}
+             */
+            plan: "free" | "pro" | "team";
+            /**
+             * Interval
+             * @default monthly
+             * @enum {string}
+             */
+            interval: "monthly" | "annual";
         };
         /**
          * RegisterResult
@@ -5527,6 +5582,12 @@ export interface components {
             past_due_since: string | null;
             /** Grace Days Left */
             grace_days_left: number | null;
+            /** Pending Plan */
+            pending_plan: string | null;
+            /** Pending Interval */
+            pending_interval: string | null;
+            /** Payment Required */
+            payment_required: boolean;
         };
         /**
          * TemplateDetailOut
@@ -9172,6 +9233,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_SubscriptionOut_"];
+                };
+            };
+        };
+    };
+    select_plan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanSelectionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubscriptionOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
