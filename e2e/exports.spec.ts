@@ -1,6 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { expectRealNumber, run } from "./helpers";
+import { expectRealNumber, run, signUpAndIn, uniqueEmail } from "./helpers";
 
 /**
  * M18 — exports and share links, against the real backend.
@@ -12,29 +12,6 @@ import { expectRealNumber, run } from "./helpers";
  * checking it in a clean one proves the capability is actually dead, which is
  * the property the whole design rests on.
  */
-
-const PASSWORD = "Forge-Exports-99";
-
-function uniqueEmail(label: string) {
-  // Matches the convention in `workspace.spec.ts`: a real-looking TLD, stable
-  // across runs so a repeatedly-run suite does not fill the dev database.
-  return `e2e-${label}-${test.info().workerIndex}@stackforge-e2e.com`;
-}
-
-async function signUpAndIn(page: Page, email: string) {
-  await page.goto("/signup");
-  await page.getByLabel("Name").fill("Exports Test");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(PASSWORD);
-  await page.getByRole("button", { name: /create account|sign up/i }).click();
-  await expect(page.getByText(/check your email/i)).toBeVisible();
-
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(PASSWORD);
-  await page.getByRole("button", { name: /sign in|log in/i }).click();
-  await page.waitForURL(/\/dashboard/);
-}
 
 test("an anonymous visitor can export a result as Markdown", async ({ page }) => {
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
@@ -75,7 +52,7 @@ test("a locked format shows the upgrade path rather than doing nothing", async (
 });
 
 test("a share link opens for a stranger and dies on revoke", async ({ page, browser }) => {
-  await signUpAndIn(page, uniqueEmail("share"));
+  await signUpAndIn(page, uniqueEmail("share"), { name: "Exports Test" });
 
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
   await run(page);
@@ -96,12 +73,21 @@ test("a share link opens for a stranger and dies on revoke", async ({ page, brow
   const url = await field.inputValue();
   expect(url).toMatch(/\/s\/[\w-]{20,}$/);
 
+  // Follow the *path*, not the absolute URL. The backend builds the link from
+  // its own `WEB_BASE_URL`, which is the developer's dev server on port 3000 —
+  // a port this suite deliberately does not use, because reusing it would
+  // adopt whatever `next dev` was already serving. Navigating to the origin
+  // the backend named fails with ERR_CONNECTION_REFUSED and looks like a
+  // broken share link. The absolute form is asserted above; what is under test
+  // here is whether the token opens for a stranger and dies on revoke.
+  const path = new URL(url).pathname;
+
   // A genuinely separate context: no cookies, no token, no storage. This is
   // the recipient, not the owner with the dialog still open.
   const stranger = await browser.newContext();
   try {
     const visitor = await stranger.newPage();
-    const response = await visitor.goto(url);
+    const response = await visitor.goto(path);
 
     expect(response?.status()).toBe(200);
     // `noindex` on the page itself, not only in the API header.
@@ -115,7 +101,7 @@ test("a share link opens for a stranger and dies on revoke", async ({ page, brow
 
     // Reloaded in the stranger's context, which never held a session to
     // invalidate — so a 404 here is the token being dead, not a cache miss.
-    const after = await visitor.goto(url);
+    const after = await visitor.goto(path);
     expect(after?.status()).toBe(404);
   } finally {
     await stranger.close();

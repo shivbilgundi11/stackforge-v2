@@ -1,7 +1,9 @@
 import { execSync } from "node:child_process";
 import path from "node:path";
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+
+import { E2E_PASSWORD, signUpAndIn, uniqueEmail } from "./helpers";
 
 /**
  * M21 — teams, against the real backend.
@@ -13,14 +15,14 @@ import { expect, test, type Page } from "@playwright/test";
  * shared project — comment, approval, decision.
  *
  * Two backend CLI commands stand in for what a browser cannot do: `set-plan`
- * (there is no test-mode Stripe key here, and checkout completion is covered
- * by the backend suite) and `invite-link` (the token lives only in an email;
- * the CLI rotates it and prints the link, exactly like an operator handling
- * "the invite never arrived").
+ * (reaching the Team tier without walking a card through Stripe's hosted
+ * checkout, which a browser test has no business driving — the plan-choice
+ * and payment-wall halves live in `checkout.spec.ts`) and `invite-link` (the
+ * token lives only in an email; the CLI rotates it and prints the link,
+ * exactly like an operator handling "the invite never arrived").
  */
 
 const BACKEND_DIR = path.resolve(__dirname, "..", "..", "backend");
-const PASSWORD = "Forge-Team-E2E-77";
 
 function cli(command: string): string {
   return execSync(`uv run python -m app.cli ${command}`, {
@@ -29,34 +31,15 @@ function cli(command: string): string {
   }).trim();
 }
 
-function uniqueEmail(label: string) {
-  return `e2e-${label}-${test.info().workerIndex}-${Date.now()}@stackforge-e2e.com`;
-}
-
-async function signUpAndIn(page: Page, email: string, name: string) {
-  await page.goto("/signup");
-  await page.getByLabel("Name").fill(name);
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(PASSWORD);
-  await page.getByRole("button", { name: /create account/i }).click();
-  await expect(page.getByText(/check your email/i)).toBeVisible();
-
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(PASSWORD);
-  await page.getByRole("button", { name: /sign in|log in/i }).click();
-  await page.waitForURL(/\/dashboard/);
-}
-
 test("a team forms, grows by invitation, and reviews shared work", async ({ page, browser }) => {
   test.setTimeout(240_000);
 
-  const ownerEmail = uniqueEmail("team-owner");
-  const memberEmail = uniqueEmail("team-member");
+  const ownerEmail = uniqueEmail("team-owner", true);
+  const memberEmail = uniqueEmail("team-member", true);
   const orgName = `E2E Guild ${test.info().workerIndex}`;
 
   // ── The owner builds the team ─────────────────────────────────────────────
-  await signUpAndIn(page, ownerEmail, "Olive Owner");
+  await signUpAndIn(page, ownerEmail, { name: "Olive Owner" });
   cli(`set-plan ${ownerEmail} team`);
 
   await page.goto("/team");
@@ -90,14 +73,14 @@ test("a team forms, grows by invitation, and reviews shared work", async ({ page
     await expect(emailField).toHaveAttribute("readonly", "");
 
     await invitee.getByLabel("Name").fill("Ivy Invitee");
-    await invitee.getByLabel("Password", { exact: false }).fill(PASSWORD);
+    await invitee.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
     await invitee.getByRole("button", { name: /create account and continue/i }).click();
 
     // No "check your email" — the invite proved the inbox. Straight to login,
     // with `next` carrying them back to the accept page.
     await invitee.waitForURL(/\/login\?next=/);
     await invitee.getByLabel("Email").fill(memberEmail);
-    await invitee.getByLabel("Password", { exact: false }).fill(PASSWORD);
+    await invitee.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
     await invitee.getByRole("button", { name: /sign in|log in/i }).click();
 
     await invitee.waitForURL(/\/invite\?token=/);
@@ -147,8 +130,8 @@ test("a team forms, grows by invitation, and reviews shared work", async ({ page
 });
 
 test("the org switcher appears only for members and scopes the team pages", async ({ page }) => {
-  const soloEmail = uniqueEmail("solo");
-  await signUpAndIn(page, soloEmail, "Solo Sam");
+  const soloEmail = uniqueEmail("solo", true);
+  await signUpAndIn(page, soloEmail, { name: "Solo Sam" });
 
   // Both assertions on one page load, deliberately. Each full navigation
   // bootstraps its own token refresh, and refresh rotates; two of them racing

@@ -1,6 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { run } from "./helpers";
+import { run, signUpAndIn, uniqueEmail } from "./helpers";
 
 /**
  * M20 — pricing, quota, and the gate, against the real backend.
@@ -17,27 +17,6 @@ import { run } from "./helpers";
  * dialog with real figures rather than a dead end, and that the locked export
  * formats explain themselves.
  */
-
-const PASSWORD = "Forge-Billing-99";
-
-function uniqueEmail(label: string) {
-  return `e2e-${label}-${test.info().workerIndex}@stackforge-e2e.com`;
-}
-
-async function signUpAndIn(page: Page, email: string) {
-  await page.goto("/signup");
-  await page.getByLabel("Name").fill("Billing Test");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(PASSWORD);
-  await page.getByRole("button", { name: /create account|sign up/i }).click();
-  await expect(page.getByText(/check your email/i)).toBeVisible();
-
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(PASSWORD);
-  await page.getByRole("button", { name: /sign in|log in/i }).click();
-  await page.waitForURL(/\/dashboard/);
-}
 
 test("the pricing page renders every plan, signed out", async ({ page }) => {
   await page.goto("/pricing");
@@ -103,25 +82,35 @@ test("hitting the anonymous cap shows the dialog with real figures", async ({ pa
   await expect(dialog.getByText(/Daily limit reached/i)).toBeVisible();
   // Figures, not a dead end: the reader has to be able to choose between
   // waiting and paying.
-  await expect(dialog.getByText("Used")).toBeVisible();
-  await expect(dialog.getByText("Limit")).toBeVisible();
-  await expect(dialog.getByText("Resets")).toBeVisible();
+  await expect(dialog.getByText("Used", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Limit", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Resets", { exact: true })).toBeVisible();
   await expect(dialog.getByRole("link", { name: /account|Upgrade/i })).toBeVisible();
 });
 
 test("a signed-in free user sees their plan and usage on the billing page", async ({ page }) => {
-  await signUpAndIn(page, uniqueEmail("billing"));
+  await signUpAndIn(page, uniqueEmail("billing"), { name: "Billing Test" });
 
   await page.goto("/settings/billing");
 
   await expect(page.getByRole("heading", { name: "Billing" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Usage" })).toBeVisible();
-  await expect(page.getByText("Tool runs today")).toBeVisible();
-  await expect(page.getByText("Projects", { exact: true })).toBeVisible();
+
+  // Scoped to the panel. Every meter label is also a word in the shell — the
+  // sidebar has a "Projects" link and the quota strip carries "Tool runs
+  // today" — so a page-wide match asserts that the navigation exists, which is
+  // not what this test is about and is not what breaks.
+  const usage = page.locator("#usage");
+  await expect(usage.getByText("Tool runs today", { exact: true })).toBeVisible();
+  await expect(usage.getByText("Projects", { exact: true })).toBeVisible();
 
   // Free has no subscription to cancel and nothing to manage in a portal.
-  await expect(page.getByRole("button", { name: "Cancel plan" })).toBeHidden();
-  await expect(page.getByRole("link", { name: /Upgrade/ })).toBeVisible();
+  // Scoped to the plan panel, like the meters above: the quota strip in the
+  // sidebar carries its own "Upgrade for unlimited" link, and matching both
+  // makes the assertion about the shell rather than about the plan.
+  const plan = page.locator("#plan");
+  await expect(plan.getByRole("button", { name: "Cancel plan" })).toBeHidden();
+  await expect(plan.getByRole("link", { name: "Upgrade", exact: true })).toBeVisible();
 });
 
 test("a locked export format explains what it is, not just that it is locked", async ({ page }) => {
