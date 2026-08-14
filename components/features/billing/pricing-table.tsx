@@ -20,6 +20,7 @@ import {
   type PlanKey,
 } from "@/lib/api/billing";
 import { usePlans } from "@/lib/api/hooks";
+import { openCheckout } from "@/lib/api/razorpay-checkout";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { cn } from "@/lib/utils";
 
@@ -42,9 +43,9 @@ export function PricingTable() {
   const [interval, setInterval] = useState<Interval>("monthly");
 
   const checkout = useMutation({
-    mutationFn: (plan: PlanKey) => createCheckoutSession({ plan, interval }),
-    onSuccess: ({ url }) => {
-      window.location.href = url;
+    mutationFn: async (plan: PlanKey) => {
+      const handle = await createCheckoutSession({ plan, interval });
+      await openCheckout(handle, { onDismiss: () => checkout.reset() });
     },
     onError: () => toast.error("Could not start checkout. Try again in a moment."),
   });

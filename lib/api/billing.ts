@@ -50,22 +50,22 @@ export function listInvoices() {
 }
 
 /**
- * Start checkout and hand the browser to Razorpay.
+ * Create the subscription the browser will authorize against.
  *
- * Returns the URL rather than navigating, so the caller decides when the
- * redirect happens — a component that navigated from inside the mutation would
- * leave its own loading state hanging on a page that is about to unmount.
+ * There is no checkout session on this provider, and no URL to redirect to:
+ * the subscription already exists in `created` state by the time this
+ * resolves, and the customer authorizes a mandate in a Razorpay Checkout modal
+ * opened with its id (D-52). Pass the result to `openCheckout`.
  *
- * The URL is a Razorpay subscription's hosted authorization page. There is no
- * checkout session on this provider: the subscription already exists in
- * `created` state by the time this resolves, and the customer authorizes a
- * mandate on the page it points at.
+ * Returns rather than opening, so the caller decides when the modal appears —
+ * a component that opened it from inside the mutation would leave its own
+ * loading state hanging under a modal it cannot see past.
  */
 export function createCheckoutSession(body: { plan: PlanKey; interval: Interval; seats?: number }) {
-  return apiFetch<{ url: string }>("/api/v1/billing/checkout-session", {
-    method: "POST",
-    body,
-  });
+  return apiFetch<{ subscription_id: string; key_id: string }>(
+    "/api/v1/billing/checkout-session",
+    { method: "POST", body },
+  );
 }
 
 /**

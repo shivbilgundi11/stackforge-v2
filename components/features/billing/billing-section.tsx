@@ -32,7 +32,7 @@ import { qk } from "@/lib/api/query-keys";
  * the period already paid for is kept.
  *
  * Card details are still never handled here. Changing a saved card means
- * authorizing a new mandate on Razorpay's own page, which is what
+ * authorizing a new mandate in Razorpay Checkout, which is what
  * re-subscribing does, so the past-due banner links to checkout rather than
  * collecting anything.
  */

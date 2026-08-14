@@ -16,6 +16,7 @@ import type { Plan, Subscription } from "@/lib/api/billing";
  */
 
 const createCheckoutSession = vi.hoisted(() => vi.fn());
+const openCheckout = vi.hoisted(() => vi.fn());
 const selectPlan = vi.hoisted(() => vi.fn());
 const replace = vi.hoisted(() => vi.fn());
 const data = vi.hoisted(() => ({
@@ -29,6 +30,10 @@ vi.mock("@/lib/api/hooks", () => ({
 }));
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
+
+// Razorpay's script cannot load in jsdom, and the point of the assertion is
+// what we hand it rather than what it draws.
+vi.mock("@/lib/api/razorpay-checkout", () => ({ openCheckout }));
 
 vi.mock("react-hot-toast", () => ({ default: { success: vi.fn(), error: vi.fn() } }));
 
@@ -128,7 +133,8 @@ describe("PaymentWall", () => {
   });
 
   it("starts checkout on the plan and interval on screen", async () => {
-    createCheckoutSession.mockResolvedValue({ url: "https://checkout.test/1" });
+    createCheckoutSession.mockResolvedValue({ subscription_id: "sub_1", key_id: "rzp_test_k" });
+    openCheckout.mockResolvedValue(undefined);
 
     renderWall();
     await userEvent.click(screen.getByRole("button", { name: "annual" }));
@@ -136,6 +142,15 @@ describe("PaymentWall", () => {
 
     await waitFor(() =>
       expect(createCheckoutSession).toHaveBeenCalledWith({ plan: "pro", interval: "annual" }),
+    );
+    // The subscription the backend just made is the one the modal opens
+    // against. Handing over anything else authorizes a mandate for a plan the
+    // customer did not choose.
+    await waitFor(() =>
+      expect(openCheckout).toHaveBeenCalledWith(
+        { subscription_id: "sub_1", key_id: "rzp_test_k" },
+        expect.objectContaining({ onDismiss: expect.any(Function) }),
+      ),
     );
   });
 

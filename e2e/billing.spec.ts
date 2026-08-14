@@ -5,7 +5,7 @@ import { run, signUpAndIn, uniqueEmail } from "./helpers";
 /**
  * M20 — pricing, quota, and the gate, against the real backend.
  *
- * What is *not* here: authorizing a mandate on Razorpay's hosted page. Driving
+ * What is *not* here: authorizing a mandate in Razorpay Checkout. Driving
  * a third party's page from a browser test asserts their markup, not ours. The
  * backend suite covers the checkout-to-upgrade path end to end with a fake
  * client and hand-built webhook deliveries, which is where the interesting

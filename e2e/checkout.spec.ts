@@ -5,7 +5,7 @@ import { E2E_PASSWORD, signUpAndIn, uniqueEmail } from "./helpers";
 /**
  * Choosing a plan at signup, and the wall that follows it.
  *
- * What is *not* here: authorizing a mandate on Razorpay's hosted page. Driving
+ * What is *not* here: authorizing a mandate in Razorpay Checkout. Driving
  * a third party's page from a browser test asserts their markup, not ours, and
  * it breaks when they redesign it. The half that follows the mandate — the
  * signed webhook, the upgrade it applies, and the duplicate delivery that must

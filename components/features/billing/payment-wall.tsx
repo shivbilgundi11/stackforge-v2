@@ -26,6 +26,7 @@ import {
   type ChoosablePlanKey,
 } from "@/lib/api/billing";
 import { usePlans, useSubscription } from "@/lib/api/hooks";
+import { openCheckout } from "@/lib/api/razorpay-checkout";
 import { qk } from "@/lib/api/query-keys";
 
 /**
@@ -75,9 +76,12 @@ export function PaymentWall() {
   }, [subscription.isLoading, subscription.data, router]);
 
   const checkout = useMutation({
-    mutationFn: () => createCheckoutSession({ plan, interval }),
-    onSuccess: ({ url }) => {
-      window.location.href = url;
+    mutationFn: async () => {
+      const handle = await createCheckoutSession({ plan, interval });
+      // Razorpay navigates to /checkout/done itself once the mandate is
+      // authorized, so there is no success branch here — only the dismissal,
+      // which has to release the button or the wall looks frozen.
+      await openCheckout(handle, { onDismiss: () => checkout.reset() });
     },
     onError: () => toast.error("Could not start checkout. Try again in a moment."),
   });

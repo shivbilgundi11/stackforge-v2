@@ -2617,10 +2617,19 @@ export interface components {
              */
             seats: number;
         };
-        /** CheckoutOut */
+        /**
+         * CheckoutOut
+         * @description What the browser opens Razorpay Checkout with.
+         *
+         *     Not a URL to redirect to. Authorization happens in a modal over our own
+         *     page, because Razorpay's hosted subscription page accepts no callback and
+         *     strands whoever pays on it (D-52).
+         */
         CheckoutOut: {
-            /** Url */
-            url: string;
+            /** Subscription Id */
+            subscription_id: string;
+            /** Key Id */
+            key_id: string;
         };
         /** ChunkEstimateIn */
         ChunkEstimateIn: {
