@@ -25,6 +25,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const fixed: MetadataRoute.Sitemap = [
     { url: SITE, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    // The marketing surface (M22). `/legal/*` is deliberately absent: both
+    // pages carry `robots: { index: false }` while they await counsel review,
+    // and listing a noindex page in the sitemap sends a search engine two
+    // contradictory instructions about the same URL.
+    ...["/features", "/pricing", "/faq", "/about", "/contact"].map((path) => ({
+      url: `${SITE}${path}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
     {
       url: `${SITE}/resources`,
       lastModified: now,
