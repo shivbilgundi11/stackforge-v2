@@ -48,12 +48,24 @@ export const qk = {
     /** The whole namespace. Invalidated after an upgrade lands, where every
      *  cached answer below it — plan, limits, meters — is now wrong at once. */
     all: () => ["billing"] as const,
-    /** Public and stable — the pricing table changes with a deploy, not with
-     *  a session. */
-    plans: () => ["billing", "plans"] as const,
+    /** Mostly public: prices and copy change with a deploy, not with a
+     *  session. `current` does not — it marks the caller's own plan, so the
+     *  reply is keyed by identity like `usage` below. Called with no argument
+     *  it returns the prefix, which still matches every identity. */
+    plans: (identity?: string) =>
+      identity ? (["billing", "plans", identity] as const) : (["billing", "plans"] as const),
     subscription: () => ["billing", "subscription"] as const,
-    /** Invalidated after every run, so the meter moves as the user works. */
-    usage: () => ["billing", "usage"] as const,
+    /** Invalidated after every run, so the meter moves as the user works.
+     *
+     *  Keyed by caller identity. `GET /billing/usage` answers 200 for an
+     *  anonymous caller rather than 401, so the reply to a request that went
+     *  out before the access token existed is a *plausible* one — it says
+     *  `plan: "anonymous"`. Without the identity in the key that answer is
+     *  cached against the signed-in user and the sidebar claims the wrong
+     *  plan until it goes stale. Called with no argument it returns the
+     *  prefix, which still matches every identity for invalidation. */
+    usage: (identity?: string) =>
+      identity ? (["billing", "usage", identity] as const) : (["billing", "usage"] as const),
     invoices: () => ["billing", "invoices"] as const,
   },
   templates: {

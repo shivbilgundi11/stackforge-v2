@@ -36,11 +36,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const channel = useRef<BroadcastChannel | null>(null);
 
-  const applySession = useCallback((nextUser: User, token: string, expiresIn: number) => {
-    tokenStore.set(token, expiresIn);
-    setUser(nextUser);
-    setStatus("authenticated");
-  }, []);
+  const applySession = useCallback(
+    (nextUser: User, token: string, expiresIn: number) => {
+      tokenStore.set(token, expiresIn);
+      setUser(nextUser);
+      setStatus("authenticated");
+      // Plan, limits, and meters were all answered for whoever the caller was
+      // a moment ago — an anonymous visitor, or the previous account. None of
+      // those answers survives a change of identity.
+      void queryClient.invalidateQueries({ queryKey: qk.billing.all() });
+    },
+    [queryClient],
+  );
 
   const clearSession = useCallback(() => {
     tokenStore.clear();
@@ -48,6 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStatus("anonymous");
     queryClient.removeQueries({ queryKey: qk.auth.me });
     queryClient.removeQueries({ queryKey: qk.auth.sessions });
+    // Removed rather than invalidated: a signed-out tab must not keep showing
+    // the plan the account had while a refetch is in flight.
+    queryClient.removeQueries({ queryKey: qk.billing.all() });
   }, [queryClient]);
 
   // ── Bootstrap ────────────────────────────────────────────────────────────

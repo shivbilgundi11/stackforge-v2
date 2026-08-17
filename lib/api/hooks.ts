@@ -6,6 +6,7 @@ import * as billing from "@/lib/api/billing";
 import * as catalog from "@/lib/api/catalog";
 import { qk } from "@/lib/api/query-keys";
 import * as tools from "@/lib/api/tools";
+import { useAuth } from "@/lib/auth/auth-provider";
 
 /**
  * Catalog hooks.
@@ -125,10 +126,22 @@ export function useRun(runId: string | null) {
  * public pricing page is the most-loaded route in the app. Its limits still
  * come from the server rather than a constant here, so a tuned limit reaches
  * the page on the next load.
+ *
+ * Keyed by identity but deliberately *not* gated on auth resolving, unlike
+ * `useUsage`. One field in the reply is per-caller — `current`, which draws
+ * the "Your plan" marker — and a copy fetched before the access token existed
+ * has it false on every row, so a signed-in user sees their own plan offered
+ * for sale. Keying by identity retires that copy the moment the user resolves
+ * instead of showing it for the full fifteen minutes. The gate is the wrong
+ * tool here: this is the most-loaded public route, and holding the whole
+ * pricing table for a refresh round trip to fix one marker no logged-out
+ * visitor can see would be a bad trade.
  */
 export function usePlans() {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: qk.billing.plans(),
+    queryKey: qk.billing.plans(user?.id ?? "anonymous"),
     queryFn: () => billing.listPlans(),
     staleTime: 1000 * 60 * 15,
   });
@@ -150,11 +163,26 @@ export function useSubscription(enabled = true) {
  * Short `staleTime`: the point of the sidebar meter is to be visibly moving
  * before the limit is hit, which is the only moment the gate converts rather
  * than annoys. Works signed out — anonymous callers are metered too.
+ *
+ * Held until `status` leaves `loading`. The access token lives in memory, so
+ * on every page load there is a window — one refresh round trip wide — where
+ * the app is signed in but cannot prove it. This endpoint answers 200 with
+ * `plan: "anonymous"` in that window instead of the 401 the client knows how
+ * to retry, so a request sent early is not corrected by anything: it is
+ * cached, and the sidebar tells a paying user they are on the anonymous tier
+ * until it goes stale. Waiting costs one render of nothing; not waiting costs
+ * a wrong plan on most reloads.
  */
 export function useUsage() {
+  const { status, user } = useAuth();
+
   return useQuery({
-    queryKey: qk.billing.usage(),
+    // Anonymous callers share one key. They are one identity as far as this
+    // endpoint is concerned — the cookie is the only thing distinguishing
+    // them, and it never changes without a reload.
+    queryKey: qk.billing.usage(user?.id ?? "anonymous"),
     queryFn: () => billing.getUsage(),
+    enabled: status !== "loading",
     staleTime: 1000 * 20,
   });
 }
