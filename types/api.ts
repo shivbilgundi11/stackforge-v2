@@ -1765,6 +1765,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile Subscription
+         * @description Ask Razorpay what this account is actually subscribed to, and apply it.
+         *
+         *     The webhook stays authoritative; this is the repair path for when one does
+         *     not arrive. Because the provider creates a subscription before it is paid
+         *     for, `subscription.activated` is the only thing that says a payment
+         *     succeeded — and a single lost delivery used to mean a customer who had paid
+         *     and an account that never moved, with no way back through the product.
+         *
+         *     Callable by the account itself rather than operators only. The person who
+         *     just paid is the one who knows something is wrong, is already looking at
+         *     the screen, and should not have to open a support ticket to have a plan
+         *     they have been charged for.
+         */
+        post: operations["reconcile_subscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/billing/cancellation": {
         parameters: {
             query?: never;
@@ -9302,6 +9333,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_subscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubscriptionOut_"];
                 };
             };
         };

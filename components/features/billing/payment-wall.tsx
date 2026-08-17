@@ -81,7 +81,7 @@ export function PaymentWall() {
       // Razorpay navigates to /checkout/done itself once the mandate is
       // authorized, so there is no success branch here — only the dismissal,
       // which has to release the button or the wall looks frozen.
-      await openCheckout(handle, { onDismiss: () => checkout.reset() });
+      await openCheckout(handle, { plan, onDismiss: () => checkout.reset() });
     },
     onError: () => toast.error("Could not start checkout. Try again in a moment."),
   });

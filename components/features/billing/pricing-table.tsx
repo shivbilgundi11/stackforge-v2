@@ -45,7 +45,7 @@ export function PricingTable() {
   const checkout = useMutation({
     mutationFn: async (plan: PlanKey) => {
       const handle = await createCheckoutSession({ plan, interval });
-      await openCheckout(handle, { onDismiss: () => checkout.reset() });
+      await openCheckout(handle, { plan, onDismiss: () => checkout.reset() });
     },
     onError: () => toast.error("Could not start checkout. Try again in a moment."),
   });

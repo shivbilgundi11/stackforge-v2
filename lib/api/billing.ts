@@ -84,6 +84,23 @@ export function selectPlan(body: { plan: PlanKey | null; interval?: Interval }) 
   });
 }
 
+/**
+ * Ask the server to re-read this account's subscription from Razorpay.
+ *
+ * The repair path for a webhook that never arrived. Razorpay creates a
+ * subscription before it is paid for, so `subscription.activated` is the only
+ * thing that says the money moved — and one lost delivery used to mean a
+ * customer who had paid and a plan that never changed, with nothing in the
+ * product able to correct it.
+ *
+ * Safe to call more than once: the server keys the reconciliation on what the
+ * subscription actually says, so repeating it over unchanged state does
+ * nothing.
+ */
+export function reconcileSubscription() {
+  return apiFetch<Subscription>("/api/v1/billing/reconcile", { method: "POST" });
+}
+
 export function setCancellation(cancel: boolean) {
   return apiFetch<Subscription>("/api/v1/billing/cancellation", {
     method: "POST",

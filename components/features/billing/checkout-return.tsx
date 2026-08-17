@@ -1,21 +1,25 @@
 "use client";
 
-import { CheckCircle2Icon, Loader2Icon } from "lucide-react";
+import { CheckCircle2Icon, Loader2Icon, RefreshCwIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Panel, PanelBody } from "@/components/forge/panel";
 import { Button } from "@/components/ui/button";
-import { getSubscription } from "@/lib/api/billing";
+import { getSubscription, reconcileSubscription } from "@/lib/api/billing";
 import { qk } from "@/lib/api/query-keys";
 
-/** How long to wait for the webhook before offering a way out. Razorpay is
- *  usually inside a few seconds; this is the ceiling before the screen stops
- *  pretending it knows what is happening. */
-const GIVE_UP_MS = 20_000;
+/** How long to keep asking before handing the user a button instead. */
+const GIVE_UP_MS = 25_000;
 const POLL_MS = 1_500;
+/** Ask Razorpay directly on the first attempt, then every seventh — roughly
+ *  every ten seconds. The local read is free; the reconcile is two calls to a
+ *  payment provider and does not belong on a 1.5-second timer. */
+const RECONCILE_EVERY = 7;
+
+const RANK: Record<string, number> = { free: 0, pro: 1, team: 2, enterprise: 3 };
 
 /**
  * Where Razorpay sends the browser back to.
@@ -23,19 +27,67 @@ const POLL_MS = 1_500;
  * This page exists because the redirect and the webhook are a race, and the
  * redirect usually wins. Razorpay hands the browser back the instant the
  * mandate is authorized; the `subscription.activated` delivery that grants the
- * plan arrives a moment later. Landing straight on `/dashboard` in that gap
- * means the app still believes the account is unpaid and bounces it back to
- * the wall — the user pays and is immediately asked to pay again.
+ * plan arrives a moment later.
  *
- * So: poll the summary until it stops saying payment is required, then
- * forward. The success redirect is never treated as proof of payment; it is
- * only the cue to start asking. The webhook remains the only thing that can
- * change a plan.
+ * ## What it waits for
+ *
+ * The plan named in `?plan=`, reached or beaten. It used to wait for
+ * `payment_required` to go false, which is a different question — "does this
+ * account owe money" — and one that is *already* false for someone upgrading
+ * from Pro to Team. So an upgrade that never landed looked exactly like one
+ * that worked: the page forwarded to the dashboard, and the account stayed on
+ * the plan it had. That is the failure this rewrite is for.
+ *
+ * ## What it does when nothing arrives
+ *
+ * Asks Razorpay. The webhook is still the only thing that grants a plan, but
+ * `reconcileSubscription` pulls the subscription and runs it through the same
+ * handler, so a delivery that was lost — or that was never going to arrive,
+ * which is every local environment without a tunnel — stops being permanent.
+ * The success redirect is never treated as proof of payment; it is only the
+ * cue to start asking.
  */
 export function CheckoutReturn() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const params = useSearchParams();
+  const target = params.get("plan");
   const [slow, setSlow] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const attempt = useRef(0);
+
+  /** Has the thing we were buying actually arrived? */
+  const landed = useCallback(
+    (plan: string, paymentRequired: boolean) => {
+      if (!target) return !paymentRequired;
+      return (RANK[plan] ?? 0) >= (RANK[target] ?? 0);
+    },
+    [target],
+  );
+
+  const settle = useCallback(async () => {
+    // Everything downstream reads the plan; none of it should keep a cached
+    // copy from before the upgrade.
+    await queryClient.invalidateQueries({ queryKey: qk.billing.all() });
+    router.replace("/dashboard");
+  }, [queryClient, router]);
+
+  const checkNow = useCallback(async () => {
+    setChecking(true);
+    try {
+      const summary = await reconcileSubscription();
+      if (landed(summary.plan, summary.payment_required)) {
+        await settle();
+        return true;
+      }
+    } catch {
+      // Reconciling is best-effort. The honest end state is the button, not a
+      // toast about a repair the user never asked for.
+    } finally {
+      setChecking(false);
+    }
+    return false;
+  }, [landed, settle]);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,20 +95,25 @@ export function CheckoutReturn() {
 
     async function poll() {
       if (cancelled) return;
+      const nth = attempt.current++;
+
       try {
-        const summary = await getSubscription();
+        // Pull from Razorpay on the first tick and periodically after it; read
+        // locally in between. The first tick matters most — in an environment
+        // with no webhook delivery at all, it is the only thing that will ever
+        // move the plan.
+        const summary =
+          nth % RECONCILE_EVERY === 0 ? await reconcileSubscription() : await getSubscription();
         if (cancelled) return;
-        if (!summary.payment_required) {
-          // Everything downstream reads the plan; none of it should keep a
-          // cached copy from before the upgrade.
-          await queryClient.invalidateQueries({ queryKey: qk.billing.all() });
-          router.replace("/dashboard");
+        if (landed(summary.plan, summary.payment_required)) {
+          await settle();
           return;
         }
       } catch {
         // A transient failure here is not worth a toast — the next tick
         // retries, and the give-up branch is the honest end state.
       }
+
       if (Date.now() - started > GIVE_UP_MS) {
         setSlow(true);
         return;
@@ -68,7 +125,7 @@ export function CheckoutReturn() {
     return () => {
       cancelled = true;
     };
-  }, [router, queryClient]);
+  }, [landed, settle]);
 
   return (
     <div className="mx-auto flex w-full max-w-[460px] flex-col pt-8">
@@ -81,13 +138,23 @@ export function CheckoutReturn() {
               </span>
               <h1 className="text-[15px] font-semibold text-fg">Payment received</h1>
               <p className="max-w-[38ch] text-[12.5px] leading-relaxed text-pretty text-fg-muted">
-                Your payment went through, but the confirmation from Razorpay is taking longer than
-                usual to reach us. Nothing is lost — your plan will switch over on its own, normally
-                within a few minutes.
+                Your payment went through, but Razorpay has not confirmed it to us yet. Nothing is
+                lost. Check again now, or leave it — the plan switches over on its own once the
+                confirmation lands.
               </p>
-              <Button asChild size="sm" variant="outline" className="mt-1">
-                <Link href="/settings/billing">Check billing settings</Link>
-              </Button>
+              <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+                <Button size="sm" onClick={() => void checkNow()} disabled={checking}>
+                  {checking ? (
+                    <Loader2Icon className="size-3.5 animate-spin" aria-hidden />
+                  ) : (
+                    <RefreshCwIcon className="size-3.5" aria-hidden />
+                  )}
+                  Check again
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/settings/billing">Billing settings</Link>
+                </Button>
+              </div>
             </>
           ) : (
             <>

@@ -88,7 +88,12 @@ export interface CheckoutHandle {
  */
 export async function openCheckout(
   handle: CheckoutHandle,
-  { email, name, onDismiss }: { email?: string; name?: string; onDismiss?: () => void } = {},
+  {
+    plan,
+    email,
+    name,
+    onDismiss,
+  }: { plan?: string; email?: string; name?: string; onDismiss?: () => void } = {},
 ): Promise<void> {
   await loadCheckout();
 
@@ -104,7 +109,14 @@ export async function openCheckout(
     // than calling a handler. One outcome path instead of two, and it survives
     // the bank pages a UPI or 3-D Secure mandate goes through, which a
     // callback closured in this tab does not.
-    callback_url: `${window.location.origin}/checkout/done`,
+    // The plan rides along so the return page can check that *this* purchase
+    // landed. Without it the page could only ask "does this account owe money",
+    // which is already false for someone upgrading from one paid plan to
+    // another — so an upgrade that silently failed looked identical to one
+    // that worked.
+    callback_url: plan
+      ? `${window.location.origin}/checkout/done?plan=${encodeURIComponent(plan)}`
+      : `${window.location.origin}/checkout/done`,
     redirect: true,
     prefill: { email, name },
     theme: { color: "#d2601a" },
