@@ -151,7 +151,7 @@ function SignupForm() {
       <AuthShell
         wide
         title="Choose a plan"
-        description="Start free, or take a trial of a paid plan — nothing is charged until the trial ends. You can change this at any time."
+        description="Start free, or pick a paid plan and set up billing next. You can change this at any time."
         footer={
           <>
             Already have an account?{" "}

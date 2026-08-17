@@ -102,7 +102,7 @@ test("the pricing page carries the chosen plan into the signup form", async ({ p
 
   // Signed out, a paid plan offers an account rather than a card — you cannot
   // buy without one either way.
-  const cta = page.getByRole("link", { name: /Start 7-day trial/ }).first();
+  const cta = page.getByRole("link", { name: /Upgrade to Pro/ }).first();
   await expect(cta).toHaveAttribute("href", /\/signup\?plan=(pro|team)/);
 
   await cta.click();

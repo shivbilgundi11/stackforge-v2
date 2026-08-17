@@ -43,7 +43,7 @@ test("annual billing shows the discounted price", async ({ page }) => {
 test("an anonymous visitor is offered an account rather than a card", async ({ page }) => {
   await page.goto("/pricing");
 
-  const cta = page.getByRole("link", { name: /Start 7-day trial/ }).first();
+  const cta = page.getByRole("link", { name: /Upgrade to Pro/ }).first();
   await expect(cta).toHaveAttribute("href", /\/signup/);
 });
 
