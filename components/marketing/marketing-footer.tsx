@@ -10,32 +10,43 @@ import { BrandLockup } from "@/components/shell/brand";
  * when they are planned (M22).
  */
 
+/**
+ * Navigation links to marketing destinations only.
+ *
+ * The footer used to be a directory of application routes — the five workflow
+ * hubs, Compare Center, the tool graveyard, the template library. Every one of
+ * them resolved, so nothing was broken, but following one dropped a visitor
+ * out of the marketing layout and into the workbench shell mid-browse: sidebar,
+ * command palette, breadcrumbs, and no way back to the site they were reading.
+ *
+ * A person clicking "Cost Planner" in a footer expects to read about the Cost
+ * Planner, not to be handed the tool. So browsing links stay inside the
+ * marketing site and point at the section of `/features` that describes each
+ * surface; the only routes into the application are the explicit calls to
+ * action, where being taken to the product is the whole intent.
+ *
+ * The per-surface landing pages M22 specifies (`/tools/[slug]`, with a live
+ * embedded calculator) are the eventual home for the middle column. Until they
+ * exist, the anchors on `/features` are the honest destination.
+ */
 const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] = [
   {
     heading: "Product",
     links: [
       { href: "/features", label: "Features" },
       { href: "/pricing", label: "Pricing" },
-      { href: "/stack-architect/new", label: "Stack Architect" },
-      { href: "/compare", label: "Compare Center" },
-    ],
-  },
-  {
-    heading: "Workflows",
-    links: [
-      { href: "/cost", label: "Cost Planner" },
-      { href: "/rag", label: "RAG Planner" },
-      { href: "/agents", label: "Agent & MCP Builder" },
-      { href: "/infra", label: "Infra Planner" },
-      { href: "/roi", label: "ROI Calculator" },
-    ],
-  },
-  {
-    heading: "Resources",
-    links: [
-      { href: "/resources/templates", label: "Templates" },
-      { href: "/stack-architect/graveyard", label: "Tool graveyard" },
       { href: "/faq", label: "FAQ" },
+    ],
+  },
+  {
+    heading: "What it does",
+    links: [
+      { href: "/features#stack-architect", label: "Stack Architect" },
+      { href: "/features#llm-pricing", label: "Cost Planner" },
+      { href: "/features#compare-models", label: "Compare Center" },
+      { href: "/features#rag-architecture", label: "RAG Planner" },
+      { href: "/features#mcp-config", label: "Agent & MCP Builder" },
+      { href: "/features#vram-estimate", label: "Infra Planner" },
     ],
   },
   {
@@ -53,7 +64,7 @@ export function MarketingFooter() {
   return (
     <footer className="border-t border-line">
       <div className="mx-auto w-full max-w-[1120px] px-5 py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <BrandLockup />
             <p className="mt-3 max-w-[28ch] text-[12.5px] leading-relaxed text-fg-muted">

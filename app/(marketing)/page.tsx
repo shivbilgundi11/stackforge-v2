@@ -176,7 +176,7 @@ export default async function Page() {
       <Section id="features">
         <SectionHeader
           eyebrow="What is inside"
-          title="Six surfaces, one workbench."
+          title="Seven surfaces, one workbench."
           lede="Every screenshot below is the actual product answering an actual question. Nothing here is a redrawn illustration."
         />
         <div className="mt-12 flex flex-col gap-16">

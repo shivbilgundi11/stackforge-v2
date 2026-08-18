@@ -49,6 +49,40 @@ test("no navigation item points at a page that does not exist", async ({ page, r
   }
 });
 
+test("navigation stays inside the marketing site", async ({ page }) => {
+  // Browsing links used to point at the workbench — the five workflow hubs,
+  // Compare Center, the tool graveyard, the template library. They all
+  // resolved, because those routes are public to anonymous visitors by design
+  // (D-17), so nothing was broken. Following one still swapped the marketing
+  // chrome for the application shell mid-browse, which is the wrong thing to
+  // do to someone who is still reading about the product.
+  //
+  // Routes into the application belong on call-to-action buttons, where being
+  // taken to the product is plainly what the control does. Nav links do not.
+  const MARKETING = ["/", "/features", "/pricing", "/faq", "/about", "/contact", "/legal"];
+  const AUTH = ["/login", "/signup"]; // standalone pages, not the workbench shell
+
+  for (const path of ["/", "/features", "/pricing"]) {
+    await page.goto(path);
+
+    const hrefs = await page
+      .locator("header nav a[href^='/'], footer a[href^='/']")
+      .evaluateAll((links) =>
+        Array.from(new Set(links.map((link) => link.getAttribute("href") ?? "").filter(Boolean))),
+      );
+
+    for (const href of hrefs) {
+      const route = href.split("#")[0] || "/";
+      const allowed =
+        AUTH.includes(route) ||
+        MARKETING.some((prefix) =>
+          prefix === "/" ? route === "/" : route === prefix || route.startsWith(`${prefix}/`),
+        );
+      expect(allowed, `${path} navigates to ${href}, which is an application route`).toBe(true);
+    }
+  }
+});
+
 test("the pricing page renders the plans the API actually configures", async ({
   page,
   request,

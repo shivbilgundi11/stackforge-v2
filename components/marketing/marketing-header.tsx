@@ -27,10 +27,19 @@ import { cn } from "@/lib/utils";
  * absent, so they arrive with the content, not before it.
  */
 
+/**
+ * Marketing destinations only.
+ *
+ * "Templates" used to sit here and pointed at `/resources/templates`, which
+ * lives in the application. Following it swapped the marketing chrome for the
+ * workbench shell mid-browse, which is disorienting in the one place a visitor
+ * is least willing to be disoriented. Routes into the product belong on the
+ * call-to-action buttons beside this nav, where that is plainly what the
+ * control does.
+ */
 const LINKS = [
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/resources/templates", label: "Templates" },
   { href: "/faq", label: "FAQ" },
   { href: "/about", label: "About" },
 ] as const;

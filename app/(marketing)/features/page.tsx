@@ -21,7 +21,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Features",
   description:
-    "Six surfaces: Stack Architect, Cost Planner, Compare Center, RAG Planner, Agent & MCP Builder, and Infra Planner — with the real product in every screenshot.",
+    "Seven surfaces: Stack Architect, Cost Planner, Compare Center, RAG Planner, Agent & MCP Builder, Infra Planner, and the ROI Calculator — with the real product in every screenshot.",
   alternates: { canonical: "/features" },
 };
 
@@ -34,7 +34,7 @@ export default async function Page() {
         <SectionHeader
           eyebrow="Features"
           title="Everything you need to argue for a stack."
-          lede={`Six surfaces over one catalog: ${catalog.models} models, ${catalog.tools} tools, ${catalog.gpus} GPUs, and ${catalog.compatibility_pairs.toLocaleString()} scored compatibility pairs. Every screenshot below is the product answering a real question.`}
+          lede={`Seven surfaces over one catalog: ${catalog.models} models, ${catalog.tools} tools, ${catalog.gpus} GPUs, and ${catalog.compatibility_pairs.toLocaleString()} scored compatibility pairs. Every screenshot below is the product answering a real question.`}
         />
       </Section>
 

@@ -13,7 +13,7 @@ import {
  * Marketing copy that appears on more than one page (M22).
  *
  * Kept in one place because the home page and `/features` describe the same
- * six surfaces, and two hand-maintained descriptions of one feature drift —
+ * same surfaces, and two hand-maintained descriptions of one feature drift —
  * which is how a site ends up claiming something the product stopped doing.
  *
  * **Every claim in this file has been checked against the implementation.**
@@ -132,37 +132,61 @@ export const FEATURES: MarketingFeature[] = [
     href: "/infra/vram-estimate",
     cta: "Size the hardware",
   },
+  {
+    icon: TrendingUpIcon,
+    title: "ROI Calculator",
+    body: "The technical plan turned into a business case: payback period, twelve-month return, and net present value against an adoption ramp rather than a step change on day one.",
+    points: [
+      "Payback, twelve-month ROI, and NPV, modelled against a realistic adoption ramp.",
+      "Build against buy at twelve, twenty-four, and thirty-six months, with sensitivity on the assumptions.",
+      "Hours reclaimed priced at fully-loaded cost, not at salary.",
+      "Implementation cost with contingency as its own visible line.",
+    ],
+    shot: "model-roi",
+    alt: "The AI model ROI calculator showing payback period, twelve-month return, and net present value against an adoption ramp.",
+    href: "/roi/model-roi",
+    cta: "Build the case",
+  },
 ];
 
+/**
+ * The workflow cards on the home page.
+ *
+ * These point at the section of `/features` that describes each surface, not
+ * at the workflow hub inside the application. A visitor browsing the marketing
+ * site who clicks "Cost Planner" wants to read about the Cost Planner; handing
+ * them the tool swaps the page chrome for the workbench shell mid-browse.
+ * Routes into the product live on the call-to-action buttons instead.
+ */
 export const WORKFLOWS: { icon: LucideIcon; label: string; href: string; body: string }[] = [
   {
     icon: BadgeDollarSignIcon,
     label: "Cost Planner",
-    href: "/cost",
+    href: "/features#llm-pricing",
     body: "Token counts, model spend, and a monthly budget you can defend.",
   },
   {
     icon: DatabaseIcon,
     label: "RAG Planner",
-    href: "/rag",
+    href: "/features#rag-architecture",
     body: "From a pile of documents to a costed, sized retrieval pipeline.",
   },
   {
     icon: BotIcon,
     label: "Agent & MCP",
-    href: "/agents",
+    href: "/features#mcp-config",
     body: "Design agent systems and generate MCP servers that run.",
   },
   {
     icon: ServerIcon,
     label: "Infra Planner",
-    href: "/infra",
+    href: "/features#vram-estimate",
     body: "VRAM, GPU economics, and deployment files for self-hosting.",
   },
   {
     icon: TrendingUpIcon,
     label: "ROI Calculator",
-    href: "/roi",
+    href: "/features#model-roi",
     body: "Turn the technical plan into a business case that survives review.",
   },
 ];
