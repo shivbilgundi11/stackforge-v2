@@ -221,7 +221,7 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
 
         {/* The result column reserves its height while pending, so submitting
             does not shove the page around. */}
-        <div className="flex min-h-[420px] flex-col gap-4">
+        <div className="flex min-h-105 flex-col gap-4">
           {/* `isLoading`, not `isPending`: a disabled query reports pending
               forever, which would pin the skeleton on every tool nobody
               arrived at through history. */}
