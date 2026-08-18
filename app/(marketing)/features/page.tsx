@@ -60,8 +60,8 @@ export default async function Page() {
                 ))}
               </ul>
               <Button asChild variant="outline" size="sm" className="mt-6">
-                <Link href={feature.href}>
-                  {feature.cta}
+                <Link href="/signup">
+                  Start free
                   <ArrowRightIcon className="size-3.5" />
                 </Link>
               </Button>

@@ -67,7 +67,7 @@ export function SectionHeader({
 export function CtaBand({
   title = "Plan the stack before you build it.",
   lede = "Every tool is open without an account. Twenty-five runs a day once you have one.",
-  primary = { href: "/stack-architect/new", label: "Design a stack" },
+  primary = { href: "/signup", label: "Get started free" },
   secondary = { href: "/pricing", label: "See pricing" },
 }: {
   title?: string;

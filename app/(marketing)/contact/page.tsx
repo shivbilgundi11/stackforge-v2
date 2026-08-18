@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 const ROUTES = [
   {
     title: "Something in the catalog is wrong or missing",
-    body: "Every catalog page has a flag control on the row itself. It carries the row and the value you are disputing, which is faster than describing it to us and much easier for us to act on.",
-    href: "/compare/models",
-    cta: "Open the model catalog",
+    body: "Every catalog page in the product has a flag control on the row itself. It carries the row and the value you are disputing, which is faster than describing it to us and much easier for us to act on.",
+    href: "/signup",
+    cta: "Open StackForge",
   },
   {
     title: "You want to know what a plan includes",
@@ -66,7 +66,9 @@ export default function Page() {
               className="flex flex-col rounded-[var(--radius)] border border-line bg-surface p-5"
             >
               <h2 className="text-[14.5px] font-semibold text-balance text-fg">{route.title}</h2>
-              <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-fg-muted">{route.body}</p>
+              <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-fg-muted">
+                {route.body}
+              </p>
               <Link
                 href={route.href}
                 className="mt-4 inline-flex items-center gap-1 text-[13px] text-ember hover:underline"

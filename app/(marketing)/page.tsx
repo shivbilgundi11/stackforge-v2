@@ -80,15 +80,17 @@ export default async function Page() {
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="h-10 bg-ember text-ember-fg shadow-none hover:bg-ember-hover">
-              <Link href="/stack-architect/new">
-                Design a stack
+              <Link href="/signup">
+                Get started free
                 <ArrowRightIcon className="size-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-10">
-              <Link href="/compare/models">Compare models</Link>
+              <Link href="/features">See what it does</Link>
             </Button>
-            <span className="text-[12px] text-fg-subtle">No account needed to start.</span>
+            <span className="text-[12px] text-fg-subtle">
+              Free tier, no card. Five runs a day without an account.
+            </span>
           </div>
 
           <div className="mt-14">
@@ -195,12 +197,13 @@ export default async function Page() {
                 <p className="mt-3 text-[14.5px] leading-relaxed text-pretty text-fg-muted">
                   {feature.body}
                 </p>
-                <Button asChild variant="outline" size="sm" className="mt-5">
-                  <Link href={feature.href}>
-                    {feature.cta}
-                    <ArrowRightIcon className="size-3.5" />
-                  </Link>
-                </Button>
+                <Link
+                  href={`/features#${feature.shot}`}
+                  className="mt-5 inline-flex items-center gap-1 text-[13px] text-ember hover:underline"
+                >
+                  Read more
+                  <ArrowRightIcon className="size-3.5" />
+                </Link>
               </div>
               <ProductShot
                 src={feature.shot}

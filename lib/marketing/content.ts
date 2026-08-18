@@ -33,8 +33,6 @@ export type MarketingFeature = {
   /** File stem under `public/marketing/`, captured from the running product. */
   shot: string;
   alt: string;
-  href: string;
-  cta: string;
 };
 
 export const FEATURES: MarketingFeature[] = [
@@ -51,8 +49,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "stack-architect",
     alt: "Stack Architect returning a recommended stack scored 85 out of 100, with eight components, a score breakdown across ten weighted dimensions, and an architecture diagram.",
-    href: "/stack-architect/new",
-    cta: "Design a stack",
   },
   {
     icon: BadgeDollarSignIcon,
@@ -66,8 +62,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "llm-pricing",
     alt: "The LLM pricing calculator showing cost per request, monthly and annual spend, and the token count with the tokenizer named.",
-    href: "/cost/llm-pricing",
-    cta: "Cost a model",
   },
   {
     icon: ScaleIcon,
@@ -81,8 +75,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "compare-models",
     alt: "Model comparison showing several models side by side across cost, context window, and task suitability, with a recommendation.",
-    href: "/compare/models",
-    cta: "Compare options",
   },
   {
     icon: DatabaseIcon,
@@ -97,8 +89,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "rag-architecture",
     alt: "The RAG architecture planner showing a recommended pipeline, a rendered diagram, and the reasoning behind each choice.",
-    href: "/rag/architecture",
-    cta: "Plan a pipeline",
   },
   {
     icon: BotIcon,
@@ -113,8 +103,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "mcp-config",
     alt: "The MCP config generator showing a generated, runnable MCP server with its files listed.",
-    href: "/agents/mcp-config",
-    cta: "Generate a server",
   },
   {
     icon: ServerIcon,
@@ -129,8 +117,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "vram-estimate",
     alt: "The VRAM estimator breaking memory into weights, KV cache, and activations, and listing which GPUs fit.",
-    href: "/infra/vram-estimate",
-    cta: "Size the hardware",
   },
   {
     icon: TrendingUpIcon,
@@ -144,8 +130,6 @@ export const FEATURES: MarketingFeature[] = [
     ],
     shot: "model-roi",
     alt: "The AI model ROI calculator showing payback period, twelve-month return, and net present value against an adoption ramp.",
-    href: "/roi/model-roi",
-    cta: "Build the case",
   },
 ];
 

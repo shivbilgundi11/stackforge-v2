@@ -25,18 +25,14 @@ import { cn } from "@/lib/utils";
  * redirect — the previous build pointed `/docs` and `/blog` at existing pages
  * and called it shipped. A nav item that lies is worse than one that is
  * absent, so they arrive with the content, not before it.
+ *
+ * "Templates" is gone for a different reason: it pointed at
+ * `/resources/templates`, which lives in the application, and following it
+ * swapped the marketing chrome for the workbench shell mid-browse. Nothing on
+ * this site now links into the product except signing up.
  */
 
-/**
- * Marketing destinations only.
- *
- * "Templates" used to sit here and pointed at `/resources/templates`, which
- * lives in the application. Following it swapped the marketing chrome for the
- * workbench shell mid-browse, which is disorienting in the one place a visitor
- * is least willing to be disoriented. Routes into the product belong on the
- * call-to-action buttons beside this nav, where that is plainly what the
- * control does.
- */
+/** Marketing destinations only. */
 const LINKS = [
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
@@ -99,7 +95,7 @@ export function MarketingHeader() {
             size="sm"
             className="bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
           >
-            <Link href="/stack-architect/new">Open the workbench</Link>
+            <Link href="/signup">Get started</Link>
           </Button>
           <Button
             variant="ghost"

@@ -110,7 +110,7 @@ export default async function Page() {
       <CtaBand
         title="Judge it on the output."
         lede="Run it against a system you are actually planning, and see whether the numbers hold up."
-        primary={{ href: "/stack-architect/new", label: "Design a stack" }}
+        primary={{ href: "/signup", label: "Get started free" }}
         secondary={{ href: "/contact", label: "Get in touch" }}
       />
     </>

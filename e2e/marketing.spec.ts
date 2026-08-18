@@ -49,27 +49,34 @@ test("no navigation item points at a page that does not exist", async ({ page, r
   }
 });
 
-test("navigation stays inside the marketing site", async ({ page }) => {
-  // Browsing links used to point at the workbench — the five workflow hubs,
-  // Compare Center, the tool graveyard, the template library. They all
-  // resolved, because those routes are public to anonymous visitors by design
-  // (D-17), so nothing was broken. Following one still swapped the marketing
-  // chrome for the application shell mid-browse, which is the wrong thing to
-  // do to someone who is still reading about the product.
+test("nothing on the marketing site links into the application", async ({ page }) => {
+  // The marketing site used to link at the workbench from three places: the
+  // footer's directory of workflow hubs, "Templates" in the header, and the
+  // call-to-action on every feature. All of them resolved — those routes are
+  // public to anonymous visitors by design (D-17) — so no link was broken and
+  // the link-integrity test above passed the whole time.
   //
-  // Routes into the application belong on call-to-action buttons, where being
-  // taken to the product is plainly what the control does. Nav links do not.
+  // Following any of them still swapped the marketing chrome for the
+  // application shell mid-browse: sidebar, command palette, breadcrumbs, and no
+  // route back to the site being read. The only sanctioned crossing is signing
+  // up or signing in, which are standalone pages rather than the workbench.
+  //
+  // This asserts over *every* link, not just the navigation, because the last
+  // pass fixed the nav and left seven call-to-action buttons pointing straight
+  // at the tools.
   const MARKETING = ["/", "/features", "/pricing", "/faq", "/about", "/contact", "/legal"];
-  const AUTH = ["/login", "/signup"]; // standalone pages, not the workbench shell
+  const AUTH = ["/login", "/signup"];
 
-  for (const path of ["/", "/features", "/pricing"]) {
+  for (const path of ["/", "/features", "/pricing", "/faq", "/about", "/contact"]) {
     await page.goto(path);
 
     const hrefs = await page
-      .locator("header nav a[href^='/'], footer a[href^='/']")
+      .locator("a[href^='/']")
       .evaluateAll((links) =>
         Array.from(new Set(links.map((link) => link.getAttribute("href") ?? "").filter(Boolean))),
       );
+
+    expect(hrefs.length, `${path} should link somewhere`).toBeGreaterThan(3);
 
     for (const href of hrefs) {
       const route = href.split("#")[0] || "/";
@@ -78,7 +85,7 @@ test("navigation stays inside the marketing site", async ({ page }) => {
         MARKETING.some((prefix) =>
           prefix === "/" ? route === "/" : route === prefix || route.startsWith(`${prefix}/`),
         );
-      expect(allowed, `${path} navigates to ${href}, which is an application route`).toBe(true);
+      expect(allowed, `${path} links to ${href}, which is an application route`).toBe(true);
     }
   }
 });

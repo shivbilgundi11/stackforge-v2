@@ -60,8 +60,8 @@ export default function Page() {
 
       <CtaBand
         title="Still deciding?"
-        lede="Run one calculator against a system you are actually planning. It takes about a minute and needs no account."
-        primary={{ href: "/cost/llm-pricing", label: "Cost a model" }}
+        lede="The free tier runs every tool, twenty-five times a day, and takes no card."
+        primary={{ href: "/signup", label: "Get started free" }}
         secondary={{ href: "/contact", label: "Ask us" }}
       />
     </>
