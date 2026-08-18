@@ -1831,8 +1831,11 @@ export interface paths {
         put?: never;
         /**
          * Update Seats
-         * @description Adjust the team's purchased seats, prorated (M21). Owner only —
-         *     the one capability the role matrix reserves for the owner alone.
+         * @description Adjust the team's purchased seats (M21). Owner only — the one capability
+         *     the role matrix reserves for the owner alone.
+         *
+         *     Takes effect at the end of the billing cycle, not immediately: Razorpay
+         *     does not prorate (D-51).
          */
         post: operations["update_seats"];
         delete?: never;
@@ -4566,6 +4569,8 @@ export interface components {
             checkout: boolean;
             /** Current */
             current: boolean;
+            /** Included */
+            included: boolean;
             /** Features */
             features: components["schemas"]["PlanFeatureOut"][];
             /** Limits */

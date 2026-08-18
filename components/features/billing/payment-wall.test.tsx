@@ -60,6 +60,7 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     self_serve: true,
     checkout: true,
     current: false,
+    included: false,
     features: [],
     limits: [],
     ...overrides,

@@ -230,6 +230,18 @@ function PlanAction({
     );
   }
 
+  // A plan beneath the one the caller already has. Checked before everything
+  // below, because a Team member was otherwise offered a Pro checkout button —
+  // and buying it charged them for a downgrade that granted nothing, then told
+  // them on the next attempt that they were "already on this plan".
+  if (plan.included) {
+    return (
+      <Button size="sm" variant="outline" disabled>
+        Included in your plan
+      </Button>
+    );
+  }
+
   // Free is the default rather than a purchase, and Enterprise is a
   // conversation. Neither is ever a checkout button, whatever is configured.
   if (!plan.self_serve) {

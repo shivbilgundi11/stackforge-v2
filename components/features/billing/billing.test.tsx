@@ -82,6 +82,7 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     self_serve: true,
     checkout: true,
     current: false,
+    included: false,
     features: [
       { key: "export_pdf", label: "PDF export", included: true, pitch: "A laid-out document." },
     ],
