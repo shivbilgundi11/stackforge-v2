@@ -234,12 +234,20 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
             <>
               {/* Every run is logged and survives 30 days; this is what
                   exempts it from the purge (M17). */}
-              <SaveRun key={shown.run_id} runId={shown.run_id} />
+              {/* Keys are prefixed because these are siblings: two children
+                  keyed on the bare run id collide, and React warns on every
+                  result. The key exists to remount each block when the run
+                  changes, which a prefixed key does just as well. */}
+              <SaveRun key={`save-${shown.run_id}`} runId={shown.run_id} />
               <HandoffBar spec={spec} result={shown} input={shownInput} />
               {/* Below the handoff, above nothing: the tray is sticky, so it
                   stays reachable while the reader scrolls the result rather
                   than sitting at the bottom of a long page (M18). */}
-              <ArtifactTray key={shown.run_id} sourceType="run" sourceId={shown.run_id} />
+              <ArtifactTray
+                key={`artifacts-${shown.run_id}`}
+                sourceType="run"
+                sourceId={shown.run_id}
+              />
               {/* Team discussion (M21). A run has a thread only when it sits
                   inside a team-shared project; otherwise this renders nothing. */}
               <CommentThread
