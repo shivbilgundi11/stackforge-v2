@@ -254,7 +254,7 @@ function SignupForm() {
             type="password"
             autoComplete="new-password"
             error={errors.password?.message}
-            hint="At least 12 characters. Checked against known breaches."
+            hint="8+ characters, with uppercase, lowercase, number, and symbol. Checked against known breaches."
             {...register("password")}
           />
 

@@ -27,7 +27,7 @@ import { ProvenanceChip } from "@/components/forge/provenance-chip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/lib/api/errors";
+import { ApiError } from "@/lib/api/errors";      
 import { useRun } from "@/lib/api/hooks";
 import { qk } from "@/lib/api/query-keys";
 import { runTool, type ToolRunResult } from "@/lib/api/tools";

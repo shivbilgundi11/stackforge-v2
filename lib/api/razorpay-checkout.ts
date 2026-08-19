@@ -12,11 +12,10 @@
  *
  * ## What it does not do
  *
- * It never decides that a payment succeeded. `callback_url` sends the browser
- * to `/checkout/done`, which polls until the webhook has actually granted the
+ * It never decides that a payment succeeded. `callback_url` posts to a route
+ * that redirects to `/checkout/done`, which polls until the webhook has granted the
  * plan. Checkout's own success signal is a cue to start asking, nothing more —
- * the query parameters Razorpay appends are unauthenticated and never read as
- * proof.
+ * Razorpay's posted fields are unauthenticated and never read as proof.
  */
 
 const SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
@@ -105,18 +104,17 @@ export async function openCheckout(
     subscription_id: handle.subscription_id,
     name: "StackForge",
     description: "Subscription",
-    // `redirect: true` makes Checkout navigate to `callback_url` itself rather
-    // than calling a handler. One outcome path instead of two, and it survives
-    // the bank pages a UPI or 3-D Secure mandate goes through, which a
-    // callback closured in this tab does not.
+    // Razorpay sends this as a POST, so it must not target the GET-only page
+    // that renders the confirmation UI. The callback route turns it into a
+    // GET and deliberately ignores its untrusted form fields.
     // The plan rides along so the return page can check that *this* purchase
     // landed. Without it the page could only ask "does this account owe money",
     // which is already false for someone upgrading from one paid plan to
     // another — so an upgrade that silently failed looked identical to one
     // that worked.
     callback_url: plan
-      ? `${window.location.origin}/checkout/done?plan=${encodeURIComponent(plan)}`
-      : `${window.location.origin}/checkout/done`,
+      ? `${window.location.origin}/checkout/callback?plan=${encodeURIComponent(plan)}`
+      : `${window.location.origin}/checkout/callback`,
     redirect: true,
     prefill: { email, name },
     theme: { color: "#d2601a" },

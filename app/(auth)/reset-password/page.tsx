@@ -85,7 +85,7 @@ function ResetPasswordForm() {
           type="password"
           autoComplete="new-password"
           error={errors.password?.message}
-          hint="At least 12 characters."
+          hint="8+ characters, with uppercase, lowercase, number, and symbol."
           {...register("password")}
         />
 

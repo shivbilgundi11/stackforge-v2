@@ -19,7 +19,7 @@ export default function VerifyEmailPage() {
   );
 }
 
-type State = "verifying" | "verified" | "failed" | "missing";
+type State = "verifying" | "refreshing" | "verified" | "failed" | "missing";
 
 function VerifyEmail() {
   const token = useSearchParams().get("token");
@@ -27,6 +27,7 @@ function VerifyEmail() {
   const [state, setState] = useState<State>(token ? "verifying" : "missing");
   const [message, setMessage] = useState("");
   const attempted = useRef(false);
+  const refreshed = useRef(false);
 
   useEffect(() => {
     if (!token || attempted.current) return;
@@ -38,8 +39,7 @@ function VerifyEmail() {
     void (async () => {
       try {
         await authApi.verifyEmail({ token });
-        setState("verified");
-        if (status === "authenticated") await refreshUser();
+        setState("refreshing");
       } catch (error) {
         setState("failed");
         setMessage(
@@ -47,7 +47,17 @@ function VerifyEmail() {
         );
       }
     })();
-  }, [token, refreshUser, status]);
+  }, [token]);
+
+  useEffect(() => {
+    if (state !== "refreshing" || status === "loading" || refreshed.current) return;
+    refreshed.current = true;
+
+    void (async () => {
+      if (status === "authenticated") await refreshUser();
+      setState("verified");
+    })();
+  }, [refreshUser, state, status]);
 
   if (state === "missing") {
     return (
@@ -65,7 +75,7 @@ function VerifyEmail() {
     );
   }
 
-  if (state === "verifying") {
+  if (state === "verifying" || state === "refreshing") {
     return (
       <AuthShell title="Verifying your email">
         <Centered

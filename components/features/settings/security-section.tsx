@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { z } from "zod";
 
 import { FormField } from "@/components/features/auth/form-field";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/forge/panel";
@@ -24,24 +23,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authApi, type User } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
+import { changePasswordSchema, type ChangePasswordValues } from "@/lib/auth/schemas";
 import { useAuth } from "@/lib/auth/auth-provider";
 
-const schema = z
-  .object({
-    current_password: z.string("Enter your current password.").min(1),
-    new_password: z.string("Choose a new password.").min(12, "At least 12 characters."),
-    confirm: z.string("Confirm the new password.").min(1),
-  })
-  .refine((values) => values.new_password === values.confirm, {
-    message: "The two passwords do not match.",
-    path: ["confirm"],
-  });
-
-type Values = z.infer<typeof schema>;
+type Values = ChangePasswordValues;
 
 export function SecuritySection({ user }: { user: User }) {
   const form = useForm<Values>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: { current_password: "", new_password: "", confirm: "" },
   });
 
@@ -98,7 +87,7 @@ export function SecuritySection({ user }: { user: User }) {
               label="New password"
               type="password"
               autoComplete="new-password"
-              hint="At least 12 characters."
+              hint="8+ characters, with uppercase, lowercase, number, and symbol."
               error={form.formState.errors.new_password?.message}
               {...form.register("new_password")}
             />

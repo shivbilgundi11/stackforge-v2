@@ -12,8 +12,12 @@ const email = z.email("Enter a valid email address.").max(254);
 
 const password = z
   .string()
-  .min(12, "Use at least 12 characters.")
-  .max(256, "Use at most 256 characters.");
+  .min(8, "Use at least 8 characters.")
+  .max(256, "Use at most 256 characters.")
+  .regex(/[a-z]/, "Include at least one lowercase letter.")
+  .regex(/[A-Z]/, "Include at least one uppercase letter.")
+  .regex(/\d/, "Include at least one number.")
+  .regex(/[^\w\s]/, "Include at least one symbol.");
 
 export const loginSchema = z.object({
   email,
@@ -53,6 +57,7 @@ export type LoginValues = z.infer<typeof loginSchema>;
 export type SignupValues = z.infer<typeof signupSchema>;
 export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
 
 /**
  * Rough strength signal for the meter. Not a security control — the server
@@ -65,8 +70,8 @@ export function passwordStrength(value: string): {
   if (!value) return { score: 0, label: "" };
 
   let score = 0;
+  if (value.length >= 8) score += 1;
   if (value.length >= 12) score += 1;
-  if (value.length >= 16) score += 1;
   if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score += 1;
   if (/\d/.test(value) && /[^\w\s]/.test(value)) score += 1;
 
