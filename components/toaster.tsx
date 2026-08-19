@@ -14,7 +14,7 @@ import { CheckIcon, InfoIcon, TriangleAlertIcon, XIcon } from "lucide-react";
 export function Toaster() {
   return (
     <HotToaster
-      position="bottom-right"
+      position="top-center"
       gutter={10}
       toastOptions={{
         duration: 4500,
@@ -30,10 +30,8 @@ export function Toaster() {
           padding: "10px 12px",
           maxWidth: "420px",
         },
-        success: { iconTheme: { primary: "var(--success)", secondary: "var(--surface)" } },
         error: {
           duration: 7000,
-          iconTheme: { primary: "var(--danger)", secondary: "var(--surface)" },
         },
       }}
     >

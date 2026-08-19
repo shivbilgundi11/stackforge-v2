@@ -49,10 +49,25 @@
 
   /* ---- accent - Orange #ee7c37. Interaction, active nav, focus, primary CTA.
      Saturated on purpose: the previous ember sat near C=0.14 and the whole
-     product read as newsprint. */
+     product read as newsprint.
+
+     `--ember-fg` is white on every accent by product decision, overriding the
+     >=4.5:1 rule in 03-Design-System §Focus and contrast. It is a deliberate
+     deviation, not an oversight, and it is recorded here because the obvious
+     reading of the numbers is that it is a bug:
+
+       white on   orange 2.77:1   green 2.59:1   yellow 1.62:1
+                  blue   3.64:1   purple 4.66:1
+       black on   orange 7.14:1   green 7.66:1   yellow 12.24:1
+
+     Black passes comfortably on all five and was what shipped before. If the
+     ratios are ever the thing to fix, the fix is to darken the accents rather
+     than to flip this token back -- the accents would need roughly
+     L=0.58 (orange #c45600, green #20892d, yellow #9c6e00), and the last of
+     those stops reading as yellow at all. */
   --ember: oklch(0.7048 0.1617 48.55);
   --ember-hover: oklch(0.6448 0.1617 48.55);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.955 0.0356 48.55);
   --ember-line: oklch(0.86 0.0727 48.55);
 
@@ -133,7 +148,7 @@
      a ramp, so they are not lifted for the dark theme. */
   --ember: oklch(0.7048 0.1617 48.55);
   --ember-hover: oklch(0.7648 0.1617 48.55);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.245 0.0453 48.55);
   --ember-line: oklch(0.345 0.0679 48.55);
 
@@ -204,7 +219,7 @@
   /* #3a83f7 - near-black label, 5.4:1 */
   --ember: oklch(0.6255 0.1884 259.46);
   --ember-hover: oklch(0.5655 0.1884 259.46);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.955 0.0415 259.46);
   --ember-line: oklch(0.86 0.0848 259.46);
 
@@ -218,7 +233,7 @@
   /* #53b559 - near-black label, 7.7:1 */
   --ember: oklch(0.6925 0.1592 144.75);
   --ember-hover: oklch(0.6325 0.1592 144.75);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.955 0.035 144.75);
   --ember-line: oklch(0.86 0.0716 144.75);
 
@@ -232,7 +247,7 @@
   /* #f6c543 - near-black label, 12.2:1 */
   --ember: oklch(0.845 0.151 87.33);
   --ember-hover: oklch(0.785 0.151 87.33);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.955 0.0332 87.33);
   --ember-line: oklch(0.86 0.068 87.33);
 
@@ -260,7 +275,7 @@
 .dark[data-accent="blue"] {
   --ember: oklch(0.6255 0.1884 259.46);
   --ember-hover: oklch(0.6855 0.1884 259.46);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.245 0.0528 259.46);
   --ember-line: oklch(0.345 0.0791 259.46);
 
@@ -274,7 +289,7 @@
 .dark[data-accent="green"] {
   --ember: oklch(0.6925 0.1592 144.75);
   --ember-hover: oklch(0.7525 0.1592 144.75);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.245 0.0446 144.75);
   --ember-line: oklch(0.345 0.0668 144.75);
 
@@ -288,7 +303,7 @@
 .dark[data-accent="yellow"] {
   --ember: oklch(0.845 0.151 87.33);
   --ember-hover: oklch(0.905 0.151 87.33);
-  --ember-fg: oklch(0.1448 0 0);
+  --ember-fg: oklch(1 0 0);
   --ember-quiet: oklch(0.245 0.0423 87.33);
   --ember-line: oklch(0.345 0.0634 87.33);
 
