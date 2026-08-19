@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { signUpAndIn, uniqueEmail } from "./helpers";
+
 /**
  * The marketing site (M22).
  *
@@ -58,8 +60,13 @@ test("nothing on the marketing site links into the application", async ({ page }
   //
   // Following any of them still swapped the marketing chrome for the
   // application shell mid-browse: sidebar, command palette, breadcrumbs, and no
-  // route back to the site being read. The only sanctioned crossing is signing
-  // up or signing in, which are standalone pages rather than the workbench.
+  // route back to the site being read. The only sanctioned crossings are
+  // signing up or signing in — standalone pages rather than the workbench —
+  // and, for a caller who is already signed in, the header's Dashboard button.
+  // This test is deliberately anonymous, which is the case the rule protects:
+  // the harm was dumping a visitor into a workbench they had no account for,
+  // not letting a customer reach their own dashboard. The signed-in header is
+  // asserted separately below.
   //
   // This asserts over *every* link, not just the navigation, because the last
   // pass fixed the nav and left seven call-to-action buttons pointing straight
@@ -183,4 +190,41 @@ test("marketing pages render with the API unavailable", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Everything you need to argue for a stack/i }),
   ).toBeVisible();
+});
+
+test("the header offers the dashboard to a signed-in visitor, and the CTAs to everyone else", async ({
+  page,
+}) => {
+  // A customer reading /pricing to upgrade, or /features while trialling, is
+  // the journey this protects: they stay on the marketing site rather than
+  // being redirected off it, and the header stops selling them a signup they
+  // already completed.
+  await page.goto("/");
+
+  const header = page.locator("header");
+  await expect(header.getByRole("link", { name: /^get started$/i })).toBeVisible();
+  await expect(header.getByRole("link", { name: /^sign in$/i })).toBeVisible();
+  await expect(header.getByRole("link", { name: /^dashboard$/i })).toHaveCount(0);
+
+  await signUpAndIn(page, uniqueEmail("marketing-header", true), { name: "Dana Dashboard" });
+
+  await page.goto("/");
+
+  await expect(header.getByRole("link", { name: /^dashboard$/i })).toBeVisible();
+  await expect(header.getByRole("link", { name: /^get started$/i })).toHaveCount(0);
+  await expect(header.getByRole("link", { name: /^sign in$/i })).toHaveCount(0);
+
+  // And it goes where it says.
+  await header.getByRole("link", { name: /^dashboard$/i }).click();
+  await page.waitForURL(/\/dashboard/);
+});
+
+test("a signed-in visitor is not bounced off the marketing site", async ({ page }) => {
+  // The alternative reading of "send them to the dashboard" was a redirect.
+  // It would make /pricing unreachable for exactly the people who upgrade.
+  await signUpAndIn(page, uniqueEmail("marketing-stay", true), { name: "Stacey Stay" });
+
+  await page.goto("/pricing");
+  await expect(page).toHaveURL(/\/pricing$/);
+  await expect(page.getByRole("heading", { name: /Every tool is open/i }).first()).toBeVisible();
 });

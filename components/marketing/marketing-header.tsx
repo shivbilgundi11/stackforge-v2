@@ -8,6 +8,7 @@ import { useState } from "react";
 import { BrandLockup } from "@/components/shell/brand";
 import { ThemeToggle } from "@/components/shell/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { cn } from "@/lib/utils";
 
 /**
@@ -30,6 +31,26 @@ import { cn } from "@/lib/utils";
  * `/resources/templates`, which lives in the application, and following it
  * swapped the marketing chrome for the workbench shell mid-browse. Nothing on
  * this site now links into the product except signing up.
+ *
+ * ## Reading the session here
+ *
+ * The layout forbids anything under `(marketing)` importing `lib/api`, because
+ * these pages must render with the API down. Reading `useAuth` does not breach
+ * that: `AuthProvider` is mounted in the *root* layout and already runs on
+ * every marketing page, so this adds no dependency the bundle did not have.
+ * And its failure mode is the right one — an unreachable API resolves the
+ * bootstrap to `anonymous`, which is exactly the signed-out header.
+ *
+ * A signed-in visitor gets one Dashboard button in place of both CTAs. They
+ * are deliberately *not* redirected: `/pricing` is where an upgrade starts and
+ * `/features` is what a trialling user reads, so bouncing an authenticated
+ * caller out of the marketing site would break the two journeys that matter
+ * most to a paying customer.
+ *
+ * The signed-out CTAs are what the static HTML carries, and `loading` renders
+ * them too. Marketing traffic is overwhelmingly signed-out, so the alternative
+ * — holding the primary CTA back until hydration resolves — would delay the
+ * conversion path for almost everyone to spare a brief swap for a few.
  */
 
 /** Marketing destinations only. */
@@ -43,6 +64,8 @@ const LINKS = [
 export function MarketingHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { status } = useAuth();
+  const signedIn = status === "authenticated";
 
   // The menu closes on the link that was tapped rather than by watching the
   // pathname. Same outcome, one less render pass, and no setState inside an
@@ -82,21 +105,33 @@ export function MarketingHeader() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="hidden text-fg-muted hover:text-fg sm:inline-flex"
-          >
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
-          >
-            <Link href="/signup">Get started</Link>
-          </Button>
+          {signedIn ? (
+            <Button
+              asChild
+              size="sm"
+              className="bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
+            >
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="hidden text-fg-muted hover:text-fg sm:inline-flex"
+              >
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                className="bg-ember text-ember-fg shadow-none hover:bg-ember-hover"
+              >
+                <Link href="/signup">Get started</Link>
+              </Button>
+            </>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -130,13 +165,23 @@ export function MarketingHeader() {
               </li>
             ))}
             <li>
-              <Link
-                href="/login"
-                onClick={close}
-                className="block rounded-[var(--radius-xs)] px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg sm:hidden"
-              >
-                Sign in
-              </Link>
+              {signedIn ? (
+                <Link
+                  href="/dashboard"
+                  onClick={close}
+                  className="block rounded-[var(--radius-xs)] px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={close}
+                  className="block rounded-[var(--radius-xs)] px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg sm:hidden"
+                >
+                  Sign in
+                </Link>
+              )}
             </li>
           </ul>
         </nav>

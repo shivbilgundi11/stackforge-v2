@@ -38,14 +38,14 @@ test("a plan chosen at signup follows the account to the payment wall", async ({
 
   await page.getByLabel("Name").fill("Paula Payer");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole("button", { name: /create account and continue to payment/i }).click();
 
   // No "check your email" on the paid path: the address gets proven by the
   // card, and holding a paying customer at an email link loses them.
   await page.waitForURL(/\/login\?next=/);
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole("button", { name: /sign in|log in/i }).click();
 
   await page.waitForURL(/\/checkout/);

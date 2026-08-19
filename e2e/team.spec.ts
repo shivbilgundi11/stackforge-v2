@@ -73,14 +73,14 @@ test("a team forms, grows by invitation, and reviews shared work", async ({ page
     await expect(emailField).toHaveAttribute("readonly", "");
 
     await invitee.getByLabel("Name").fill("Ivy Invitee");
-    await invitee.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
+    await invitee.getByLabel("Password", { exact: true }).fill(E2E_PASSWORD);
     await invitee.getByRole("button", { name: /create account and continue/i }).click();
 
     // No "check your email" — the invite proved the inbox. Straight to login,
     // with `next` carrying them back to the accept page.
     await invitee.waitForURL(/\/login\?next=/);
     await invitee.getByLabel("Email").fill(memberEmail);
-    await invitee.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
+    await invitee.getByLabel("Password", { exact: true }).fill(E2E_PASSWORD);
     await invitee.getByRole("button", { name: /sign in|log in/i }).click();
 
     await invitee.waitForURL(/\/invite\?token=/);

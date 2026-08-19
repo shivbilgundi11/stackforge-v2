@@ -116,9 +116,14 @@ export async function signUpAndIn(
   await page.getByRole("button", { name: /^continue$/i }).click();
 
   // Step two: the account.
+  //
+  // `exact: true` on the password field is load-bearing. Every password box
+  // now carries a reveal toggle labelled "Show password", so a loose match
+  // resolves to two elements and fails on strict mode — in the shared helper,
+  // which would take most of this suite down with it.
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole("button", { name: /create account/i }).click();
 
   if (plan) {
@@ -138,7 +143,7 @@ export async function signUpAndIn(
   }
 
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: false }).fill(E2E_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole("button", { name: /sign in|log in/i }).click();
 
   await page.waitForURL(plan ? /\/checkout/ : /\/dashboard/);
