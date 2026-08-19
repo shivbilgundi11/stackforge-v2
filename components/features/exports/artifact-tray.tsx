@@ -124,7 +124,7 @@ export function ArtifactTray({
 
   return (
     <>
-      <div className="sticky bottom-0 z-10 -mx-1 flex flex-col gap-2 rounded-md border border-line bg-surface/95 px-3 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-surface/80">
+      <div className="sticky bottom-0 z-10 -mx-1 flex flex-col gap-2 rounded-md border border-line bg-surface/95 px-3 py-2.5 backdrop-blur supports-backdrop-filter:bg-surface/80">
         <div className="flex flex-wrap items-center gap-2">
           <FileTextIcon className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
           <span className="text-xs font-medium text-fg">Export</span>
