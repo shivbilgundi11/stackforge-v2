@@ -55,10 +55,10 @@ import { cn } from "@/lib/utils";
 
 /** Marketing destinations only. */
 const LINKS = [
+  { href: "/about", label: "About" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/faq", label: "FAQ" },
-  { href: "/about", label: "About" },
 ] as const;
 
 export function MarketingHeader() {
@@ -75,11 +75,8 @@ export function MarketingHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line/70 backdrop-blur-md">
       <div className="absolute inset-0 -z-10 bg-bg/85" />
-      <div className="mx-auto flex h-14 w-full max-w-[1120px] items-center justify-between gap-4 px-5">
-        <Link
-          href="/"
-          className="rounded-[var(--radius-xs)] focus-visible:outline-2 focus-visible:outline-ember"
-        >
+      <div className="mx-auto flex h-14 w-full max-w-280 items-center justify-between gap-4 px-5">
+        <Link href="/" className="rounded-xs focus-visible:outline-2 focus-visible:outline-ember">
           <BrandLockup />
         </Link>
 
@@ -92,7 +89,7 @@ export function MarketingHeader() {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-[var(--radius-xs)] px-2.5 py-1.5 text-[13px] transition-colors",
+                  "rounded-xs px-2.5 py-1.5 text-[13px] transition-colors",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember",
                   active ? "text-fg" : "text-fg-muted hover:text-fg",
                 )}
@@ -158,7 +155,7 @@ export function MarketingHeader() {
                 <Link
                   href={link.href}
                   onClick={close}
-                  className="block rounded-[var(--radius-xs)] px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg"
+                  className="block rounded-xs px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg"
                 >
                   {link.label}
                 </Link>
@@ -169,7 +166,7 @@ export function MarketingHeader() {
                 <Link
                   href="/dashboard"
                   onClick={close}
-                  className="block rounded-[var(--radius-xs)] px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg"
+                  className="block rounded-xs px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg"
                 >
                   Dashboard
                 </Link>
@@ -177,7 +174,7 @@ export function MarketingHeader() {
                 <Link
                   href="/login"
                   onClick={close}
-                  className="block rounded-[var(--radius-xs)] px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg sm:hidden"
+                  className="block rounded-xs px-1 py-2.5 text-[14px] text-fg-muted hover:text-fg sm:hidden"
                 >
                   Sign in
                 </Link>

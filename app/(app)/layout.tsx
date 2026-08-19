@@ -21,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <AppHeader />
         <VerificationBanner />
         <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
-          <div className="mx-auto w-full max-w-[1440px]">
+          <div className="mx-auto w-full max-w-360">
             <AuthGuard>{children}</AuthGuard>
           </div>
         </main>
