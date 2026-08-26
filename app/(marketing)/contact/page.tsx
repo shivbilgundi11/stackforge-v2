@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, MailIcon, PhoneIcon } from "lucide-react";
 
 import { Section, SectionHeader } from "@/components/marketing/section";
 
@@ -59,11 +59,30 @@ export default function Page() {
       </Section>
 
       <Section>
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2">
+          <a
+            href="mailto:hello@example.com"
+            className="rounded-(--radius) border border-line bg-surface p-5 transition-colors hover:bg-surface-2"
+          >
+            <MailIcon className="size-4 text-ember" />
+            <h2 className="mt-4 text-[14.5px] font-semibold text-fg">Email us</h2>
+            <p className="mt-1 text-[13.5px] text-fg-muted">hello@stackforge.io</p>
+          </a>
+          <a
+            href="tel:+910000000000"
+            className="rounded-(--radius) border border-line bg-surface p-5 transition-colors hover:bg-surface-2"
+          >
+            <PhoneIcon className="size-4 text-ember" />
+            <h2 className="mt-4 text-[14.5px] font-semibold text-fg">Call us</h2>
+            <p className="mt-1 text-[13.5px] text-fg-muted">+91 00000 00000</p>
+          </a>
+        </div>
+
+        <div className="mt-5 grid gap-5 md:grid-cols-3">
           {ROUTES.map((route) => (
             <div
               key={route.title}
-              className="flex flex-col rounded-[var(--radius)] border border-line bg-surface p-5"
+              className="flex flex-col rounded-(--radius) border border-line bg-surface p-5"
             >
               <h2 className="text-[14.5px] font-semibold text-balance text-fg">{route.title}</h2>
               <p className="mt-2 flex-1 text-[13.5px] leading-relaxed text-fg-muted">
@@ -80,7 +99,7 @@ export default function Page() {
           ))}
         </div>
 
-        <div className="mt-10 rounded-[var(--radius)] border border-line bg-surface-2 p-5">
+        <div className="mt-10 rounded-(--radius) border border-line bg-surface-2 p-5">
           <h2 className="text-[14px] font-semibold text-fg">Reporting something urgent</h2>
           <p className="mt-2 max-w-[70ch] text-[13.5px] leading-relaxed text-fg-muted">
             If you have found a security issue, please do not open it anywhere public. A dedicated
