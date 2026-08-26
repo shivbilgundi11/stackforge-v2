@@ -54,7 +54,7 @@ export default function Page() {
         <SectionHeader
           eyebrow="Contact"
           title="Get in touch."
-          lede="A contact form is not live yet — rather than put one here that quietly goes nowhere, these are the routes that reach us or answer the question directly."
+          // lede="A contact form is not live yet — rather than put one here that quietly goes nowhere, these are the routes that reach us or answer the question directly."
         />
       </Section>
 

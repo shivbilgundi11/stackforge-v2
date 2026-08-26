@@ -27,7 +27,7 @@ export function Section({
 }) {
   return (
     <section id={id} className={cn(!bleed && "border-t border-line", className)}>
-      <div className="mx-auto w-full max-w-[1120px] px-5 py-16 sm:py-20">{children}</div>
+      <div className="mx-auto w-full max-w-280 px-5 py-16 sm:py-20">{children}</div>
     </section>
   );
 }
@@ -77,7 +77,7 @@ export function CtaBand({
 }) {
   return (
     <Section>
-      <div className="rounded-[var(--radius)] border border-line bg-surface-2 px-6 py-12 text-center sm:px-12">
+      <div className="rounded-(--radius) border border-line bg-surface-2 px-6 py-12 text-center sm:px-12">
         <h2 className="mx-auto max-w-[24ch] font-serif text-[clamp(1.75rem,3.5vw,2.5rem)] leading-[1.1] tracking-[-0.02em] text-balance text-fg">
           {title}
         </h2>
