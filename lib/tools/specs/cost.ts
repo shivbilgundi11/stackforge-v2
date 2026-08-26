@@ -374,6 +374,7 @@ export const budgetEstimatorSpec: ToolSpec = {
   keywords: ["budget", "forecast", "growth", "monthly", "projection", "spend"],
   endpoint: "/api/v1/tools/cost/budget-estimator",
   tier: "free",
+  synthesises: true,
   input: z.object({
     lines: z
       .array(

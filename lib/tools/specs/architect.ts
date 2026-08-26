@@ -184,6 +184,7 @@ export const stackCompatibilitySpec: ToolSpec = {
   keywords: ["compatibility", "matrix", "pairs", "score", "stack"],
   endpoint: "/api/v1/architect/score",
   tier: "free",
+  synthesises: true,
   input: z.object({
     component_slugs: z
       .array(z.string().min(1))
@@ -255,6 +256,12 @@ export const stackCompatibilitySpec: ToolSpec = {
         },
       },
       { kind: "callout" },
+      {
+        kind: "prose",
+        keys: ["summary", "weakest_pair_impact"],
+        title: "What the weakest pairing costs",
+        description: "The scores are the engine's; this is what living with them looks like.",
+      },
       {
         kind: "table",
         key: "score_breakdown",

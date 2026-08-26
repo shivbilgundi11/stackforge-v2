@@ -145,6 +145,16 @@ export type ResultBlock =
   | { kind: "mermaid"; artifact: string; title?: string }
   | { kind: "checklist"; key: string; title?: string }
   | { kind: "callout" }
+  /**
+   * Written commentary, read from `metrics`.
+   *
+   * The keys are prose the synthesis layer wrote — a summary, a rationale,
+   * the weakest link — and they are absent on a `rule_based` run. The block
+   * renders nothing at all when none of its keys are present, which is what
+   * lets a tool declare it unconditionally instead of the page learning
+   * which runs had a model in them.
+   */
+  | { kind: "prose"; keys: string[]; title?: string; description?: string }
   | { kind: "json"; title?: string };
 
 export type ResultSpec = {

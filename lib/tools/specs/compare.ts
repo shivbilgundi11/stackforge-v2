@@ -40,6 +40,7 @@ export const compareModelsSpec: ToolSpec = {
   keywords: ["compare", "models", "llm", "versus", "benchmark"],
   endpoint: "/api/v1/tools/compare/models",
   tier: "free",
+  synthesises: true,
   input: z.object({
     model_ids: z
       .array(z.string().min(1))
@@ -134,6 +135,7 @@ export const compareVectorDbSpec: ToolSpec = {
   keywords: ["vector", "database", "pinecone", "qdrant", "pgvector", "weaviate", "milvus"],
   endpoint: "/api/v1/tools/compare/vector-db",
   tier: "free",
+  synthesises: true,
   input: z.object({
     tool_slugs: z.array(z.string().min(1)).min(2, "Pick at least two databases.").max(6),
     vector_count: z.number().int().min(1),
@@ -198,6 +200,7 @@ export const compareStacksSpec: ToolSpec = {
   keywords: ["stack", "architecture", "tco", "mvp", "enterprise", "serverless"],
   endpoint: "/api/v1/tools/compare/stacks",
   tier: "free",
+  synthesises: true,
   input: z.object({
     archetypes: z.array(z.string().min(1)).min(2, "Pick at least two.").max(5),
     monthly_model_spend: z.number().min(0),
@@ -275,6 +278,7 @@ export const compareBuildVsBuySpec: ToolSpec = {
   keywords: ["build", "buy", "vendor", "break-even", "tco", "make"],
   endpoint: "/api/v1/tools/compare/build-vs-buy",
   tier: "free",
+  synthesises: true,
   input: z.object({
     build_hours: z.number().int().min(1).max(100_000),
     blended_hourly_rate: z.number().min(1).max(1000),

@@ -4,6 +4,7 @@ import { ArrowDownIcon, DownloadIcon, ShieldAlertIcon, WorkflowIcon } from "luci
 import { useState } from "react";
 
 import { Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
+import { CalloutBlock, ProseBlock } from "@/components/features/tools/result-blocks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ToolRunResult } from "@/lib/api/tools";
@@ -88,6 +89,21 @@ export function WorkflowDag({ data }: { data: ToolRunResult }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* A bespoke result component replaces the block list wholesale, so the
+          two things every other tool gets for free — its warnings and its
+          written analysis — have to be asked for by name here. Leaving them
+          out is how a run that paid for synthesis renders as if it never had
+          any. */}
+      <CalloutBlock data={data} />
+      <ProseBlock
+        block={{
+          kind: "prose",
+          keys: ["summary", "rationale", "weakest_link"],
+          title: "Analysis",
+          description: "The topology, costs, and contracts above are the engine's.",
+        }}
+        data={data}
+      />
       <Panel>
         <PanelHeader
           icon={<WorkflowIcon className="size-4" aria-hidden />}

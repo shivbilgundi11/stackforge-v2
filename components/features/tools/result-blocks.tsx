@@ -69,6 +69,8 @@ export function ResultBlockRenderer({ block, data }: { block: ResultBlock; data:
       return <ChecklistBlock block={block} data={data} />;
     case "callout":
       return <CalloutBlock data={data} />;
+    case "prose":
+      return <ProseBlock block={block} data={data} />;
     case "json":
       return <JsonBlock block={block} data={data} />;
   }
@@ -455,6 +457,49 @@ function MermaidBlock({
       <Code code={artifact.content} className="rounded-none border-0 bg-transparent">
         <CodeBlockView lang="mermaid" className="max-h-[420px]" writing={false} duration={0} />
       </Code>
+    </Panel>
+  );
+}
+
+// ── prose ────────────────────────────────────────────────────────────────────
+
+/**
+ * The written half of a synthesis run.
+ *
+ * Renders nothing when the run had no model in it, so a tool declares the
+ * block once and a `rule_based` result simply has one fewer panel — rather
+ * than a panel apologising for being empty. The `Analysis` header is the only
+ * label the user needs: the provenance footer already names the model, and
+ * repeating "AI-generated" above every paragraph reads as a disclaimer.
+ */
+export function ProseBlock({
+  block,
+  data,
+}: {
+  block: Extract<ResultBlock, { kind: "prose" }>;
+  data: ToolRunResult;
+}) {
+  const paragraphs = block.keys
+    .map((key) => ({ key, text: String(data.metrics?.[key] ?? "").trim() }))
+    .filter((entry) => entry.text.length > 0);
+
+  if (paragraphs.length === 0) return null;
+
+  return (
+    <Panel>
+      <PanelHeader title={block.title ?? "Analysis"} description={block.description} />
+      <PanelBody className="flex flex-col gap-3">
+        {paragraphs.map(({ key, text }, index) => (
+          <div key={key} className="flex flex-col gap-1">
+            {index > 0 ? (
+              <span className="text-[11px] tracking-wide text-fg-muted uppercase">
+                {humanise(key)}
+              </span>
+            ) : null}
+            <p className="text-[13px] leading-relaxed text-fg">{text}</p>
+          </div>
+        ))}
+      </PanelBody>
     </Panel>
   );
 }
