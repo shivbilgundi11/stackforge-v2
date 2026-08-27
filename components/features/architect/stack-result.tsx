@@ -46,8 +46,16 @@ type ScoreRow = {
 
 const BURIED = new Set(["deprecated", "not_for_production", "caution"]);
 
-/** The arc sweeps from zero on mount — see the panel note above. */
+/**
+ * The arc sweeps from zero on mount — see the panel note above.
+ *
+ * The headline is printed at the engine's own precision rather than rounded.
+ * The summary underneath, the breakdown rows and the alternatives all quote
+ * one decimal, so rounding here is how an 84.5 stack comes to announce itself
+ * as an 85 directly above its own explanation of why it scored 84.5.
+ */
 function ScoreRing({ score }: { score: number }) {
+  const shown = Number.isInteger(score) ? String(score) : score.toFixed(1);
   const radius = 46;
   const circumference = 2 * Math.PI * radius;
   const filled = circumference * Math.min(1, Math.max(0, score / 100));
@@ -58,7 +66,7 @@ function ScoreRing({ score }: { score: number }) {
         viewBox="0 0 120 120"
         className="size-full -rotate-90"
         role="img"
-        aria-label={`Stack score ${score} out of 100`}
+        aria-label={`Stack score ${shown} out of 100`}
       >
         <circle cx="60" cy="60" r={radius} fill="none" strokeWidth="8" className="stroke-line" />
         <circle
@@ -74,7 +82,7 @@ function ScoreRing({ score }: { score: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-semibold text-fg tabular-nums">{Math.round(score)}</span>
+        <span className="text-2xl font-semibold text-fg tabular-nums">{shown}</span>
         <span className="text-[11px] text-fg-muted">/ 100</span>
       </div>
     </div>
