@@ -36,6 +36,10 @@ export const stackArchitectSpec: ToolSpec = {
     sensitivity: z.enum(["public", "internal", "confidential", "restricted", "regulated"]),
     deployment: z.enum(["any", "managed", "self-hosted", "hybrid"]),
     capabilities: z.array(z.string()).max(12).optional(),
+    model_hosting: z.enum(["api", "managed-open-weights", "self-hosted"]),
+    workload: z.enum(["inference", "fine-tuning", "training"]),
+    traffic: z.enum(["steady", "spiky", "batch"]),
+    residency: z.enum(["any", "eu", "in", "us"]),
   }),
   defaults: {
     use_case: "rag",
@@ -46,6 +50,10 @@ export const stackArchitectSpec: ToolSpec = {
     sensitivity: "internal",
     deployment: "any",
     capabilities: [],
+    model_hosting: "api",
+    workload: "inference",
+    traffic: "steady",
+    residency: "any",
   },
   presets: [
     {
@@ -62,6 +70,16 @@ export const stackArchitectSpec: ToolSpec = {
         team_skill: "beginner",
         deployment: "managed",
         scale_target: "small",
+      },
+    },
+    {
+      label: "Self-hosted 70B",
+      description: "Open weights on rented GPUs — the case that adds a compute layer",
+      values: {
+        model_hosting: "self-hosted",
+        workload: "inference",
+        deployment: "self-hosted",
+        scale_target: "large",
       },
     },
     {
@@ -160,10 +178,88 @@ export const stackArchitectSpec: ToolSpec = {
       max: 12,
       description: "Optional. Recorded with the stack and passed to the analysis.",
     },
+    // ── M25 ──────────────────────────────────────────────────────────────
+    //
+    // Where the *model* runs, as opposed to where the application runs. Every
+    // default here is the answer that leaves the recommendation exactly as it
+    // was before this module, so an untouched form is unaffected — and the
+    // three questions that only matter once you are renting a machine hide
+    // themselves until you are.
+    {
+      kind: "radio-group",
+      name: "model_hosting",
+      label: "Where do the weights run?",
+      options: [
+        { value: "api", label: "Someone else's API", hint: "no compute layer" },
+        {
+          value: "managed-open-weights",
+          label: "Open weights, hosted",
+          hint: "Together, Groq, Fireworks",
+        },
+        { value: "self-hosted", label: "On my own hardware", hint: "adds a compute layer" },
+      ],
+      description:
+        "Most stacks call an API and need no GPU at all. Saying so keeps the compute layer out of the answer rather than ranking it last.",
+    },
+    {
+      kind: "select",
+      name: "workload",
+      label: "Workload",
+      span: 6,
+      showWhen: (values) => values.model_hosting === "self-hosted",
+      options: [
+        { value: "inference", label: "Inference only" },
+        { value: "fine-tuning", label: "Fine-tuning", hint: "needs 80GB on one card" },
+        { value: "training", label: "Training from scratch", hint: "needs 8 cards in one box" },
+      ],
+    },
+    {
+      kind: "select",
+      name: "traffic",
+      label: "Traffic pattern",
+      span: 6,
+      showWhen: (values) => values.model_hosting === "self-hosted",
+      options: [
+        { value: "steady", label: "Steady" },
+        { value: "spiky", label: "Spiky", hint: "excludes anything that bills while idle" },
+        { value: "batch", label: "Batch" },
+      ],
+      description:
+        "Spiky traffic on a reserved GPU spends most of the month paying for an idle machine.",
+    },
+    {
+      kind: "select",
+      name: "residency",
+      label: "Data residency",
+      span: 6,
+      options: [
+        { value: "any", label: "No requirement" },
+        { value: "eu", label: "EU" },
+        { value: "in", label: "India" },
+        { value: "us", label: "US" },
+      ],
+      description:
+        "Asked of the whole stack, not just the compute layer — the vector store holding your embeddings is the same question. A managed tool with no verified residency on file is excluded rather than assumed.",
+    },
   ],
   submitLabel: "Design my stack",
   result: { blocks: [], component: StackResult },
   handoffs: [
+    {
+      to: "gpu-cost",
+      label: "Price the GPU",
+      showWhen: ({ metrics }) => Boolean(metrics.compute_gpu),
+      description:
+        "The stack names the vendor. This is what its hours actually cost, against the managed API you would otherwise call.",
+      // Deliberately not a monthly figure on the result page: the architect
+      // scores how well a stack's cost *shape* fits the budget and refuses to
+      // invent a bill for it (D-16). This is the tool that models utilisation,
+      // spot and egress, and it opens on the instance the stack chose.
+      values: ({ metrics, targetDefaults }) =>
+        typeof metrics.compute_gpu === "string" && metrics.compute_gpu
+          ? { ...targetDefaults, gpu: metrics.compute_gpu }
+          : {},
+    },
     {
       to: "budget-estimator",
       label: "Cost this stack",

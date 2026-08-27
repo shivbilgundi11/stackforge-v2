@@ -211,6 +211,16 @@ export type ToolHandoff = {
     input: Record<string, unknown>;
     targetDefaults: Record<string, unknown>;
   }) => Record<string, unknown>;
+  /**
+   * Conditional visibility, the same idea as a field's own `showWhen`. A handoff
+   * whose prefill depends on a metric the run may not have produced offers
+   * nothing when it is missing, and a button labelled for a component the
+   * stack does not contain is worse than no button.
+   */
+  showWhen?: (context: {
+    metrics: Record<string, unknown>;
+    input: Record<string, unknown>;
+  }) => boolean;
 };
 
 export type ToolSpec = {

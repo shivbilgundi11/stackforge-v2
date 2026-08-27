@@ -258,6 +258,9 @@ const METRIC_FIXTURES: Record<string, Record<string, unknown>> = {
   },
   "stack-architect": {
     score: "87.4",
+    // Present only on a stack with a compute layer, which is what the
+    // gpu-cost handoff is gated on (M25).
+    compute_gpu: "lambda-gpu-8x-h100-sxm5",
     components: 6,
     candidates: 5,
     excluded: 41,

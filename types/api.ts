@@ -3935,6 +3935,8 @@ export interface components {
             tags?: string[];
             /** Use Cases */
             use_cases?: string[];
+            /** Residency */
+            residency?: string[];
             /** Facts */
             facts?: {
                 [key: string]: unknown;
@@ -4935,11 +4937,13 @@ export interface components {
         };
         /**
          * RecommendIn
-         * @description The eight inputs from `PRD.md` §8.1.
+         * @description The eight inputs from `PRD.md` §8.1, plus M25's four.
          *
-         *     All eight have defaults so the form is runnable from the first screen —
+         *     All of them have defaults so the form is runnable from the first screen —
          *     an anonymous visitor gets a real recommendation without filling anything
-         *     in, which is the product's strongest demo.
+         *     in, which is the product's strongest demo. M25's four default to the
+         *     answers that leave the recommendation exactly as it was before that
+         *     module, which is what keeps every saved stack valid.
          */
         RecommendIn: {
             /**
@@ -4984,6 +4988,30 @@ export interface components {
             deployment: "any" | "managed" | "self-hosted" | "hybrid";
             /** Capabilities */
             capabilities?: string[];
+            /**
+             * Model Hosting
+             * @default api
+             * @enum {string}
+             */
+            model_hosting: "api" | "managed-open-weights" | "self-hosted";
+            /**
+             * Workload
+             * @default inference
+             * @enum {string}
+             */
+            workload: "inference" | "fine-tuning" | "training";
+            /**
+             * Traffic
+             * @default steady
+             * @enum {string}
+             */
+            traffic: "steady" | "spiky" | "batch";
+            /**
+             * Residency
+             * @default any
+             * @enum {string}
+             */
+            residency: "any" | "eu" | "in" | "us";
         };
         /**
          * RefreshResultOut
@@ -5799,6 +5827,8 @@ export interface components {
             tags?: string[];
             /** Use Cases */
             use_cases?: string[];
+            /** Residency */
+            residency?: string[];
             /** Facts */
             facts?: {
                 [key: string]: unknown;

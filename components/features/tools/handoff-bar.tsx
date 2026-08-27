@@ -32,9 +32,12 @@ export function HandoffBar({
   const router = useRouter();
   const send = useWorkflowSession((state) => state.send);
 
+  const metrics = result.metrics ?? {};
   const handoffs = (spec.handoffs ?? []).flatMap((handoff) => {
     const target = getTool(handoff.to);
-    return target ? [{ handoff, target }] : [];
+    if (!target) return [];
+    if (handoff.showWhen && !handoff.showWhen({ metrics, input })) return [];
+    return [{ handoff, target }];
   });
 
   if (!handoffs.length) return null;
@@ -57,7 +60,7 @@ export function HandoffBar({
                 fromTitle: spec.title,
                 values: omitUndefined(
                   handoff.values({
-                    metrics: result.metrics ?? {},
+                    metrics,
                     input,
                     targetDefaults: target.defaults ?? {},
                   }),
