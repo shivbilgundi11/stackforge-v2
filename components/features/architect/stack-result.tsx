@@ -3,7 +3,7 @@
 import { AlertTriangleIcon, DownloadIcon, SkullIcon, SparklesIcon } from "lucide-react";
 import { useState } from "react";
 
-import { Code, CodeBlock as CodeBlockView } from "@/components/animate-ui/components/animate/code";
+import { MermaidDiagram } from "@/components/forge/mermaid-diagram";
 import { Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -243,9 +243,17 @@ export function StackResult({ data }: { data: ToolRunResult }) {
               </Button>
             }
           />
-          <Code code={diagram.content} className="rounded-none border-0 bg-transparent">
-            <CodeBlockView lang="mermaid" className="max-h-[360px]" writing={false} duration={0} />
-          </Code>
+          {/*
+            Rendered rather than shown as source. The stack's shape is the one
+            thing on this page a reader takes in at a glance, and Mermaid
+            source is the one thing on it they cannot. The component keeps the
+            source in the DOM and brings it back if the parse fails, so a
+            broken diagram still leaves something to paste elsewhere — and the
+            download button hands over the `.mmd` either way.
+          */}
+          <PanelBody className="p-0">
+            <MermaidDiagram chart={diagram.content} />
+          </PanelBody>
         </Panel>
       ) : null}
 

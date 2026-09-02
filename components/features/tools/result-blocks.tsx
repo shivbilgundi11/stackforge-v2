@@ -28,6 +28,7 @@ import {
 // output comes from the nested `CodeBlock`. Using `Code` alone renders an
 // empty panel — which is exactly what it did.
 import { Code, CodeBlock as CodeBlockView } from "@/components/animate-ui/components/animate/code";
+import { MermaidDiagram } from "@/components/forge/mermaid-diagram";
 import { MetricStrip, MetricTile } from "@/components/forge/metric-tile";
 import { Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
 import { Badge } from "@/components/ui/badge";
@@ -451,12 +452,13 @@ function MermaidBlock({
           </Button>
         }
       />
-      {/* Rendering is deferred to M18, which owns diagram export. Until then
-          the source is shown rather than a placeholder box — a developer can
-          paste it somewhere useful, which an empty frame does not allow. */}
-      <Code code={artifact.content} className="rounded-none border-0 bg-transparent">
-        <CodeBlockView lang="mermaid" className="max-h-[420px]" writing={false} duration={0} />
-      </Code>
+      {/* Rendered, not shown as source. Every tool that declares this block
+          declares it for the same reason — the shape is the answer — and the
+          component falls back to the source if the parse fails, which is what
+          the deferral was protecting. */}
+      <PanelBody className="p-0">
+        <MermaidDiagram chart={artifact.content} />
+      </PanelBody>
     </Panel>
   );
 }

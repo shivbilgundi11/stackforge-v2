@@ -1,5 +1,6 @@
 import { InfoIcon, OctagonAlertIcon, TriangleAlertIcon } from "lucide-react";
 
+import { MermaidDiagram } from "@/components/forge/mermaid-diagram";
 import { MetricStrip, MetricTile } from "@/components/forge/metric-tile";
 import { Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
 import { ProvenanceChip } from "@/components/forge/provenance-chip";
@@ -137,16 +138,29 @@ export function SharedResult({ payload }: { payload: SharePayload }) {
             description="The files this result produced, exactly as the author saw them."
           />
           <PanelBody className="flex flex-col gap-4">
-            {artifacts.map((artifact, index) => (
-              <div key={index} className="flex flex-col gap-1.5">
-                <p className="font-mono text-[11px] text-fg-muted">
-                  {String(artifact["filename"] ?? "file")}
-                </p>
-                <pre className="overflow-x-auto rounded-md border border-line bg-surface-2/60 p-3 font-mono text-[11px] leading-relaxed text-fg">
-                  {String(artifact["content"] ?? "")}
-                </pre>
-              </div>
-            ))}
+            {artifacts.map((artifact, index) => {
+              const content = String(artifact["content"] ?? "");
+              return (
+                <div key={index} className="flex flex-col gap-1.5">
+                  <p className="font-mono text-[11px] text-fg-muted">
+                    {String(artifact["filename"] ?? "file")}
+                  </p>
+                  {/*
+                    The diagram is drawn here too. A share link is read by
+                    someone who was not in the session and cannot re-run it —
+                    the reader least equipped to parse Mermaid by eye, and the
+                    one most helped by the picture.
+                  */}
+                  {artifact["format"] === "mermaid" ? (
+                    <MermaidDiagram chart={content} />
+                  ) : (
+                    <pre className="overflow-x-auto rounded-md border border-line bg-surface-2/60 p-3 font-mono text-[11px] leading-relaxed text-fg">
+                      {content}
+                    </pre>
+                  )}
+                </div>
+              );
+            })}
           </PanelBody>
         </Panel>
       ) : null}
