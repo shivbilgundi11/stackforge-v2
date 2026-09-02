@@ -15,6 +15,11 @@
 
 # next.js
 /.next/
+# scripts/capture-marketing.mjs builds here so it does not clobber a running
+# dev server. It must be ignored: Tailwind auto-detects its sources from the
+# tree minus .gitignore, and scanning a build output pulls class names out of
+# binary chunks — which breaks globals.css for whatever is running on :3000.
+/.next-capture/
 /out/
 
 # production
