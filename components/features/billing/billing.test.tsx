@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type * as BillingModule from "@/lib/api/billing";
-import type { Plan, Quota, Subscription, Usage } from "@/lib/api/billing";
+import type { Plan, PlanPrice, Quota, Subscription, Usage } from "@/lib/api/billing";
 
 /**
  * The billing surfaces (M20).
@@ -66,15 +66,44 @@ function quota(overrides: Partial<Quota> = {}): Quota {
   };
 }
 
+/**
+ * INR is charged and USD is only displayed, exactly as the catalog ships it.
+ *
+ * The dollar row is derived at a made-up rate of ₹100 = $1 so the two are one
+ * substitution apart and a failed assertion names which currency rendered.
+ */
+function pricesFor(base: Plan): PlanPrice[] {
+  const cents = (minor: number | null) => (minor === null ? null : Math.round(minor / 100));
+  const row = (
+    currency: string,
+    monthly: number | null,
+    annual: number | null,
+    charged: boolean,
+  ) => ({
+    currency,
+    monthly_minor: monthly,
+    annual_minor: annual,
+    annual_saving_minor:
+      monthly === null || annual === null ? 0 : Math.max(0, monthly * 12 - annual),
+    charged,
+  });
+
+  return [
+    row("inr", base.monthly_minor, base.annual_minor, true),
+    row("usd", cents(base.monthly_minor), cents(base.annual_minor), false),
+  ];
+}
+
 function plan(overrides: Partial<Plan> = {}): Plan {
-  return {
+  const base: Plan = {
     key: "pro",
     label: "Pro",
     tagline: "For the person who has to defend the number.",
-    monthly_minor: 1900,
-    annual_minor: 19000,
-    annual_saving_minor: 3800,
-    currency: "usd",
+    monthly_minor: 49_900,
+    annual_minor: 499_900,
+    annual_saving_minor: 98_900,
+    currency: "inr",
+    prices: [],
     per_seat: false,
     trial_days: 7,
     highlights: ["Unlimited tool runs"],
@@ -89,6 +118,8 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     limits: [{ metric: "tool_runs_per_day", label: "Tool runs per day", limit: null }],
     ...overrides,
   };
+
+  return { ...base, prices: overrides.prices ?? pricesFor(base) };
 }
 
 function subscription(overrides: Partial<Subscription> = {}): Subscription {
@@ -120,6 +151,7 @@ beforeEach(() => {
   data.plans = [];
   data.subscription = null;
   data.usage = null;
+  localStorage.clear();
 });
 
 // ── Meters ──────────────────────────────────────────────────────────────────
@@ -160,7 +192,7 @@ describe("PricingTable", () => {
 
     renderWith(<PricingTable />);
 
-    expect(screen.getByText("$19")).toBeInTheDocument();
+    expect(screen.getByText("₹499")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Pro" })).toBeInTheDocument();
     // The limit comes from the payload, and `null` reads as Unlimited.
     expect(screen.getAllByText("Unlimited").length).toBeGreaterThan(0);
@@ -172,8 +204,32 @@ describe("PricingTable", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "annual" }));
 
-    expect(screen.getByText("$190")).toBeInTheDocument();
-    expect(screen.getByText(/Save \$38 a year/)).toBeInTheDocument();
+    expect(screen.getByText("₹4,999")).toBeInTheDocument();
+    expect(screen.getByText(/Save ₹989 a year/)).toBeInTheDocument();
+  });
+
+  it("reads prices in the chosen currency and keeps the rupee amount on screen", () => {
+    // A page that only ever showed dollars would send someone to a statement
+    // line in a currency they never saw. The dollar figure is a reading; the
+    // rupee one is the charge, and both are on the card.
+    localStorage.setItem("stackforge-currency", "usd");
+    data.plans = [plan()];
+
+    renderWith(<PricingTable />);
+
+    expect(screen.getByText("$4.99")).toBeInTheDocument();
+    expect(screen.getByText(/Charged as ₹499\/month/)).toBeInTheDocument();
+  });
+
+  it("says nothing about conversion when rupees are what is being read", () => {
+    localStorage.setItem("stackforge-currency", "inr");
+    data.plans = [plan()];
+
+    renderWith(<PricingTable />);
+
+    expect(screen.getByText("₹499")).toBeInTheDocument();
+    expect(screen.queryByText(/Charged as/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/shown for reference/i)).not.toBeInTheDocument();
   });
 
   it("sends a signed-out visitor to signup rather than to checkout", async () => {

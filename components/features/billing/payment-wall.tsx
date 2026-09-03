@@ -19,8 +19,11 @@ import { Panel, PanelBody } from "@/components/forge/panel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  amountFor,
+  chargedPrice,
   createCheckoutSession,
   formatPrice,
+  priceIn,
   selectPlan,
   type Interval,
   type ChoosablePlanKey,
@@ -28,6 +31,7 @@ import {
 import { usePlans, useSubscription } from "@/lib/api/hooks";
 import { openCheckout } from "@/lib/api/razorpay-checkout";
 import { qk } from "@/lib/api/query-keys";
+import { useDisplayCurrency } from "@/lib/currency/use-display-currency";
 
 /**
  * The payment wall.
@@ -50,6 +54,7 @@ export function PaymentWall() {
   const queryClient = useQueryClient();
   const subscription = useSubscription();
   const plans = usePlans();
+  const { currency } = useDisplayCurrency();
 
   const pending = subscription.data?.pending_plan;
   const pastDue = !pending && subscription.data?.payment_required === true;
@@ -103,8 +108,17 @@ export function PaymentWall() {
   });
 
   const row = (plans.data ?? []).find((entry) => entry.key === plan);
-  const saving = (plans.data ?? []).find((entry) => entry.annual_saving_minor > 0);
+  const saving = (plans.data ?? [])
+    .map((entry) => priceIn(entry, currency))
+    .find((price) => price.annual_saving_minor > 0);
   const buyable = row?.checkout === true;
+
+  // The button says what the card is debited, always — never the currency the
+  // page is being read in. Razorpay charges in INR, and a button reading
+  // "Pay $5.99" over a ₹499 statement line is the one number on this screen
+  // that cannot be allowed to be a conversion.
+  const due = row ? amountFor(chargedPrice(row), interval) : null;
+  const dueCurrency = row ? chargedPrice(row).currency : undefined;
 
   if (subscription.isLoading) {
     return (
@@ -176,10 +190,7 @@ export function PaymentWall() {
               )}
               {row && row.trial_days > 0 && !pastDue
                 ? `Start ${row.trial_days}-day trial`
-                : `Pay ${formatPrice(
-                    interval === "annual" ? row?.annual_minor : row?.monthly_minor,
-                    row?.currency,
-                  )}`}
+                : `Pay ${formatPrice(due, dueCurrency)}`}
               <ArrowRightIcon className="size-3.5" aria-hidden />
             </Button>
           ) : (
@@ -197,7 +208,8 @@ export function PaymentWall() {
           <div className="flex items-center gap-1.5 text-[11.5px] text-fg-subtle">
             <ShieldCheckIcon className="size-3.5 shrink-0" aria-hidden />
             <span>
-              Card and UPI details go to Razorpay, never to StackForge.
+              Card and UPI details go to Razorpay, never to StackForge. Payment is taken in Indian
+              rupees.
               {row && row.trial_days > 0 && !pastDue
                 ? ` You authorize a payment method now and are not charged until the ${row.trial_days}-day trial ends.`
                 : null}

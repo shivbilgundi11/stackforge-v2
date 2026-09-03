@@ -78,6 +78,39 @@ beforeEach(() => {
   localStorage.clear();
 });
 
+describe("currency", () => {
+  it("defaults to rupees, the currency that is charged", () => {
+    renderView();
+
+    const group = screen.getByRole("radiogroup", { name: /display currency/i });
+    expect(within(group).getByRole("radio", { name: /indian rupee/i })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  it("writes the chosen currency to storage so prices read the same next visit", async () => {
+    const user = userEvent.setup();
+    renderView();
+
+    await user.click(screen.getByRole("radio", { name: /us dollar/i }));
+
+    expect(localStorage.getItem("stackforge-currency")).toBe("usd");
+    expect(screen.getByRole("radio", { name: /us dollar/i })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  it("says what the setting does not do", () => {
+    // The expensive misunderstanding on this page would be reading a display
+    // toggle as a billing one. Razorpay charges in INR either way.
+    renderView();
+
+    expect(screen.getByText(/always taken in Indian rupees/i)).toBeInTheDocument();
+  });
+});
+
 describe("appearance", () => {
   it("renders before the account sections have anything to show", () => {
     // Theme is stored in the browser, not on the account, so it does not wait

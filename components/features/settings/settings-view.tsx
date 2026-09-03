@@ -1,6 +1,7 @@
 "use client";
 
 import { AppearanceSection } from "@/components/features/settings/appearance-section";
+import { CurrencySection } from "@/components/features/settings/currency-section";
 import { ProfileSection } from "@/components/features/settings/profile-section";
 import { DangerSection, SecuritySection } from "@/components/features/settings/security-section";
 import { SharesSection } from "@/components/features/settings/shares-section";
@@ -12,12 +13,12 @@ import { useAuth } from "@/lib/auth/auth-provider";
 import Link from "next/link";
 
 /**
- * Appearance is above the account sections.
+ * Appearance and currency are above the account sections.
  *
  * Theme is the setting people come here for most often, so it leads — even
  * though, like the rest of the shell, this page needs an account to reach.
- * It is stored in the browser rather than on the account, which is why it
- * renders before the profile query has said anything.
+ * Both are stored in the browser rather than on the account, which is why they
+ * render before the profile query has said anything.
  */
 export function SettingsView() {
   const { status, user } = useAuth();
@@ -26,10 +27,11 @@ export function SettingsView() {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <PageHeader
         title="Settings"
-        description="Appearance is stored in this browser. Everything else belongs to your account."
+        description="Appearance and currency are stored in this browser. Everything else belongs to your account."
       />
 
       <AppearanceSection />
+      <CurrencySection />
 
       {status === "loading" ? (
         <>

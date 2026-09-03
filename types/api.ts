@@ -4436,6 +4436,30 @@ export interface components {
             source: string;
         };
         /**
+         * PlanPriceOut
+         * @description The plan's amount in one currency.
+         *
+         *     Every currency the product can be *read* in ships in the same payload, so
+         *     switching the display currency is a re-render rather than a refetch — the
+         *     pricing page is public and its query is cached, and a currency that needed
+         *     a round trip would flip the whole table back to a skeleton.
+         *
+         *     Only `charged` is a promise. The rest are readings of the same price for
+         *     people who do not think in rupees.
+         */
+        PlanPriceOut: {
+            /** Currency */
+            currency: string;
+            /** Monthly Minor */
+            monthly_minor: number | null;
+            /** Annual Minor */
+            annual_minor: number | null;
+            /** Annual Saving Minor */
+            annual_saving_minor: number;
+            /** Charged */
+            charged: boolean;
+        };
+        /**
          * PlanSelectionIn
          * @description The wall's two buttons: pick a paid plan, or decline and stay free.
          *
@@ -4491,6 +4515,8 @@ export interface components {
             annual_saving_minor: number;
             /** Currency */
             currency: string;
+            /** Prices */
+            prices: components["schemas"]["PlanPriceOut"][];
             /** Per Seat */
             per_seat: boolean;
             /** Trial Days */

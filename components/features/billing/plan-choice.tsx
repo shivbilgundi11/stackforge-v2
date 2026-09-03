@@ -2,10 +2,19 @@
 
 import { CheckIcon } from "lucide-react";
 
-import { formatPrice, type Interval, type Plan, type ChoosablePlanKey } from "@/lib/api/billing";
+import {
+  amountFor,
+  chargedPrice,
+  formatPrice,
+  priceIn,
+  type Interval,
+  type Plan,
+  type ChoosablePlanKey,
+} from "@/lib/api/billing";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDisplayCurrency } from "@/lib/currency/use-display-currency";
 import { cn } from "@/lib/utils";
 
 /**
@@ -74,8 +83,12 @@ function PlanOption({
   interval: Interval;
   selected: boolean;
 }) {
-  const cents = interval === "annual" ? plan.annual_minor : plan.monthly_minor;
-  const free = plan.monthly_minor === 0;
+  const { currency } = useDisplayCurrency();
+  const price = priceIn(plan, currency);
+  const charged = chargedPrice(plan);
+  const cents = amountFor(price, interval);
+  const chargedCents = amountFor(charged, interval);
+  const free = price.monthly_minor === 0;
   const suffix = free ? "" : interval === "annual" ? "/year" : "/month";
 
   return (
@@ -105,9 +118,16 @@ function PlanOption({
         <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <span className="text-[13.5px] font-semibold text-fg">{plan.label}</span>
           <span className="font-mono text-[12.5px] text-fg tabular-nums">
-            {free ? "Free" : formatPrice(cents, plan.currency)}
+            {free ? "Free" : formatPrice(cents, price.currency)}
           </span>
           {suffix ? <span className="text-[11.5px] text-fg-subtle">{suffix}</span> : null}
+          {/* The charge is in rupees whichever currency is being read, and
+              this is the form where someone decides to be charged. */}
+          {!price.charged && chargedCents ? (
+            <span className="text-[11.5px] text-fg-subtle">
+              ({formatPrice(chargedCents, charged.currency)} charged)
+            </span>
+          ) : null}
           {plan.per_seat && !free ? (
             <span className="text-[11.5px] text-fg-subtle">per seat</span>
           ) : null}

@@ -29,9 +29,23 @@ test("the pricing page renders every plan, signed out", async ({ page }) => {
   }
 
   // The price comes from the server, not from copy in the page.
-  await expect(page.getByText("₹1,599", { exact: true })).toBeVisible();
+  await expect(page.getByText("₹499", { exact: true })).toBeVisible();
   // And so do the limits, including the unlimited ones.
   await expect(page.getByText("Unlimited").first()).toBeVisible();
+});
+
+test("the pricing page can be read in dollars and still names the charge", async ({ page }) => {
+  // The setting lives in Settings, which needs an account; the preference it
+  // writes does not. Writing it directly is what a returning visitor's browser
+  // does anyway, and it keeps this test signed out like the page it covers.
+  await page.goto("/pricing");
+  await page.evaluate(() => localStorage.setItem("stackforge-currency", "usd"));
+  await page.reload();
+
+  await expect(page.getByText("$5.99", { exact: true })).toBeVisible();
+  // Razorpay debits rupees whatever the page is read in, so the rupee amount
+  // never leaves the card.
+  await expect(page.getByText(/Charged as ₹499\/month/)).toBeVisible();
 });
 
 test("annual billing shows the discounted price", async ({ page }) => {
@@ -39,8 +53,8 @@ test("annual billing shows the discounted price", async ({ page }) => {
 
   await page.getByRole("button", { name: "annual" }).click();
 
-  await expect(page.getByText("₹15,999", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Save ₹3,189 a year/)).toBeVisible();
+  await expect(page.getByText("₹4,999", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Save ₹989 a year/)).toBeVisible();
 });
 
 test("a signed-out visitor is offered an account rather than a card", async ({ page }) => {

@@ -44,15 +44,18 @@ vi.mock("@/lib/api/billing", async () => {
 
 const { PaymentWall } = await import("@/components/features/billing/payment-wall");
 
+/** INR is charged, USD is displayed — the dollar row at a made-up ₹100 = $1
+ *  so a failed assertion names which currency rendered. */
 function plan(overrides: Partial<Plan> = {}): Plan {
-  return {
+  const base: Plan = {
     key: "pro",
     label: "Pro",
     tagline: "For the person who has to defend the number.",
-    monthly_minor: 1900,
-    annual_minor: 19000,
-    annual_saving_minor: 3800,
-    currency: "usd",
+    monthly_minor: 49_900,
+    annual_minor: 499_900,
+    annual_saving_minor: 98_900,
+    currency: "inr",
+    prices: [],
     per_seat: false,
     trial_days: 7,
     highlights: ["Unlimited tool runs", "PDF export"],
@@ -64,6 +67,27 @@ function plan(overrides: Partial<Plan> = {}): Plan {
     features: [],
     limits: [],
     ...overrides,
+  };
+
+  const cents = (minor: number | null) => (minor === null ? null : Math.round(minor / 100));
+  return {
+    ...base,
+    prices: overrides.prices ?? [
+      {
+        currency: "inr",
+        monthly_minor: base.monthly_minor,
+        annual_minor: base.annual_minor,
+        annual_saving_minor: base.annual_saving_minor,
+        charged: true,
+      },
+      {
+        currency: "usd",
+        monthly_minor: cents(base.monthly_minor),
+        annual_minor: cents(base.annual_minor),
+        annual_saving_minor: Math.round(base.annual_saving_minor / 100),
+        charged: false,
+      },
+    ],
   };
 }
 
@@ -96,7 +120,17 @@ function renderWall() {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  data.plans = [plan(), plan({ key: "team", label: "Team", monthly_minor: 4900, per_seat: true })];
+  localStorage.clear();
+  data.plans = [
+    plan(),
+    plan({
+      key: "team",
+      label: "Team",
+      monthly_minor: 129_900,
+      annual_minor: 1_299_900,
+      per_seat: true,
+    }),
+  ];
   data.subscription = subscription();
 });
 
@@ -164,6 +198,25 @@ describe("PaymentWall", () => {
     await waitFor(() =>
       expect(selectPlan).toHaveBeenCalledWith({ plan: "team", interval: "monthly" }),
     );
+  });
+
+  it("quotes the charged currency on the button, whatever the page is read in", async () => {
+    // The one number on this screen that cannot be a conversion. Razorpay
+    // debits INR, so a button reading "Pay $4.99" over a ₹499 statement line
+    // is a different price from the one that was agreed to.
+    localStorage.setItem("stackforge-currency", "usd");
+    // No trial on this product, so the button quotes the amount rather than
+    // offering days.
+    data.plans = [plan({ trial_days: 0 })];
+
+    renderWall();
+
+    expect(await screen.findByRole("button", { name: /Pay ₹499/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Pay \$/ })).not.toBeInTheDocument();
+    // The picker above it still reads in dollars, with the rupee charge beside
+    // each one.
+    expect(screen.getByText("$4.99")).toBeInTheDocument();
+    expect(screen.getByText("(₹499 charged)")).toBeInTheDocument();
   });
 
   it("explains an unbuyable plan rather than offering a button that fails", () => {

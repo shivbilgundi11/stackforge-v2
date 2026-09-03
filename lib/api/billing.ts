@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api/client";
+import { localeFor, type DisplayCurrency } from "@/lib/currency/display-currency";
 import type { components } from "@/types/api";
 
 /**
@@ -14,6 +15,7 @@ import type { components } from "@/types/api";
 type Schemas = components["schemas"];
 
 export type Plan = Schemas["PricingPlanOut"];
+export type PlanPrice = Schemas["PlanPriceOut"];
 export type PlanFeature = Schemas["PlanFeatureOut"];
 export type PlanLimit = Schemas["PlanLimitOut"];
 export type Subscription = Schemas["SubscriptionOut"];
@@ -62,10 +64,10 @@ export function listInvoices() {
  * loading state hanging under a modal it cannot see past.
  */
 export function createCheckoutSession(body: { plan: PlanKey; interval: Interval; seats?: number }) {
-  return apiFetch<{ subscription_id: string; key_id: string }>(
-    "/api/v1/billing/checkout-session",
-    { method: "POST", body },
-  );
+  return apiFetch<{ subscription_id: string; key_id: string }>("/api/v1/billing/checkout-session", {
+    method: "POST",
+    body,
+  });
 }
 
 /**
@@ -113,24 +115,60 @@ export function setCancellation(cancel: boolean) {
 /**
  * Minor units (paise) to a price string.
  *
- * `₹1,599` rather than `₹1,599.00`: every price this product charges is a
- * whole number of rupees, and trailing zeros on a pricing page read as
- * precision nobody asked for.
+ * `₹499` rather than `₹499.00`: every price this product *charges* is a whole
+ * number of rupees, and trailing zeros on a pricing page read as precision
+ * nobody asked for.
  *
- * Forced to `en-IN` for INR so the grouping is lakh-style (`₹15,999`, and
- * `₹1,00,000` above a lakh). The browser's own locale would render an Indian
- * price with Western grouping for most visitors, which reads as a foreign
- * price on a page charging rupees.
+ * The locale comes from the currency, not the browser — see `localeFor`. A
+ * rupee price grouped the Western way, or a dollar price written `59,99 $`,
+ * reads as a foreign price on a page selling to the person looking at it.
+ *
+ * Dollar amounts do keep their cents: `$5.99` is the price, and rounding it to
+ * `$6` on the page would be a different number from the one in the catalog.
+ * That is what the `amount % 1` test is for — whole amounts lose the `.00`,
+ * fractional ones keep both digits.
  */
 export function formatPrice(minor: number | null | undefined, currency = "inr"): string {
   if (minor === null || minor === undefined) return "Custom";
   const amount = minor / 100;
-  return new Intl.NumberFormat(currency.toLowerCase() === "inr" ? "en-IN" : undefined, {
+  return new Intl.NumberFormat(localeFor(currency), {
     style: "currency",
     currency: currency.toUpperCase(),
     minimumFractionDigits: 0,
     maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
   }).format(amount);
+}
+
+/**
+ * The plan's row for one display currency.
+ *
+ * Falls back to the charged price rather than to nothing: a currency the
+ * server does not price this plan in is a catalog gap, and quoting the real
+ * rupee amount is the only wrong-looking-but-true answer available. The
+ * charged row is always first in `prices`, which is what makes the fallback
+ * safe.
+ */
+export function priceIn(plan: Plan, currency: DisplayCurrency | string): PlanPrice {
+  const wanted = plan.prices.find((price) => price.currency === currency);
+  return wanted ?? chargedPrice(plan);
+}
+
+/** What a card is actually debited. The only price a pay button may show. */
+export function chargedPrice(plan: Plan): PlanPrice {
+  return (
+    plan.prices.find((price) => price.charged) ?? {
+      currency: plan.currency,
+      monthly_minor: plan.monthly_minor,
+      annual_minor: plan.annual_minor,
+      annual_saving_minor: plan.annual_saving_minor,
+      charged: true,
+    }
+  );
+}
+
+/** The amount for one interval, so callers stop repeating the ternary. */
+export function amountFor(price: PlanPrice, interval: Interval): number | null {
+  return interval === "annual" ? price.annual_minor : price.monthly_minor;
 }
 
 /** `null` is unlimited, and says so. A meter reading "3 of 999999" is a meter

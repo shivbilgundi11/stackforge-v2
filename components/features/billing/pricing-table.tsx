@@ -12,9 +12,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  amountFor,
+  chargedPrice,
   createCheckoutSession,
   formatLimit,
   formatPrice,
+  priceIn,
   type Interval,
   type Plan,
   type PlanKey,
@@ -22,6 +25,8 @@ import {
 import { usePlans } from "@/lib/api/hooks";
 import { openCheckout } from "@/lib/api/razorpay-checkout";
 import { useAuth } from "@/lib/auth/auth-provider";
+import type { DisplayCurrency } from "@/lib/currency/display-currency";
+import { useDisplayCurrency } from "@/lib/currency/use-display-currency";
 import { cn } from "@/lib/utils";
 
 /**
@@ -40,6 +45,7 @@ import { cn } from "@/lib/utils";
 export function PricingTable() {
   const { status } = useAuth();
   const plans = usePlans();
+  const { currency } = useDisplayCurrency();
   const [interval, setInterval] = useState<Interval>("monthly");
 
   const checkout = useMutation({
@@ -51,7 +57,13 @@ export function PricingTable() {
   });
 
   const rows = plans.data ?? [];
-  const saving = rows.find((plan) => plan.annual_saving_minor > 0);
+  // In the currency being read, not the one being charged: this is the number
+  // next to the annual toggle, and a rupee saving over a table of dollars
+  // reads as a different offer rather than the same one.
+  const saving = rows
+    .map((plan) => priceIn(plan, currency))
+    .find((row) => row.annual_saving_minor > 0);
+  const converted = rows.some((plan) => !priceIn(plan, currency).charged);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col">
@@ -84,6 +96,7 @@ export function PricingTable() {
               key={plan.key}
               plan={plan}
               interval={interval}
+              currency={currency}
               authenticated={status === "authenticated"}
               pending={checkout.isPending}
               onBuy={() => checkout.mutate(plan.key as PlanKey)}
@@ -93,6 +106,17 @@ export function PricingTable() {
       )}
 
       {rows.length > 0 ? <ComparisonTable plans={rows} /> : null}
+
+      {converted ? (
+        <p className="mt-6 text-center text-[12.5px] text-fg-subtle">
+          Dollar prices are shown for reference. Every payment is taken in Indian rupees at the
+          rupee price under each plan — the amount your card is charged is that one.{" "}
+          <Link href="/settings" className="underline hover:text-fg-muted">
+            Change the currency
+          </Link>
+          .
+        </p>
+      ) : null}
 
       <p className="mt-6 text-center text-[12.5px] text-fg-subtle">
         Nothing is ever deleted when a plan ends. Your projects, stacks, and runs stay where they
@@ -143,18 +167,23 @@ function IntervalToggle({
 function PlanColumn({
   plan,
   interval,
+  currency,
   authenticated,
   pending,
   onBuy,
 }: {
   plan: Plan;
   interval: Interval;
+  currency: DisplayCurrency;
   authenticated: boolean;
   pending: boolean;
   onBuy: () => void;
 }) {
-  const cents = interval === "annual" ? plan.annual_minor : plan.monthly_minor;
-  const suffix = plan.monthly_minor === null ? "" : interval === "annual" ? "/year" : "/month";
+  const price = priceIn(plan, currency);
+  const charged = chargedPrice(plan);
+  const cents = amountFor(price, interval);
+  const chargedCents = amountFor(charged, interval);
+  const suffix = price.monthly_minor === null ? "" : interval === "annual" ? "/year" : "/month";
   const featured = plan.key === "pro";
 
   return (
@@ -178,13 +207,26 @@ function PlanColumn({
           <p className="text-[12.5px] leading-relaxed text-fg-muted">{plan.tagline}</p>
         </div>
 
-        <div className="flex items-baseline gap-1">
-          <span className="font-serif text-[28px] leading-none text-fg">
-            {formatPrice(cents, plan.currency)}
-          </span>
-          {suffix ? <span className="text-[12.5px] text-fg-subtle">{suffix}</span> : null}
-          {plan.per_seat && plan.monthly_minor !== null ? (
-            <span className="text-[12.5px] text-fg-subtle">per seat</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-baseline gap-1">
+            <span className="font-serif text-[28px] leading-none text-fg">
+              {formatPrice(cents, price.currency)}
+            </span>
+            {suffix ? <span className="text-[12.5px] text-fg-subtle">{suffix}</span> : null}
+            {plan.per_seat && price.monthly_minor !== null ? (
+              <span className="text-[12.5px] text-fg-subtle">per seat</span>
+            ) : null}
+          </div>
+
+          {/* The rupee amount stays on screen whenever the dollar one is what
+              is being read. The card is debited in INR whatever the page says,
+              and a customer who only ever saw dollars reads the statement as a
+              different price than the one they agreed to. */}
+          {!price.charged && chargedCents ? (
+            <p className="text-[11.5px] text-fg-subtle">
+              Charged as {formatPrice(chargedCents, charged.currency)}
+              {suffix}
+            </p>
           ) : null}
         </div>
 

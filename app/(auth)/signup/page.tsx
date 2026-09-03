@@ -13,9 +13,10 @@ import { useFormErrors } from "@/components/features/auth/use-form-errors";
 import { IntervalChoice, PlanChoice } from "@/components/features/billing/plan-choice";
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/api/auth";
-import { formatPrice, type Interval, type ChoosablePlanKey } from "@/lib/api/billing";
+import { formatPrice, priceIn, type Interval, type ChoosablePlanKey } from "@/lib/api/billing";
 import { usePlans } from "@/lib/api/hooks";
 import { passwordStrength, signupSchema, type SignupValues } from "@/lib/auth/schemas";
+import { useDisplayCurrency } from "@/lib/currency/use-display-currency";
 import { cn } from "@/lib/utils";
 
 export default function SignupPage() {
@@ -62,7 +63,12 @@ function SignupForm() {
   const [submitting, setSubmitting] = useState(false);
 
   const plans = usePlans();
-  const saving = (plans.data ?? []).find((row) => row.annual_saving_minor > 0);
+  const { currency } = useDisplayCurrency();
+  // In the currency the visitor is reading, not the one they will be charged
+  // — the annual saving sits next to the prices in the picker below it.
+  const saving = (plans.data ?? [])
+    .map((row) => priceIn(row, currency))
+    .find((price) => price.annual_saving_minor > 0);
 
   const {
     register,
