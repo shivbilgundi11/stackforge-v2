@@ -3,6 +3,8 @@
 import { useTheme } from "next-themes";
 import { useEffect, useId, useRef, useState } from "react";
 
+import { paintBadges } from "@/lib/brand/badges";
+
 /**
  * A rendered Mermaid diagram.
  *
@@ -38,6 +40,14 @@ import { useEffect, useId, useRef, useState } from "react";
  *
  * Re-reading them when the theme resolves differently is what makes the
  * picture follow the light/dark toggle.
+ *
+ * **Brand badges.** The backend emits `%% brand:` metadata beside the diagram
+ * and `lib/brand/badges` turns it into a logo on each box. The marks are
+ * fetched with the same dynamic import as Mermaid itself and for the same
+ * reason — forty kilobytes of icon paths has no business in the bundle of a
+ * page with no diagram on it. A failure to load them is not a failure to
+ * render: the diagram is already on screen by then, and it loses the logos
+ * rather than the picture.
  */
 
 //: The token behind each Mermaid theme variable, and the hex to fall back to
@@ -72,6 +82,12 @@ function toHex(value: string): string | null {
   context.fillRect(0, 0, 1, 1);
   const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
   return `#${[r, g, b].map((channel) => (channel ?? 0).toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** The colour behind the diagram, for the badge ring to punch out of. */
+function resolvedSurface(): string {
+  const value = getComputedStyle(document.documentElement).getPropertyValue("--color-surface");
+  return (value && toHex(value.trim())) || "#ffffff";
 }
 
 function resolvedThemeVariables(): Record<string, string> {
@@ -117,6 +133,17 @@ export function MermaidDiagram({ chart }: { chart: string }) {
         if (cancelled || !container.current) return;
         container.current.innerHTML = svg;
         setRendered(true);
+
+        // After the picture is on screen, never before. The badges are an
+        // enhancement of a diagram that has already rendered, so a failure to
+        // fetch the marks costs the logos and nothing else.
+        try {
+          const marks = (await import("@/lib/brand/marks.json")).default;
+          const root = container.current?.querySelector("svg");
+          if (!cancelled && root) paintBadges(root, chart, marks, { surface: resolvedSurface() });
+        } catch (error) {
+          console.error("Brand badges unavailable", error);
+        }
       } catch (error) {
         // Logged, not swallowed. The fallback is good enough that a broken
         // diagram looks deliberate, which is how this component shipped once
