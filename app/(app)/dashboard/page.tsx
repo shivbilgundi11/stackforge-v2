@@ -25,9 +25,7 @@ export default function DashboardPage() {
       />
 
       {/* The panels are a client component: they read the signed-in identity
-          and fetch one aggregate. Signed out, none of it is fetched — an
-          anonymous visitor gets a prompt, not seven empty panels implying
-          something broke. */}
+          and fetch one aggregate. `AuthGuard` guarantees there is one. */}
       <DashboardPanels />
     </>
   );

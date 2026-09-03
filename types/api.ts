@@ -299,40 +299,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/anonymous": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Start an anonymous session */
-        post: operations["create_anonymous"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/claim": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Attach anonymous work to this account */
-        post: operations["claim_anonymous"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/auth/identity": {
         parameters: {
             query?: never;
@@ -342,8 +308,11 @@ export interface paths {
         };
         /**
          * Who is calling
-         * @description Unauthenticated-safe. Lets the client decide between the signed-in and
-         *     anonymous experience without a 401 round trip on first load.
+         * @description Unauthenticated-safe, and the only route in the API that still is.
+         *
+         *     Everything else answers 401 without a session. This one answers "no" so a
+         *     client can tell "signed out" from "the API is down" without reading a 401
+         *     it would otherwise try to refresh its way out of.
          */
         get: operations["identity"];
         put?: never;
@@ -1330,7 +1299,7 @@ export interface paths {
          * Save Run
          * @description Keep this run past the 30-day purge.
          *
-         *     Requires an account. Running and exporting are free and anonymous;
+         *     Saving is what an account is for. Running and exporting are free;
          *     *keeping* is what the account is for, and asking at this moment is asking
          *     someone who has already decided the result is worth something.
          */
@@ -1733,10 +1702,9 @@ export interface paths {
         };
         /**
          * Get Usage
-         * @description Every meter, for an anonymous caller as much as a paying one.
+         * @description Every meter, for a free account as much as a paying one.
          *
-         *     Anonymous is not an error case here. They are metered too, and the sidebar
-         *     meter is the thing that makes the limit visible before it is hit — which is
+         *     The sidebar meter is what makes a limit visible before it is hit, which is
          *     the only moment the gate can convert rather than annoy.
          */
         get: operations["get_usage"];
@@ -2397,11 +2365,6 @@ export interface components {
             /** Latency Ms */
             latency_ms: number;
         };
-        /** AnonymousSessionOut */
-        AnonymousSessionOut: {
-            /** Anonymous Id */
-            anonymous_id: string;
-        };
         /** ApprovalDecisionIn */
         ApprovalDecisionIn: {
             /**
@@ -2707,18 +2670,6 @@ export interface components {
             query_pattern: "factoid" | "synthesis" | "mixed";
             /** Model Id */
             model_id?: string | null;
-        };
-        /** ClaimAnonymousRequest */
-        ClaimAnonymousRequest: {
-            /** Anonymous Id */
-            anonymous_id: string;
-        };
-        /** ClaimResult */
-        ClaimResult: {
-            /** Claimed */
-            claimed: boolean;
-            /** Reassigned */
-            reassigned: number;
         };
         /** CloudCostIn */
         CloudCostIn: {
@@ -3065,14 +3016,6 @@ export interface components {
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
-        /** Envelope[AnonymousSessionOut] */
-        Envelope_AnonymousSessionOut_: {
-            /** Success */
-            success: boolean;
-            data?: components["schemas"]["AnonymousSessionOut"] | null;
-            error?: components["schemas"]["ErrorBody"] | null;
-            meta: components["schemas"]["Meta"];
-        };
         /** Envelope[ApprovalOut] */
         Envelope_ApprovalOut_: {
             /** Success */
@@ -3110,14 +3053,6 @@ export interface components {
             /** Success */
             success: boolean;
             data?: components["schemas"]["CheckoutOut"] | null;
-            error?: components["schemas"]["ErrorBody"] | null;
-            meta: components["schemas"]["Meta"];
-        };
-        /** Envelope[ClaimResult] */
-        Envelope_ClaimResult_: {
-            /** Success */
-            success: boolean;
-            data?: components["schemas"]["ClaimResult"] | null;
             error?: components["schemas"]["ErrorBody"] | null;
             meta: components["schemas"]["Meta"];
         };
@@ -3987,16 +3922,15 @@ export interface components {
         };
         /**
          * IdentityOut
-         * @description Unauthenticated-safe. Lets the client choose between the signed-in and
-         *     anonymous experience on first load without a 401 round trip.
+         * @description Unauthenticated-safe: answers "is there a session?" without the 401
+         *     every other route would give, so a client can tell signed-out from
+         *     down.
          */
         IdentityOut: {
             /** Authenticated */
             authenticated: boolean;
             user: components["schemas"]["UserOut"] | null;
-            /** Anonymous Id */
-            anonymous_id: string | null;
-            plan: components["schemas"]["Plan"];
+            plan: components["schemas"]["Plan"] | null;
             /**
              * Server Time
              * Format: date-time
@@ -4940,7 +4874,7 @@ export interface components {
          * @description The eight inputs from `PRD.md` §8.1, plus M25's four.
          *
          *     All of them have defaults so the form is runnable from the first screen —
-         *     an anonymous visitor gets a real recommendation without filling anything
+         *     a first-time user gets a real recommendation without filling anything
          *     in, which is the product's strongest demo. M25's four default to the
          *     answers that leave the recommendation exactly as it was before that
          *     module, which is what keeps every saved stack valid.
@@ -6574,59 +6508,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_SimpleMessage_"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_anonymous: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope_AnonymousSessionOut_"];
-                };
-            };
-        };
-    };
-    claim_anonymous: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ClaimAnonymousRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope_ClaimResult_"];
                 };
             };
             /** @description Validation Error */

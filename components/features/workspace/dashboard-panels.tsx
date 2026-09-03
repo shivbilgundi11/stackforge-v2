@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDashboard } from "@/lib/api/workspace";
-import { useAuth } from "@/lib/auth/auth-provider";
 import { relativeAge } from "@/lib/format";
 import { qk } from "@/lib/api/query-keys";
 import { getTool, TOOL_REGISTRY, toolHref } from "@/lib/tools/registry";
@@ -30,8 +29,8 @@ import { getTool, TOOL_REGISTRY, toolHref } from "@/lib/tools/registry";
  * retention mechanic, and a mechanic that exists only as an email is one the
  * user meets in their inbox and never again.
  *
- * Signed out, none of this is fetched. The dashboard for an anonymous visitor
- * is a prompt to sign in, not seven empty panels implying something broke.
+ * There is no signed-out branch: `AuthGuard` gates the whole shell, so this
+ * only ever mounts with a session behind it.
  */
 
 const DEFAULT_QUICK_START = [
@@ -53,16 +52,11 @@ function hrefOf(slug: string): string {
 }
 
 export function DashboardPanels() {
-  const { status } = useAuth();
-  const signedIn = status === "authenticated";
-
   const { data, isPending } = useQuery({
     queryKey: qk.workspace.dashboard(),
     queryFn: getDashboard,
-    enabled: signedIn,
   });
 
-  if (!signedIn) return <SignedOut />;
   if (isPending || !data) return <Loading />;
 
   const quickStart = data.quick_start.length ? data.quick_start : DEFAULT_QUICK_START;
@@ -279,25 +273,6 @@ export function DashboardPanels() {
         </Panel>
       </div>
     </div>
-  );
-}
-
-function SignedOut() {
-  return (
-    <Panel>
-      <PanelBody>
-        <EmptyState
-          icon={<FolderIcon className="size-4" aria-hidden />}
-          title="Sign in to see your work"
-          description="Every calculation you run is kept for 30 days. An account keeps the ones you choose, groups them into projects, and carries figures between tools."
-          action={
-            <Button asChild size="sm">
-              <Link href="/login">Sign in</Link>
-            </Button>
-          }
-        />
-      </PanelBody>
-    </Panel>
   );
 }
 

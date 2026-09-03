@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { expectProvenance, run } from "./helpers";
+import { expectProvenance, run, signedIn } from "./helpers";
 
 /**
  * Compare Center, against the real backend.
@@ -32,6 +32,8 @@ for (const { path, name } of COMPARISONS) {
     await expect(page.getByTestId("comparison-rationale")).toBeVisible();
   });
 }
+
+signedIn("compare");
 
 test("a comparison reports its confidence", async ({ page }) => {
   await page.goto("/compare/models");

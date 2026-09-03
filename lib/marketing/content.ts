@@ -181,7 +181,7 @@ export type FaqItem = { q: string; a: string };
 export const FAQ: FaqItem[] = [
   {
     q: "Do I need an account to use it?",
-    a: "No. Every tool runs without one — five runs a day anonymously, twenty-five with a free account. An account is for keeping the work, not for using the product.",
+    a: "Yes, and it is free — no card, twenty-five runs a day. Signing up takes an email and a password, and every tool is open the moment you are in.",
   },
   {
     q: "Where do the numbers come from?",
@@ -193,7 +193,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "What do I actually leave with?",
-    a: "Markdown on every result, free and without an account. On Pro, the same result as PDF, JSON, YAML, or CSV, plus a bundle with the architecture document, the diagram, a starter Compose file, and .cursorrules.",
+    a: "Markdown on every result, on the free plan. On Pro, the same result as PDF, JSON, YAML, or CSV, plus a bundle with the architecture document, the diagram, a starter Compose file, and .cursorrules.",
   },
   {
     q: "How accurate are the cost estimates?",
@@ -204,8 +204,8 @@ export const FAQ: FaqItem[] = [
     a: "It is a starter template. The Compose and Kubernetes output is correct and runnable as a starting point, and you will edit it before it goes anywhere near production. Anyone who tells you otherwise about generated infrastructure is selling something.",
   },
   {
-    q: "What happens to my work if I do not sign up?",
-    a: "Runs made anonymously are kept for thirty days and are attached to your browser session. Create an account in the same browser and they move across with you rather than being lost.",
+    q: "How long is my work kept?",
+    a: "Every run is kept for thirty days on your account, and the ones you save are kept until you delete them. Saving a run is one click from the result.",
   },
   {
     q: "Can I share a result with my team?",

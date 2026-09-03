@@ -55,7 +55,7 @@ test("nothing on the marketing site links into the application", async ({ page }
   // The marketing site used to link at the workbench from three places: the
   // footer's directory of workflow hubs, "Templates" in the header, and the
   // call-to-action on every feature. All of them resolved — those routes are
-  // public to anonymous visitors by design (D-17) — so no link was broken and
+  // reachable without an account — so no link was broken and
   // the link-integrity test above passed the whole time.
   //
   // Following any of them still swapped the marketing chrome for the
@@ -63,7 +63,7 @@ test("nothing on the marketing site links into the application", async ({ page }
   // route back to the site being read. The only sanctioned crossings are
   // signing up or signing in — standalone pages rather than the workbench —
   // and, for a caller who is already signed in, the header's Dashboard button.
-  // This test is deliberately anonymous, which is the case the rule protects:
+  // This test is deliberately signed out, which is the case the rule protects:
   // the harm was dumping a visitor into a workbench they had no account for,
   // not letting a customer reach their own dashboard. The signed-in header is
   // asserted separately below.

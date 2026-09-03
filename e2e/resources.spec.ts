@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { signedIn } from "./helpers";
+
 /**
  * M19 — the template library, against the real backend.
  *
@@ -9,6 +11,8 @@ import { expect, test } from "@playwright/test";
  * body* rather than on the rendered DOM: `page.goto` returns the HTML the
  * server sent, before any JavaScript has run.
  */
+
+signedIn("resources");
 
 test("template prose is in the server-rendered HTML, not assembled by the client", async ({
   page,
@@ -109,23 +113,29 @@ test("a multi-file starter shows a file tree with per-file copy", async ({ page,
   expect(copied).toContain("FastAPI");
 });
 
-test("the library is reachable without an account", async ({ page }) => {
-  // `/resources` used to be in ACCOUNT_ONLY_PREFIXES, which would have
-  // redirected this to /login and wasted the whole acquisition channel.
-  await page.goto("/resources");
+test("the library needs an account like the rest of the shell", async ({ browser }) => {
+  // `/resources` was deliberately left out of the guarded list for as long as
+  // the library was an acquisition channel. The whole shell is account-only
+  // now, and this is the test that says so out loud — the SEO cost is a
+  // decision, not an accident.
+  const context = await browser.newContext();
+  const fresh = await context.newPage();
 
-  await expect(page).toHaveURL(/\/resources$/);
-  await expect(page.getByRole("heading", { name: "Resources" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /stack templates/i })).toBeVisible();
+  await fresh.goto("/resources");
+  await fresh.waitForURL(/\/login\?next=/);
+
+  await context.close();
 });
 
-test("the sitemap lists every template", async ({ request }) => {
+test("the sitemap offers only what a signed-out crawler can read", async ({ request }) => {
   const response = await request.get("/sitemap.xml");
   const xml = await response.text();
 
-  expect(xml).toContain("/resources/templates/rag-chatbot");
-  expect(xml).toContain("/resources/templates/ai-production-readiness");
-  // Account-only routes are excluded — crawling them teaches a search engine
-  // that the site is mostly a login page.
+  // The marketing surface, and nothing else. Listing a page that answers a
+  // crawler with a redirect to /login teaches a search engine that the site is
+  // a login form.
+  expect(xml).toContain("/pricing");
+  expect(xml).toContain("/features");
+  expect(xml).not.toContain("/resources");
   expect(xml).not.toContain("/dashboard");
 });

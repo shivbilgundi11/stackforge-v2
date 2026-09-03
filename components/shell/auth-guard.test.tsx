@@ -6,6 +6,9 @@ import type { Subscription } from "@/lib/api/billing";
 /**
  * `AuthGuard` — who gets shown what, and who gets sent where.
  *
+ * The shell is account-only in its entirety, so there is no "ungated route"
+ * case any more: without a session every path under `(app)` redirects.
+ *
  * The case worth a test of its own is the wall guarding its own route. React
  * Query's `enabled: false` does not mean "no data": it means "do not fetch",
  * and the hook still serves whatever the key already holds. So on `/checkout`
@@ -17,7 +20,7 @@ import type { Subscription } from "@/lib/api/billing";
 
 const replace = vi.hoisted(() => vi.fn());
 const state = vi.hoisted(() => ({
-  status: "authenticated" as "authenticated" | "anonymous" | "loading",
+  status: "authenticated" as "authenticated" | "signed-out" | "loading",
   pathname: "/dashboard",
   subscription: undefined as Subscription | undefined,
   isError: false,
@@ -81,24 +84,36 @@ beforeEach(() => {
 });
 
 describe("AuthGuard", () => {
-  it("renders an ungated route without waiting on a subscription", () => {
-    state.pathname = "/cost/llm-pricing";
-    state.status = "anonymous";
-
-    renderGuard();
-
-    // The anonymous tier reaches every calculator by design (D-17).
-    expect(screen.getByText("Protected content")).toBeInTheDocument();
-    expect(state.enabledCalls.every((enabled) => enabled === false)).toBe(true);
-  });
-
-  it("sends an anonymous visitor on a gated route to login", async () => {
-    state.status = "anonymous";
+  it("sends a signed-out visitor to login", async () => {
+    state.status = "signed-out";
 
     renderGuard();
 
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/login?next=%2Fdashboard"));
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
+  });
+
+  it("gates a tool page too, not only the account surfaces", async () => {
+    // The change this file is the record of: a calculator used to be open to
+    // anyone, and is now behind the same door as the dashboard.
+    state.pathname = "/cost/llm-pricing";
+    state.status = "signed-out";
+
+    renderGuard();
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/login?next=%2Fcost%2Fllm-pricing"));
+    expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
+    // And no subscription is asked for on behalf of somebody with no session.
+    expect(state.enabledCalls.every((enabled) => enabled === false)).toBe(true);
+  });
+
+  it("holds the skeleton while the session is still resolving", () => {
+    state.status = "loading";
+
+    renderGuard();
+
+    expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
+    expect(replace).not.toHaveBeenCalled();
   });
 
   it("sends an account that owes a checkout to the wall", async () => {
@@ -167,7 +182,7 @@ describe("AuthGuard", () => {
     expect(replace).not.toHaveBeenCalled();
   });
 
-  it("renders a gated route once nothing is owed", () => {
+  it("renders a route once nothing is owed", () => {
     state.subscription = subscription({ pending_plan: null, payment_required: false });
 
     renderGuard();

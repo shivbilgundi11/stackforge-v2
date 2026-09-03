@@ -57,7 +57,7 @@ export async function downloadExport(record: ExportRecord): Promise<void> {
   const token = tokenStore.get();
   const response = await fetch(`${BASE_URL}${record.download_url}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
-    credentials: "include", // the anonymous cookie, for a visitor with no account
+    credentials: "include",
   });
   if (!response.ok) throw new Error("That export is no longer available.");
 

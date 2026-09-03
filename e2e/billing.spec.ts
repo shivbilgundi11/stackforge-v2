@@ -12,9 +12,12 @@ import { run, signUpAndIn, uniqueEmail } from "./helpers";
  * failure — a duplicate delivery applying twice — actually lives.
  *
  * What is here is everything a browser is needed for: that the pricing page
- * renders real limits from the API, that hitting the anonymous cap produces the
+ * renders real limits from the API, that hitting the free cap produces the
  * dialog with real figures rather than a dead end, and that the locked export
  * formats explain themselves.
+ *
+ * The pricing page is marketing and stays reachable signed out. Everything
+ * that meters a run needs an account, so those tests sign in first.
  */
 
 test("the pricing page renders every plan, signed out", async ({ page }) => {
@@ -40,28 +43,33 @@ test("annual billing shows the discounted price", async ({ page }) => {
   await expect(page.getByText(/Save ₹3,189 a year/)).toBeVisible();
 });
 
-test("an anonymous visitor is offered an account rather than a card", async ({ page }) => {
+test("a signed-out visitor is offered an account rather than a card", async ({ page }) => {
   await page.goto("/pricing");
 
   const cta = page.getByRole("link", { name: /Upgrade to Pro/ }).first();
   await expect(cta).toHaveAttribute("href", /\/signup/);
 });
 
-test("the sidebar meter shows the anonymous allowance", async ({ page }) => {
+test("the sidebar meter shows the free allowance", async ({ page }) => {
+  await signUpAndIn(page, uniqueEmail("meter"));
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
   await run(page);
 
   // The gate has to be visible before it is hit — that is the only moment it
   // can convert rather than annoy.
-  await expect(page.getByText(/anonymous plan/i)).toBeVisible();
+  await expect(page.getByText(/free plan/i)).toBeVisible();
   await expect(page.getByText(/Tool runs today/i)).toBeVisible();
 });
 
-test("hitting the anonymous cap shows the dialog with real figures", async ({ page }) => {
+test("hitting the free cap shows the dialog with real figures", async ({ page }) => {
+  // A brand-new account, so the day's allowance is untouched.
+  await signUpAndIn(page, uniqueEmail("cap", true));
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
 
-  // The anonymous allowance is five a day (D-17). One more than that.
-  for (let attempt = 0; attempt < 6; attempt += 1) {
+  // The free allowance is a row in `plan_quotas`, so the loop runs until the
+  // dialog appears rather than counting to a number this file would have to
+  // keep in step with the table.
+  for (let attempt = 0; attempt < 30; attempt += 1) {
     await page
       .getByRole("button", { name: /^Run$|Calculate/i })
       .first()
@@ -84,7 +92,7 @@ test("hitting the anonymous cap shows the dialog with real figures", async ({ pa
   await expect(dialog.getByText("Used", { exact: true })).toBeVisible();
   await expect(dialog.getByText("Limit", { exact: true })).toBeVisible();
   await expect(dialog.getByText("Resets", { exact: true })).toBeVisible();
-  await expect(dialog.getByRole("link", { name: /account|Upgrade/i })).toBeVisible();
+  await expect(dialog.getByRole("link", { name: /Upgrade/i })).toBeVisible();
 });
 
 test("a signed-in free user sees their plan and usage on the billing page", async ({ page }) => {

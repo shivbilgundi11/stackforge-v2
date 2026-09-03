@@ -3,29 +3,42 @@ import type { MetadataRoute } from "next";
 /**
  * `robots.txt`.
  *
- * Two disallows, and both are deliberate rather than defensive.
- *
  * `/s/` is the share-link space (M18). Those are capability URLs, and a
  * capability URL in a search index is no longer a capability. The pages
  * already send `noindex` in a header and a meta tag; this is the third layer,
  * and it is the one that stops the crawl happening at all.
  *
- * The account-only routes are excluded because they redirect to a login page.
- * Letting them be crawled teaches a search engine that most of the site is a
- * sign-in form.
- *
- * Everything else — every tool, every hub, the whole template library — is
- * open, which is the point of M19.
+ * Everything else disallowed here is the app shell, which is account-only in
+ * its entirety: every one of those paths answers a signed-out crawler with a
+ * redirect to `/login`. What remains crawlable is the marketing site and the
+ * auth pages themselves.
  */
 
 const SITE = process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
+
+/** Mirrors the `(app)` route group. A new hub added there belongs here too. */
+const APP_PREFIXES = [
+  "/agents",
+  "/checkout",
+  "/compare",
+  "/cost",
+  "/dashboard",
+  "/infra",
+  "/projects",
+  "/rag",
+  "/resources",
+  "/roi",
+  "/settings",
+  "/stack-architect",
+  "/team",
+];
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/s/", "/dashboard", "/projects", "/settings", "/team", "/api/"],
+      disallow: ["/s/", "/invite", "/api/", ...APP_PREFIXES],
     },
     sitemap: `${SITE}/sitemap.xml`,
   };

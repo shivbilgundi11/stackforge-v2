@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { expectRealNumber, run } from "./helpers";
+import { expectRealNumber, run, signedIn } from "./helpers";
 
 /**
  * The two paths that only exist across a navigation.
@@ -9,6 +9,8 @@ import { expectRealNumber, run } from "./helpers";
  * URL, so neither is provable in a single-component test — and both fail
  * quietly rather than loudly when they break.
  */
+
+signedIn("workflow");
 
 test("a cost result carries into the budget estimator", async ({ page }) => {
   await page.goto(

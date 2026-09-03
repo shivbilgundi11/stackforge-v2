@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { expectRealNumber, run } from "./helpers";
+import { expectRealNumber, run, signedIn } from "./helpers";
 
 /**
  * WF3, against the real backend.
@@ -29,6 +29,8 @@ async function namesInZip(bytes: Buffer): Promise<string[]> {
   }
   return names;
 }
+
+signedIn("agents");
 
 test("a two-tool MCP server generates and downloads as a bundle", async ({ page }) => {
   await page.goto("/agents/mcp-config");

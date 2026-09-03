@@ -12,12 +12,12 @@ import { useAuth } from "@/lib/auth/auth-provider";
 import Link from "next/link";
 
 /**
- * Appearance is above the account sections, and available signed out.
+ * Appearance is above the account sections.
  *
- * Theme is the setting people come here for most often, and it is the one that
- * needs no account — gating it behind sign-in would be gating a preference
- * stored in their own browser. The account sections simply do not render for
- * an anonymous visitor, which is why this page is not in the guarded list.
+ * Theme is the setting people come here for most often, so it leads — even
+ * though, like the rest of the shell, this page needs an account to reach.
+ * It is stored in the browser rather than on the account, which is why it
+ * renders before the profile query has said anything.
  */
 export function SettingsView() {
   const { status, user } = useAuth();
@@ -44,9 +44,7 @@ export function SettingsView() {
           <SecuritySection user={user} />
           <DangerSection user={user} />
         </>
-      ) : (
-        <SignedOutNotice />
-      )}
+      ) : null}
     </div>
   );
 }
@@ -72,24 +70,6 @@ function BillingLink({ plan }: { plan: string }) {
         </div>
         <Button asChild size="sm" variant="outline">
           <Link href="/settings/billing">Manage billing</Link>
-        </Button>
-      </PanelBody>
-    </Panel>
-  );
-}
-
-function SignedOutNotice() {
-  return (
-    <Panel>
-      <PanelBody className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <p className="text-[13.5px] font-medium text-fg">Profile and account</p>
-          <p className="text-[13px] text-fg-muted">
-            Sign in to change your name, timezone, or password. Your theme is saved either way.
-          </p>
-        </div>
-        <Button asChild size="sm">
-          <Link href="/login?next=/settings">Sign in</Link>
         </Button>
       </PanelBody>
     </Panel>

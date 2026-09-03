@@ -141,7 +141,7 @@ export function usePlans() {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: qk.billing.plans(user?.id ?? "anonymous"),
+    queryKey: qk.billing.plans(user?.id ?? "signed-out"),
     queryFn: () => billing.listPlans(),
     staleTime: 1000 * 60 * 15,
   });
@@ -162,25 +162,21 @@ export function useSubscription(enabled = true) {
  *
  * Short `staleTime`: the point of the sidebar meter is to be visibly moving
  * before the limit is hit, which is the only moment the gate converts rather
- * than annoys. Works signed out — anonymous callers are metered too.
+ * than annoys.
  *
  * Held until `status` leaves `loading`. The access token lives in memory, so
  * on every page load there is a window — one refresh round trip wide — where
- * the app is signed in but cannot prove it. This endpoint answers 200 with
- * `plan: "anonymous"` in that window instead of the 401 the client knows how
- * to retry, so a request sent early is not corrected by anything: it is
- * cached, and the sidebar tells a paying user they are on the anonymous tier
- * until it goes stale. Waiting costs one render of nothing; not waiting costs
- * a wrong plan on most reloads.
+ * the app is signed in but cannot prove it. A request sent inside that window
+ * is answered for a caller the API cannot identify, and that answer is cached
+ * against the signed-in user, so the sidebar shows the wrong plan until it
+ * goes stale. Waiting costs one render of nothing; not waiting costs a wrong
+ * plan on most reloads.
  */
 export function useUsage() {
   const { status, user } = useAuth();
 
   return useQuery({
-    // Anonymous callers share one key. They are one identity as far as this
-    // endpoint is concerned — the cookie is the only thing distinguishing
-    // them, and it never changes without a reload.
-    queryKey: qk.billing.usage(user?.id ?? "anonymous"),
+    queryKey: qk.billing.usage(user?.id ?? "signed-out"),
     queryFn: () => billing.getUsage(),
     enabled: status !== "loading",
     staleTime: 1000 * 20,

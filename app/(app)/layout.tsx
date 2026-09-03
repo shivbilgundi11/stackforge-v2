@@ -14,19 +14,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
 
+  // The guard is outside the shell, not inside `<main>`: the whole surface is
+  // account-only, so a signed-out visitor gets the skeleton and a redirect
+  // rather than a working sidebar over an empty page.
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-      <SidebarInset className="min-w-0 bg-bg">
-        <AppHeader />
-        <VerificationBanner />
-        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
-          <div className="mx-auto w-full max-w-360">
-            <AuthGuard>{children}</AuthGuard>
-          </div>
-        </main>
-      </SidebarInset>
-      <CommandPalette />
-    </SidebarProvider>
+    <AuthGuard>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <SidebarInset className="min-w-0 bg-bg">
+          <AppHeader />
+          <VerificationBanner />
+          <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
+            <div className="mx-auto w-full max-w-360">{children}</div>
+          </main>
+        </SidebarInset>
+        <CommandPalette />
+      </SidebarProvider>
+    </AuthGuard>
   );
 }

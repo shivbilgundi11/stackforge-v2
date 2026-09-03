@@ -124,7 +124,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
     return fetch(buildUrl(path, query), {
       method,
       headers,
-      credentials: "include", // carries the refresh and anonymous cookies
+      credentials: "include", // carries the refresh cookie
       signal,
       body: formData ?? (body !== undefined ? JSON.stringify(body) : undefined),
     });

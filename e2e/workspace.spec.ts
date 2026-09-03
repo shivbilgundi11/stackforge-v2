@@ -5,39 +5,44 @@ import { expectRealNumber, run, signUpAndIn, uniqueEmail } from "./helpers";
 /**
  * M17 — saved work, against the real backend.
  *
- * The claim under test is the one the module exists for and that no unit test
- * can make: work done *before* an account survives creating one. It spans the
- * anonymous cookie, the login handler's claim step, the runs table, and the
- * dashboard aggregate — four layers that each pass their own tests while the
- * run quietly disappears between them.
+ * The claim this module used to exist for — work done *before* an account
+ * survives creating one — is gone with the anonymous tier: there is no such
+ * work. What remains is the claim no unit test can make, that a run reaches
+ * the dashboard aggregate and reopens with its inputs intact, across the
+ * session, the runs table, and the aggregate — three layers that each pass
+ * their own tests while the run quietly disappears between them.
  *
- * A fresh browser context per test means a fresh anonymous session, so the
- * run claimed here is unambiguously this test's.
+ * A fresh browser context per test means a fresh session, so the run asserted
+ * on here is unambiguously this test's.
  */
 
-test("a run made before signing up is waiting on the dashboard after", async ({ page }) => {
+test("a signed-out visitor is sent to login, not to a calculator", async ({ page }) => {
+  await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
+
+  await page.waitForURL(/\/login\?next=/);
+  await expect(page.getByRole("button", { name: /sign in|log in/i })).toBeVisible();
+});
+
+test("a run is waiting on the dashboard afterwards", async ({ page }) => {
+  await signUpAndIn(page, uniqueEmail("recent"), { name: "Workspace Test" });
+
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
   await run(page);
   await expectRealNumber(page);
 
-  // Signed out, the result carries the ask rather than a save button.
-  await expect(page.getByText(/kept for 30 days/i)).toBeVisible();
-
-  await signUpAndIn(page, uniqueEmail("claim"), { name: "Workspace Test" });
-
-  // The claim happens in the login handler, so the run is already on the
-  // account by the time the dashboard renders.
+  await page.goto("/dashboard");
   const recent = page.getByRole("link", { name: /LLM Pricing/i });
   await expect(recent.first()).toBeVisible();
 });
 
-test("a claimed run reopens with its inputs restored", async ({ page }) => {
+test("a run reopens with its inputs restored", async ({ page }) => {
+  await signUpAndIn(page, uniqueEmail("reopen"), { name: "Workspace Test" });
+
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=4242");
   await run(page);
   await expectRealNumber(page);
 
-  await signUpAndIn(page, uniqueEmail("reopen"), { name: "Workspace Test" });
-
+  await page.goto("/dashboard");
   await page
     .getByRole("link", { name: /LLM Pricing/i })
     .first()

@@ -66,7 +66,7 @@ export function SectionHeader({
 /** The closing call to action. One per page, at the bottom. */
 export function CtaBand({
   title = "Plan the stack before you build it.",
-  lede = "Every tool is open without an account. Twenty-five runs a day once you have one.",
+  lede = "Free to start, no card. Twenty-five runs a day, every tool included.",
   primary = { href: "/signup", label: "Get started free" },
   secondary = { href: "/pricing", label: "See pricing" },
 }: {

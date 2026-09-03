@@ -65,9 +65,10 @@ test("the wall stands in front of the account pages until it is settled", async 
   await page.goto("/settings/billing");
   await page.waitForURL(/\/checkout/);
 
-  // But the tools are not walled. The anonymous tier reaches every calculator
-  // by design (D-17), and a signed-in account must not have *less* than that
-  // while it decides whether to pay.
+  // But the tools are not walled. An account that has chosen a plan and not
+  // yet paid keeps working at the free tier while it decides — a wall across
+  // the whole product tells a hesitating buyer that declining costs them
+  // everything, which is how they decline.
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
   await expect(page.getByRole("button", { name: /^Run$|Calculate/i }).first()).toBeVisible();
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CircleUserIcon, LifeBuoyIcon, LogOutIcon, SettingsIcon, UserPlusIcon } from "lucide-react";
+import { CircleUserIcon, LifeBuoyIcon, LogOutIcon, SettingsIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -46,6 +46,8 @@ export function UserMenu() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-60">
+        {/* Always present: the shell is account-only. The null arm only
+            satisfies the type. */}
         {user ? (
           <>
             <DropdownMenuLabel className="font-normal">
@@ -71,30 +73,7 @@ export function UserMenu() {
               Sign out
             </DropdownMenuItem>
           </>
-        ) : (
-          <>
-            <DropdownMenuLabel className="font-normal">
-              <p className="text-[13px] font-medium text-fg">Not signed in</p>
-              <p className="mt-0.5 text-[11.5px] text-fg-subtle">
-                Anonymous session · 5 runs a day
-              </p>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => router.push("/login")}>
-              <LogOutIcon className="size-4 rotate-180" />
-              Sign in
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => router.push("/signup")}>
-              <UserPlusIcon className="size-4" />
-              Create an account
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => router.push("/docs")}>
-              <LifeBuoyIcon className="size-4" />
-              Documentation
-            </DropdownMenuItem>
-          </>
-        )}
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

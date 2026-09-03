@@ -39,7 +39,7 @@ import { cn } from "@/lib/utils";
  * that: `AuthProvider` is mounted in the *root* layout and already runs on
  * every marketing page, so this adds no dependency the bundle did not have.
  * And its failure mode is the right one — an unreachable API resolves the
- * bootstrap to `anonymous`, which is exactly the signed-out header.
+ * bootstrap to `signed-out`, which is exactly the signed-out header.
  *
  * A signed-in visitor gets one Dashboard button in place of both CTAs. They
  * are deliberately *not* redirected: `/pricing` is where an upgrade starts and

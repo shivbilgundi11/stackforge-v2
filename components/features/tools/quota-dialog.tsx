@@ -13,7 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { ApiError } from "@/lib/api/errors";
-import { useAuth } from "@/lib/auth/auth-provider";
 
 /**
  * The 402.
@@ -21,7 +20,8 @@ import { useAuth } from "@/lib/auth/auth-provider";
  * Shows the real numbers the backend sent. "You have hit your limit" with no
  * figures is a dead end; "5 of 5 runs used, resets at 00:00 UTC" lets the
  * reader decide between waiting and paying, which is the only decision the
- * dialog exists to support.
+ * dialog exists to support. Every caller that can reach this has an account —
+ * the shell is account-only — so the way out is an upgrade, not a signup.
  */
 
 type QuotaDetails = {
@@ -33,11 +33,9 @@ type QuotaDetails = {
 };
 
 export function QuotaDialog({ error, onClose }: { error: ApiError | null; onClose: () => void }) {
-  const { status } = useAuth();
   const quota = error?.details?.["quota"] as QuotaDetails | undefined;
 
   const resetsAt = quota?.resets_at ? new Date(quota.resets_at) : null;
-  const isAnonymous = status !== "authenticated";
 
   return (
     <Dialog open={Boolean(error)} onOpenChange={(open) => !open && onClose()}>
@@ -77,8 +75,8 @@ export function QuotaDialog({ error, onClose }: { error: ApiError | null; onClos
             Not now
           </Button>
           <Button asChild size="sm">
-            <Link href={isAnonymous ? "/signup" : "/settings/billing"}>
-              {isAnonymous ? "Create a free account" : "Upgrade"}
+            <Link href="/settings/billing">
+              Upgrade
               <ArrowRightIcon className="size-3.5" aria-hidden />
             </Link>
           </Button>

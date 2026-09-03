@@ -13,7 +13,8 @@ import { expectRealNumber, run, signUpAndIn, uniqueEmail } from "./helpers";
  * the property the whole design rests on.
  */
 
-test("an anonymous visitor can export a result as Markdown", async ({ page }) => {
+test("a free account can export a result as Markdown", async ({ page }) => {
+  await signUpAndIn(page, uniqueEmail("export-md"));
   await page.goto("/cost/llm-pricing?model_id=claude-opus-5&requests_per_day=1000");
   await run(page);
   await expectRealNumber(page);
@@ -61,8 +62,8 @@ test("a share link opens for a stranger and dies on revoke", async ({ page, brow
   // Wait for the signed-in state before opening the dialog. The access token
   // lives in a module closure, so a full navigation drops it and the provider
   // re-acquires one from the refresh cookie on mount. Until that lands the
-  // page renders its anonymous variant — and the share dialog's anonymous
-  // variant has no "create link" button, only the reason there isn't one.
+  // page renders as though signed out, and `AuthGuard` holds a skeleton over
+  // it until the session lands.
   await expect(page.getByRole("button", { name: /keep this run/i })).toBeVisible();
 
   await page.getByRole("button", { name: "Share", exact: true }).click();

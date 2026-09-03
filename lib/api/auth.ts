@@ -17,8 +17,6 @@ export type SessionEntry = S["SessionOut"];
 export type SessionList = S["SessionListOut"];
 export type SimpleMessage = S["SimpleMessage"];
 export type RegisterResult = S["RegisterResult"];
-export type ClaimResult = S["ClaimResult"];
-export type AnonymousSession = S["AnonymousSessionOut"];
 export type Plan = S["Plan"];
 
 const base = "/api/v1/auth";
@@ -36,8 +34,8 @@ export const authApi = {
 
   me: () => api.get<User>(`${base}/me`),
 
-  /** Unauthenticated-safe. Used on first load so the app can choose between
-   *  the signed-in and anonymous experience without a 401 round trip. */
+  /** Unauthenticated-safe: answers "is there a session?" without the 401 the
+   *  client would otherwise have to interpret. */
   identity: () => api.get<IdentityResult>(`${base}/identity`, { skipAuthRetry: true }),
 
   updateProfile: (body: S["UpdateProfileRequest"]) => api.patch<User>(`${base}/profile`, body),
@@ -62,10 +60,4 @@ export const authApi = {
 
   revokeSession: (sessionId: string) =>
     api.delete<SimpleMessage>(`${base}/sessions/${encodeURIComponent(sessionId)}`),
-
-  startAnonymous: () =>
-    api.post<AnonymousSession>(`${base}/anonymous`, undefined, { skipAuthRetry: true }),
-
-  claimAnonymous: (body: S["ClaimAnonymousRequest"]) =>
-    api.post<ClaimResult>(`${base}/claim`, body),
 };

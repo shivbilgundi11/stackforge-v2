@@ -17,8 +17,8 @@ import { getTool, toolHref } from "@/lib/tools/registry";
  * you did with no way to see any of them — which is why the previous build's
  * history was ignored.
  *
- * Anonymous callers have history too: runs are attributed to the anonymous
- * session cookie, so this is populated before anyone signs in.
+ * Every run belongs to the account that made it, so this is per-user and
+ * empty until the user has run something.
  */
 export function RecentRuns({ workflow, limit = 5 }: { workflow: string; limit?: number }) {
   const { data, isPending, isError } = useRecentRuns({ workflow, limit });

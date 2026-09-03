@@ -1,13 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-import { expectProvenance, expectRealNumber, headline, run } from "./helpers";
+import { expectProvenance, expectRealNumber, headline, run, signedIn } from "./helpers";
 
 /**
  * WF1 — Cost Planner, against the real backend.
  *
- * Each test starts from a fresh browser context, so each gets its own
- * anonymous session and its own 5-run allowance.
+ * Each test starts from a fresh browser context and signs into the spec's own
+ * account, so each gets that account's daily allowance.
  */
+
+signedIn("cost");
 
 test("llm-pricing computes a real monthly figure", async ({ page }) => {
   await page.goto("/cost/llm-pricing");

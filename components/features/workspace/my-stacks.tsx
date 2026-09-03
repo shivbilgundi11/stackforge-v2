@@ -109,7 +109,7 @@ export function MyStacks() {
           <EmptyState
             icon={<LayersIcon className="size-4" aria-hidden />}
             title="Sign in to see your stacks"
-            description="Design a stack without an account; keeping it needs one."
+            description="Your saved stacks live on your account."
             action={
               <Button asChild size="sm">
                 <Link href="/login">Sign in</Link>

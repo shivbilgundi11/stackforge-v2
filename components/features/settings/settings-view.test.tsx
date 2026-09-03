@@ -79,16 +79,17 @@ beforeEach(() => {
 });
 
 describe("appearance", () => {
-  it("is available signed out, because a theme is not account data", () => {
-    authStatus.current = "anonymous";
+  it("renders before the account sections have anything to show", () => {
+    // Theme is stored in the browser, not on the account, so it does not wait
+    // on the profile query. The page itself is behind `AuthGuard` like the
+    // rest of the shell — this is about ordering, not access.
+    authStatus.current = "signed-out";
     authStatus.user = null;
     renderView();
 
     expect(screen.getByRole("radiogroup", { name: /accent colour/i })).toBeInTheDocument();
     expect(screen.getByRole("radiogroup", { name: /colour mode/i })).toBeInTheDocument();
-    // …and the account sections simply are not there.
     expect(screen.queryByLabelText(/^name$/i)).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
   });
 
   it("writes the chosen accent to the document and to storage", async () => {

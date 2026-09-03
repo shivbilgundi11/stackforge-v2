@@ -148,3 +148,17 @@ export async function signUpAndIn(
 
   await page.waitForURL(plan ? /\/checkout/ : /\/dashboard/);
 }
+
+/**
+ * Sign every test in a spec into its own account.
+ *
+ * The whole app shell is account-only, so a spec that drives a tool page has
+ * to start signed in — a `page.goto` to a calculator now lands on `/login`.
+ * One stable address per spec and per worker, so a repeated run reuses the
+ * account rather than filling the database with new ones.
+ */
+export function signedIn(label: string) {
+  test.beforeEach(async ({ page }) => {
+    await signUpAndIn(page, uniqueEmail(label));
+  });
+}

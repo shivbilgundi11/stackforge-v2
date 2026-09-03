@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
 
-import { run } from "./helpers";
+import { run, signedIn } from "./helpers";
 
 /**
  * The flagship, against the real backend.
  *
  * Two claims are worth an end-to-end test and cannot be made anywhere else:
- * an anonymous visitor gets a complete recommendation with no account and no
- * AI key configured, and a hard constraint removes components from the answer
- * rather than ranking them down.
+ * a new free account gets a complete recommendation with no AI key configured,
+ * and a hard constraint removes components from the answer rather than ranking
+ * them down.
  *
  * The generous timeout is for a machine with no Redis. Every cache and quota
  * read fails open, and failing open still costs a connect attempt each — a
@@ -18,7 +18,9 @@ import { run } from "./helpers";
 
 const RECOMMEND_TIMEOUT = 45_000;
 
-test("an anonymous visitor gets a scored stack with no account", async ({ page }) => {
+signedIn("architect");
+
+test("a new free account gets a scored stack with no AI key", async ({ page }) => {
   await page.goto("/stack-architect/new");
   await run(page, "Design my stack");
 

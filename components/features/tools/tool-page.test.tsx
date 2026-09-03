@@ -38,7 +38,7 @@ vi.mock("react-hot-toast", () => ({
 // a token refresh on mount, and the App Router hooks need a router context;
 // wiring either up would test the harness rather than the component.
 vi.mock("@/lib/auth/auth-provider", () => ({
-  useAuth: () => ({ status: "anonymous", user: null, isVerified: false }),
+  useAuth: () => ({ status: "authenticated", user: null, isVerified: false }),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -210,7 +210,7 @@ describe("error mapping", () => {
             remaining: 0,
             period: "day",
             resets_at: "2026-08-10T00:00:00Z",
-            plan: "anonymous",
+            plan: "free",
           },
         },
       }),
@@ -225,16 +225,17 @@ describe("error mapping", () => {
     // "You have hit your limit" with no figures is a dead end — the numbers
     // are what tell the user whether to upgrade or just wait.
     expect(
-      within(dialog).getByText(/used all 5 runs available on the anonymous plan/i),
+      within(dialog).getByText(/used all 5 runs available on the free plan/i),
     ).toBeInTheDocument();
 
     const used = within(dialog).getByText("Used").closest("div");
     expect(within(used as HTMLElement).getByText("5")).toBeInTheDocument();
 
-    // An anonymous caller is offered an account, not a billing page.
-    expect(within(dialog).getByRole("link", { name: /create a free account/i })).toHaveAttribute(
+    // Every caller that can reach a tool has an account, so the way out of a
+    // 402 is an upgrade rather than a signup.
+    expect(within(dialog).getByRole("link", { name: /upgrade/i })).toHaveAttribute(
       "href",
-      "/signup",
+      "/settings/billing",
     );
     expect(toastError).not.toHaveBeenCalled();
   });

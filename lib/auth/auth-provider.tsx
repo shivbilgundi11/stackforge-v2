@@ -9,12 +9,11 @@ import { authApi, type User } from "@/lib/api/auth";
 import { qk } from "@/lib/api/query-keys";
 import { tokenStore } from "@/lib/auth/token-store";
 
-type AuthStatus = "loading" | "authenticated" | "anonymous";
+type AuthStatus = "loading" | "authenticated" | "signed-out";
 
 type AuthContextValue = {
   status: AuthStatus;
   user: User | null;
-  anonymousId: string | null;
   isVerified: boolean;
   signIn: (email: string, password: string) => Promise<User>;
   signOut: () => Promise<void>;
@@ -29,7 +28,6 @@ const LOGOUT_CHANNEL = "stackforge-auth";
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<User | null>(null);
-  const [anonymousId, setAnonymousId] = useState<string | null>(null);
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -42,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(nextUser);
       setStatus("authenticated");
       // Plan, limits, and meters were all answered for whoever the caller was
-      // a moment ago — an anonymous visitor, or the previous account. None of
-      // those answers survives a change of identity.
+      // a moment ago — nobody, or the previous account. None of those answers
+      // survives a change of identity.
       void queryClient.invalidateQueries({ queryKey: qk.billing.all() });
     },
     [queryClient],
@@ -52,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const clearSession = useCallback(() => {
     tokenStore.clear();
     setUser(null);
-    setStatus("anonymous");
+    setStatus("signed-out");
     queryClient.removeQueries({ queryKey: qk.auth.me });
     queryClient.removeQueries({ queryKey: qk.auth.sessions });
     // Removed rather than invalidated: a signed-out tab must not keep showing
@@ -83,15 +81,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // No session. Establish an anonymous identity so quota and tool runs
-      // have something to key on before the user ever signs up.
-      try {
-        const anon = await authApi.startAnonymous();
-        if (!cancelled) setAnonymousId(anon.anonymous_id);
-      } catch {
-        /* anonymous identity is best-effort; the app still works without it */
-      }
-      if (!cancelled) setStatus("anonymous");
+      // No session. Nothing to establish — the app shell is account-only, so
+      // a caller without one is signed out and `AuthGuard` sends them to
+      // `/login`. Only the marketing pages render in this state.
+      if (!cancelled) setStatus("signed-out");
     })();
 
     return () => {
@@ -143,20 +136,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (email: string, password: string) => {
       const result = await authApi.login({ email, password });
       applySession(result.user, result.tokens.access_token, result.tokens.expires_in);
-
-      // Attach anything done before signing up. This is the whole reason
-      // anonymous work is stored.
-      if (anonymousId) {
-        try {
-          await authApi.claimAnonymous({ anonymous_id: anonymousId });
-          setAnonymousId(null);
-        } catch {
-          /* a failed claim must never block a successful sign-in */
-        }
-      }
       return result.user;
     },
-    [applySession, anonymousId],
+    [applySession],
   );
 
   const signOut = useCallback(async () => {
@@ -182,7 +164,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         status,
         user,
-        anonymousId,
         isVerified: user?.email_verified ?? false,
         signIn,
         signOut,

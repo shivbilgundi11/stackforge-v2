@@ -57,13 +57,12 @@ export const qk = {
     subscription: () => ["billing", "subscription"] as const,
     /** Invalidated after every run, so the meter moves as the user works.
      *
-     *  Keyed by caller identity. `GET /billing/usage` answers 200 for an
-     *  anonymous caller rather than 401, so the reply to a request that went
-     *  out before the access token existed is a *plausible* one — it says
-     *  `plan: "anonymous"`. Without the identity in the key that answer is
-     *  cached against the signed-in user and the sidebar claims the wrong
-     *  plan until it goes stale. Called with no argument it returns the
-     *  prefix, which still matches every identity for invalidation. */
+     *  Keyed by caller identity. A request that goes out before the access
+     *  token exists is answered for a caller the API cannot identify, and
+     *  without the identity in the key that answer is cached against the
+     *  signed-in user — the sidebar then claims the wrong plan until it goes
+     *  stale. Called with no argument it returns the prefix, which still
+     *  matches every identity for invalidation. */
     usage: (identity?: string) =>
       identity ? (["billing", "usage", identity] as const) : (["billing", "usage"] as const),
     invoices: () => ["billing", "invoices"] as const,

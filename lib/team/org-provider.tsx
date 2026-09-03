@@ -68,7 +68,7 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
     ) {
       orgStore.set(null);
     }
-    if (storedId && status === "anonymous") {
+    if (storedId && status === "signed-out") {
       orgStore.set(null);
     }
   }, [storedId, status, query.isSuccess, query.isFetching, currentOrg]);

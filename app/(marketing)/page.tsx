@@ -89,7 +89,7 @@ export default async function Page() {
               <Link href="/features">See what it does</Link>
             </Button>
             <span className="text-[12px] text-fg-subtle">
-              Free tier, no card. Five runs a day without an account.
+              Free tier, no card. Twenty-five runs a day.
             </span>
           </div>
 

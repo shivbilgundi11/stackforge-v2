@@ -406,43 +406,6 @@ export const ALL_TOOLS: PaletteEntry[] = NAV_GROUPS.flatMap((group) =>
 );
 
 /**
- * Routes that genuinely need an account.
- *
- * Everything else in the shell — every tool, every hub, the catalog, the
- * graveyard — is open to anonymous visitors, because the product is built
- * around that: the backend mints an anonymous session per caller and grants
- * it 5 runs a day, tool runs are attributed to it, and the quota dialog's
- * whole anonymous branch offers "create a free account" at the point the
- * allowance runs out. Gating the tools behind a login makes all of that
- * unreachable and turns the front door into a signup wall.
- *
- * What is listed here is work that belongs to *a person*: saved projects,
- * team membership, settings, billing. There is nothing to show an anonymous
- * visitor on those pages.
- */
-const ACCOUNT_ONLY_PREFIXES = [
-  "/dashboard",
-  "/projects",
-  // `/resources` is deliberately absent. The template library is the product's
-  // strongest organic acquisition surface (M19, `PRD.md` §15), and a page
-  // behind a login cannot be crawled, cannot be shared, and cannot be the
-  // thing that brings someone in. Premium templates are gated on their *body*
-  // by the API, which is a gate a search engine can still index around.
-  "/team",
-  // `/settings` itself is deliberately absent. Appearance is a preference
-  // stored in the visitor's own browser, so gating it behind sign-in gates
-  // something the account does not own — and the page already renders its
-  // account sections only when there is an account. Billing is the sub-page
-  // that genuinely belongs to a person.
-  "/settings/billing",
-  // The payment wall and the provider's return page. Both need an account and
-  // neither means anything without one — but see `isPaymentWall` below: they
-  // are the one pair of account-only routes the wall must never redirect
-  // *away* from, or it redirects to itself.
-  "/checkout",
-] as const;
-
-/**
  * The payment wall's own routes.
  *
  * `AuthGuard` sends an account that owes a checkout to `/checkout`. Without
@@ -452,33 +415,6 @@ const ACCOUNT_ONLY_PREFIXES = [
  */
 export function isPaymentWall(pathname: string): boolean {
   return pathname === "/checkout" || pathname.startsWith("/checkout/");
-}
-
-/**
- * Routes whose content must be in the server-rendered HTML.
- *
- * The shell normally withholds children until the auth status resolves, so the
- * quota strip and the history feed do not flicker from anonymous to signed-in.
- * That wait costs nothing on a tool page — nobody is indexing a calculator —
- * and costs everything on the template library, where the initial HTML is what
- * a crawler receives and the prose *is* the product (M19, `PRD.md` §15).
- *
- * These pages render immediately at the cost of a possible re-render when the
- * session lands. Nothing on them is user-specific, so there is nothing to
- * flicker.
- */
-const PUBLIC_CONTENT_PREFIXES = ["/resources"] as const;
-
-export function isPublicContent(pathname: string): boolean {
-  return PUBLIC_CONTENT_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-}
-
-export function requiresAccount(pathname: string): boolean {
-  return ACCOUNT_ONLY_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
 }
 
 export function findGroupByHref(pathname: string): NavGroup | undefined {

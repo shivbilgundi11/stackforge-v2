@@ -11,9 +11,9 @@ import type { ToolSpec } from "@/lib/tools/spec";
  * mutation, error mapping, quota handling, provenance, recent runs, and the
  * URL state all come for free, and only the payoff screen is bespoke.
  *
- * Every field has a default, so an anonymous visitor gets a real
- * recommendation without filling anything in. That is deliberate — the
- * product's strongest demo is the product working (`PRD.md` §18).
+ * Every field has a default, so a first-time user gets a real recommendation
+ * without filling anything in. That is deliberate — the product's strongest
+ * demo is the product working (`PRD.md` §18).
  */
 
 export const stackArchitectSpec: ToolSpec = {

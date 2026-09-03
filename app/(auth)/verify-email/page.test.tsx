@@ -3,7 +3,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 
 const verifyEmail = vi.hoisted(() => vi.fn());
 const auth = vi.hoisted(() => ({
-  status: "loading" as "loading" | "authenticated" | "anonymous",
+  status: "loading" as "loading" | "authenticated" | "signed-out",
   refreshUser: vi.fn(),
 }));
 

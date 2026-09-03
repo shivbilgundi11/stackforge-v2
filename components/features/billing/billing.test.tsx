@@ -176,8 +176,8 @@ describe("PricingTable", () => {
     expect(screen.getByText(/Save \$38 a year/)).toBeInTheDocument();
   });
 
-  it("sends an anonymous visitor to signup rather than to checkout", async () => {
-    authStatus.current = "anonymous";
+  it("sends a signed-out visitor to signup rather than to checkout", async () => {
+    authStatus.current = "signed-out";
     data.plans = [plan()];
 
     renderWith(<PricingTable />);
@@ -190,7 +190,7 @@ describe("PricingTable", () => {
   });
 
   it("still sends a signed-out visitor to signup when billing is unconfigured", () => {
-    authStatus.current = "anonymous";
+    authStatus.current = "signed-out";
     // The regression this pins: reading `checkout` before `authenticated`
     // meant an environment with no payment keys sent every visitor to the
     // resources page. Whether *this deployment* can take a card has no bearing
