@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Panel, PanelBody } from "@/components/forge/panel";
 import { Button } from "@/components/ui/button";
 import { getSubscription, reconcileSubscription } from "@/lib/api/billing";
-import { qk } from "@/lib/api/query-keys";
+import { useAuth } from "@/lib/auth/auth-provider";
 
 /** How long to keep asking before handing the user a button instead. */
 const GIVE_UP_MS = 25_000;
@@ -46,10 +46,15 @@ const RANK: Record<string, number> = { free: 0, pro: 1, team: 2, enterprise: 3 }
  * which is every local environment without a tunnel — stops being permanent.
  * The success redirect is never treated as proof of payment; it is only the
  * cue to start asking.
+ *
+ * ## What it retires once the plan lands
+ *
+ * Everything, and the signed-in user besides. See `settle`.
  */
 export function CheckoutReturn() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { refreshUser } = useAuth();
   const params = useSearchParams();
   const target = params.get("plan");
   const [slow, setSlow] = useState(false);
@@ -66,11 +71,24 @@ export function CheckoutReturn() {
   );
 
   const settle = useCallback(async () => {
-    // Everything downstream reads the plan; none of it should keep a cached
-    // copy from before the upgrade.
-    await queryClient.invalidateQueries({ queryKey: qk.billing.all() });
+    // `user.plan` is held in the auth provider's state rather than the query
+    // cache, and the account menu reads it from there. Invalidating queries
+    // does not touch it, so the plan came back right everywhere the cache
+    // reached and wrong in the one place it did not — until a full reload.
+    await refreshUser();
+
+    // Then everything, rather than the billing keys this used to name. The
+    // plan is an input to quota, feature gates, the dashboard aggregate, which
+    // export formats are offered and whether a premium template body comes
+    // back; the default `staleTime` is thirty seconds and a checkout takes
+    // less than that, so a curated list that misses one serves the
+    // pre-upgrade answer on the very page the user is being sent to. Same
+    // argument `switchOrg` makes: refetching the world is cheaper than a list
+    // that has to be kept complete.
+    await queryClient.invalidateQueries();
+
     router.replace("/dashboard");
-  }, [queryClient, router]);
+  }, [refreshUser, queryClient, router]);
 
   const checkNow = useCallback(async () => {
     setChecking(true);

@@ -5,6 +5,7 @@ import { beforeEach, expect, it, vi } from "vitest";
 
 import type * as BillingModule from "@/lib/api/billing";
 import type { Subscription } from "@/lib/api/billing";
+import { qk } from "@/lib/api/query-keys";
 
 /**
  * The page Razorpay returns the browser to.
@@ -15,16 +16,26 @@ import type { Subscription } from "@/lib/api/billing";
  * upgrading from Pro to Team — so an upgrade that silently failed forwarded to
  * the dashboard exactly like one that worked. A real customer paid and was
  * left on Pro with the app showing no sign anything was wrong.
+ *
+ * The second is what happens *after* it forwards. The plan the user just
+ * bought is an input to nearly every read in the app, and one of the places it
+ * is read from is not the query cache at all — so a purchase that landed
+ * correctly still showed the old plan until the page was reloaded.
  */
 
 const getSubscription = vi.hoisted(() => vi.fn());
 const reconcileSubscription = vi.hoisted(() => vi.fn());
 const replace = vi.hoisted(() => vi.fn());
+const refreshUser = vi.hoisted(() => vi.fn());
 const search = vi.hoisted(() => ({ value: "" }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
   useSearchParams: () => new URLSearchParams(search.value),
+}));
+
+vi.mock("@/lib/auth/auth-provider", () => ({
+  useAuth: () => ({ status: "authenticated", user: null, refreshUser }),
 }));
 
 vi.mock("@/lib/api/billing", async () => {
@@ -54,16 +65,18 @@ function subscription(overrides: Partial<Subscription> = {}): Subscription {
 
 function renderPage() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
+  const view = render(
     <QueryClientProvider client={queryClient}>
       <CheckoutReturn />
     </QueryClientProvider>,
   );
+  return { ...view, queryClient };
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
   search.value = "";
+  refreshUser.mockResolvedValue(undefined);
 });
 
 it("does not report success when the upgrade has not landed", async () => {
@@ -133,4 +146,37 @@ it("offers a way to check again when nothing arrives", async () => {
   await userEvent.click(button);
 
   await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+});
+
+it("refreshes the signed-in user before forwarding", async () => {
+  // `user.plan` lives in the auth provider's state, not in the query cache,
+  // and the account menu reads it from there. Invalidating queries does not
+  // touch it, so without this the plan was right everywhere the cache reached
+  // and wrong in the one place it did not — until a full reload.
+  search.value = "plan=pro";
+  reconcileSubscription.mockResolvedValue(subscription({ plan: "pro" }));
+
+  renderPage();
+
+  await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+  expect(refreshUser).toHaveBeenCalled();
+});
+
+it("retires every cached answer, not only the billing ones", async () => {
+  // The plan is an input to quota, feature gates, the dashboard aggregate,
+  // which export formats are offered and whether a premium template body comes
+  // back. The default `staleTime` is thirty seconds and a checkout takes less
+  // than that, so a curated list that misses one serves the pre-upgrade answer
+  // on the page the user lands on.
+  search.value = "plan=pro";
+  reconcileSubscription.mockResolvedValue(subscription({ plan: "pro" }));
+
+  const { queryClient } = renderPage();
+  queryClient.setQueryData(qk.workspace.dashboard(), { plan: { plan: "free" } });
+  queryClient.setQueryData(qk.templates.library(), { total: 0 });
+
+  await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+
+  expect(queryClient.getQueryState(qk.workspace.dashboard())?.isInvalidated).toBe(true);
+  expect(queryClient.getQueryState(qk.templates.library())?.isInvalidated).toBe(true);
 });
