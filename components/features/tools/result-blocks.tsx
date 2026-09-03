@@ -81,6 +81,24 @@ export function ResultBlockRenderer({ block, data }: { block: ResultBlock; data:
 
 /** Keys that should render as money rather than a bare number. */
 const MONEY = /cost|price|spend|saving|revenue|tco|budget|delta/i;
+
+/**
+ * Does this block put a currency figure on screen?
+ *
+ * Asked by the page so the cost disclaimer lands directly beneath the money
+ * rather than at the top of the result. It reads the same `MONEY` pattern
+ * `formatMetric` formats with, so the two cannot disagree about what counts as
+ * a dollar figure — which is the failure mode of a hand-kept list of "the cost
+ * tools".
+ */
+export function blockRendersMoney(block: ResultBlock, data: ToolRunResult): boolean {
+  if (block.kind !== "metrics") return false;
+  const metrics = data.metrics ?? {};
+  const keys = block.keys ?? Object.keys(metrics);
+  return keys.some(
+    (key) => MONEY.test(key) && metrics[key] !== undefined && !Number.isNaN(Number(metrics[key])),
+  );
+}
 const PERCENT = /_pct$|^pct|percent|ratio|share/i;
 const COUNT = /tokens|requests|count|vectors|lines|months?$/i;
 

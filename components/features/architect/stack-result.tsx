@@ -5,9 +5,11 @@ import { useState } from "react";
 
 import { MermaidDiagram } from "@/components/forge/mermaid-diagram";
 import { Panel, PanelBody, PanelHeader } from "@/components/forge/panel";
+import { Disclaimer } from "@/components/legal/disclaimer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ToolRunResult } from "@/lib/api/tools";
+import * as legal from "@/lib/legal/disclaimers";
 import { cn } from "@/lib/utils";
 
 /**
@@ -149,6 +151,12 @@ export function StackResult({ data }: { data: ToolRunResult }) {
             ) : null}
           </div>
         </div>
+        {/* On the score's own panel rather than at the end of the page. A bare
+            "85/100" claims a precision the inputs do not have, and the sentence
+            that says so has to be where the number is. */}
+        <div className="border-t border-line px-4 py-2.5">
+          <Disclaimer className="px-0">{legal.SCORE}</Disclaimer>
+        </div>
       </Panel>
 
       {buried.length > 0 ? (
@@ -197,6 +205,9 @@ export function StackResult({ data }: { data: ToolRunResult }) {
             </div>
           ))}
         </PanelBody>
+        <div className="border-t border-line px-4 py-2.5">
+          <Disclaimer className="px-0">{legal.RECOMMENDATION}</Disclaimer>
+        </div>
       </Panel>
 
       <Panel>
@@ -225,6 +236,9 @@ export function StackResult({ data }: { data: ToolRunResult }) {
             </div>
           ))}
         </PanelBody>
+        <div className="border-t border-line px-4 py-2.5">
+          <Disclaimer className="px-0">{legal.RECOMMENDATION}</Disclaimer>
+        </div>
       </Panel>
 
       {diagram ? (

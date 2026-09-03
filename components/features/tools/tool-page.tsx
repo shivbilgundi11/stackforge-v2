@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookOpenIcon, PlayIcon, SparklesIcon, ZapIcon } from "lucide-react";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -20,14 +20,17 @@ import {
 import { QuotaDialog } from "@/components/features/tools/quota-dialog";
 import { SynthesisProgress } from "@/components/features/tools/synthesis-progress";
 import { SaveRun } from "@/components/features/workspace/save-run";
-import { ResultBlockRenderer } from "@/components/features/tools/result-blocks";
+import { blockRendersMoney, ResultBlockRenderer } from "@/components/features/tools/result-blocks";
+import { Disclaimer } from "@/components/legal/disclaimer";
+import { FirstRunNotice } from "@/components/legal/first-run-notice";
+import * as legal from "@/lib/legal/disclaimers";
 import { PageHeader } from "@/components/forge/page-header";
 import { EmptyState, Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/forge/panel";
 import { ProvenanceChip } from "@/components/forge/provenance-chip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/lib/api/errors";      
+import { ApiError } from "@/lib/api/errors";
 import { useRun } from "@/lib/api/hooks";
 import { qk } from "@/lib/api/query-keys";
 import { runTool, type ToolRunResult } from "@/lib/api/tools";
@@ -169,6 +172,13 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
         }
       />
 
+      {/* The checklist's two highest-risk surfaces, and two separate triggers:
+          dismissing the notice on the ROI calculator should not silently
+          dismiss it on a tool the user has never opened. */}
+      {spec.group === "roi" || spec.group === "architect" ? (
+        <FirstRunNotice tool={spec.group} />
+      ) : null}
+
       <div className="grid gap-5 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)] lg:items-start">
         <Panel className="lg:sticky lg:top-4">
           <form
@@ -192,6 +202,16 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
                     {preset.label}
                   </button>
                 ))}
+              </div>
+            ) : null}
+
+            {/* Before anything is calculated, not only after. A payback period
+                is read as a finding rather than as arithmetic over the reader's
+                own assumptions, and saying so once the number is on screen is
+                late. */}
+            {spec.group === "roi" ? (
+              <div className="px-4 pt-3">
+                <Disclaimer>{legal.ROI_INPUT}</Disclaimer>
               </div>
             ) : null}
 
@@ -290,6 +310,11 @@ function ResultArea({
   }
 
   const Bespoke = spec.result.component;
+  const notice = disclaimerFor(spec, result);
+  // The block the disclaimer follows. `-1` means no block on this result puts a
+  // figure on screen that the notice is about, so it goes under the whole
+  // result instead — which is where a comparison's belongs anyway.
+  const anchor = notice?.anchor === "money" ? indexOfMoney(spec, result) : -1;
 
   return (
     <>
@@ -297,12 +322,48 @@ function ResultArea({
         <Bespoke data={result} />
       ) : (
         spec.result.blocks.map((block, index) => (
-          <ResultBlockRenderer key={`${block.kind}-${index}`} block={block} data={result} />
+          <Fragment key={`${block.kind}-${index}`}>
+            <ResultBlockRenderer block={block} data={result} />
+            {notice && index === anchor ? (
+              <Disclaimer tone={notice.tone}>{notice.text}</Disclaimer>
+            ) : null}
+          </Fragment>
         ))
       )}
+      {notice && anchor === -1 ? <Disclaimer tone={notice.tone}>{notice.text}</Disclaimer> : null}
       <ProvenanceFooter result={result} />
     </>
   );
+}
+
+type Notice = { text: string; tone: "quiet" | "strict"; anchor: "money" | "result" };
+
+/**
+ * Which disclaimer this result needs, if any.
+ *
+ * Derived rather than declared per tool. Thirty specs with a `disclaimer:`
+ * field is thirty chances to add the thirty-first without one, and the thing
+ * that actually decides is not the tool's identity — it is whether the answer
+ * on screen is money, a comparison, or a business case.
+ *
+ * ROI comes first and wins outright: its output is money too, and a payback
+ * period in a board deck is a different kind of claim from a token price.
+ */
+function disclaimerFor(spec: ToolSpec, result: ToolRunResult): Notice | null {
+  if (spec.group === "roi") {
+    return { text: legal.ROI_OUTPUT, tone: "strict", anchor: "money" };
+  }
+  if (spec.group === "compare") {
+    return { text: legal.COMPARISON, tone: "quiet", anchor: "result" };
+  }
+  if (spec.result.blocks.some((block) => blockRendersMoney(block, result))) {
+    return { text: legal.ESTIMATE, tone: "quiet", anchor: "money" };
+  }
+  return null;
+}
+
+function indexOfMoney(spec: ToolSpec, result: ToolRunResult): number {
+  return spec.result.blocks.findIndex((block) => blockRendersMoney(block, result));
 }
 
 function ResultSkeleton({ synthesises }: { synthesises: boolean }) {

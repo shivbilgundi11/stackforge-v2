@@ -1,16 +1,21 @@
 "use client";
 
-import { ArrowRightIcon, SkullIcon } from "lucide-react";
+import { ArrowRightIcon, FlagIcon, SkullIcon } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 
 import { PageHeader } from "@/components/forge/page-header";
 import { EmptyState, Panel, PanelBody } from "@/components/forge/panel";
+import { Disclaimer } from "@/components/legal/disclaimer";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { flagCatalogEntry } from "@/lib/api/catalog";
 import { useGraveyard } from "@/lib/api/hooks";
 import { relativeAge } from "@/lib/format";
+import * as legal from "@/lib/legal/disclaimers";
 import { cn } from "@/lib/utils";
 
 /**
@@ -120,9 +125,12 @@ export function Graveyard() {
                       {entry.description}
                     </p>
                   </div>
-                  <span className="shrink-0 text-[11px] text-fg-subtle">
-                    reviewed {relativeAge(entry.last_reviewed_at)}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <span className="text-[11px] text-fg-subtle">
+                      reviewed {relativeAge(entry.last_reviewed_at)}
+                    </span>
+                    <SuggestCorrection slug={entry.slug} name={entry.name} />
+                  </div>
                 </div>
 
                 <div className="rounded-md border border-line bg-surface-2/50 px-3 py-2.5">
@@ -154,6 +162,11 @@ export function Graveyard() {
               </PanelBody>
             </Panel>
           ))}
+          {/* Once, under the list, rather than on every card. Each entry
+              already carries its own review date and its own correction
+              button; repeating the sentence nine times would bury the dates
+              that make it meaningful. */}
+          <Disclaimer>{legal.CATALOG}</Disclaimer>
         </div>
       )}
     </>
@@ -183,5 +196,46 @@ function FilterChip({
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * "Suggest a correction", per entry.
+ *
+ * The checklist asks for this on every tool page and gives the reason plainly:
+ * a standing, visible correction process is what you point at when a vendor
+ * disputes how their tool is described here. A burial notice is the page most
+ * likely to be disputed, which is why it is the page that carries it.
+ *
+ * Posts to the same endpoint the comparison matrix flags from, so corrections
+ * land in one editorial queue rather than two.
+ */
+function SuggestCorrection({ slug, name }: { slug: string; name: string }) {
+  const [sent, setSent] = useState(false);
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      className="h-6 px-1.5 text-[11px] text-fg-subtle"
+      disabled={sent}
+      onClick={async () => {
+        try {
+          await flagCatalogEntry({
+            entity_type: "tool",
+            entity_id: slug,
+            note: `Correction suggested for ${name} from the tool graveyard.`,
+          });
+          setSent(true);
+          toast.success("Sent for editorial review. Thank you.");
+        } catch {
+          toast.error("Could not send that. Try again in a moment.");
+        }
+      }}
+    >
+      <FlagIcon className="size-3" aria-hidden />
+      {sent ? "Sent" : "Suggest a correction"}
+    </Button>
   );
 }

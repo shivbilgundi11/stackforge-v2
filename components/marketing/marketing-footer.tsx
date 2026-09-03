@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BrandLockup } from "@/components/shell/brand";
+import * as legal from "@/lib/legal/disclaimers";
 
 /**
  * The marketing footer.
@@ -93,12 +94,25 @@ export function MarketingFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-[12px] text-fg-subtle sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} StackForge. All rights reserved.</p>
-          <p>
-            Prices and specifications are carried from vendor documentation and stamped with the
-            date they were last verified.
+        <div className="mt-12 flex flex-col gap-3 border-t border-line pt-6 text-[12px] text-fg-subtle">
+          {/* Above the copyright line rather than beside it. This is the one
+              disclaimer that has to be on every page including the ones with
+              no numbers on them, and a sentence sharing a row with "all rights
+              reserved" is a sentence nobody reads. */}
+          <p className="max-w-[90ch] leading-relaxed">
+            {legal.FOOTER}{" "}
+            <Link href="/legal/terms" className="underline underline-offset-2 hover:text-fg-muted">
+              See our Terms
+            </Link>{" "}
+            for the complete disclaimers and limitations of liability.
           </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {new Date().getFullYear()} StackForge. All rights reserved.</p>
+            <p>
+              Prices and specifications are carried from vendor documentation and stamped with the
+              date they were last verified.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

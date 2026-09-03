@@ -23,6 +23,7 @@ import {
 } from "@/components/animate-ui/components/radix/sidebar";
 import { BrandLockup } from "@/components/shell/brand";
 import { PlanCard } from "@/components/shell/plan-card";
+import * as legal from "@/lib/legal/disclaimers";
 import { FOOTER_NAV, NAV_GROUPS, WORKSPACE_NAV } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -158,6 +159,15 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
+        {/* The app shell has no footer, and adding one would cost vertical
+            space on every calculator to carry one sentence. This is the same
+            sentence in the one place that is on screen everywhere in the app
+            and is already the quiet corner. */}
+        {!collapsed ? (
+          <p className="px-2 pb-1 text-[10.5px] leading-relaxed text-fg-subtle">
+            {legal.FOOTER_COMPACT}
+          </p>
+        ) : null}
       </SidebarFooter>
 
       <SidebarRail />
