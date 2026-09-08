@@ -155,7 +155,7 @@ export function StackResult({ data }: { data: ToolRunResult }) {
             "85/100" claims a precision the inputs do not have, and the sentence
             that says so has to be where the number is. */}
         <div className="border-t border-line px-4 py-2.5">
-          <Disclaimer className="px-0">{legal.SCORE}</Disclaimer>
+          <Disclaimer>{legal.SCORE}</Disclaimer>
         </div>
       </Panel>
 
@@ -206,7 +206,7 @@ export function StackResult({ data }: { data: ToolRunResult }) {
           ))}
         </PanelBody>
         <div className="border-t border-line px-4 py-2.5">
-          <Disclaimer className="px-0">{legal.RECOMMENDATION}</Disclaimer>
+          <Disclaimer>{legal.RECOMMENDATION}</Disclaimer>
         </div>
       </Panel>
 
@@ -237,7 +237,7 @@ export function StackResult({ data }: { data: ToolRunResult }) {
           ))}
         </PanelBody>
         <div className="border-t border-line px-4 py-2.5">
-          <Disclaimer className="px-0">{legal.RECOMMENDATION}</Disclaimer>
+          <Disclaimer>{legal.RECOMMENDATION}</Disclaimer>
         </div>
       </Panel>
 

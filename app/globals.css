@@ -92,6 +92,11 @@
   --warning: oklch(0.6224 0.1224 68);
   --warning-quiet: oklch(0.9601 0.0374 82);
   --warning-line: oklch(0.8624 0.0834 74);
+  /* Text on --warning-quiet. --warning itself is only 3.30:1 there, which
+     is fine for a 1px border or an icon and not for the 11.5px sentence in
+     a disclaimer. Dropped to L=0.52 for 5.04:1 (#a46700) — still legibly
+     yellow, unlike the L=0.58 the ember note above predicts. */
+  --warning-strong: oklch(0.52 0.1224 68);
 
   --danger: oklch(0.5344 0.1789 25.7);
   --danger-quiet: oklch(0.9531 0.0224 20);
@@ -168,6 +173,10 @@
   --warning: oklch(0.7834 0.1231 78);
   --warning-quiet: oklch(0.2923 0.0433 78);
   --warning-line: oklch(0.3893 0.0673 78);
+  /* On a dark ground --warning already clears AA on --warning-quiet at
+     7.02:1, so the strong step is that same colour rather than a darker
+     one, which would only lose contrast here. */
+  --warning-strong: oklch(0.7834 0.1231 78);
 
   --danger: oklch(0.6634 0.1731 25.7);
   --danger-quiet: oklch(0.2823 0.0503 25.7);
@@ -255,6 +264,7 @@
   --warning: oklch(0.6224 0.1224 55);
   --warning-quiet: oklch(0.9601 0.0374 55);
   --warning-line: oklch(0.8624 0.0834 55);
+  --warning-strong: oklch(0.52 0.1224 55);
 }
 
 .dark [data-accent="purple"],
@@ -311,6 +321,7 @@
   --warning: oklch(0.7834 0.1231 55);
   --warning-quiet: oklch(0.2923 0.0433 55);
   --warning-line: oklch(0.3893 0.0673 55);
+  --warning-strong: oklch(0.7834 0.1231 55);
 }
 
 /* ==========================================================================
@@ -347,6 +358,7 @@
   --color-warning: var(--warning);
   --color-warning-quiet: var(--warning-quiet);
   --color-warning-line: var(--warning-line);
+  --color-warning-strong: var(--warning-strong);
   --color-danger: var(--danger);
   --color-danger-quiet: var(--danger-quiet);
   --color-danger-line: var(--danger-line);

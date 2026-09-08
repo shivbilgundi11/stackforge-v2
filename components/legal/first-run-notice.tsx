@@ -76,13 +76,15 @@ export function FirstRunNotice({ tool }: { tool: string }) {
   return (
     <div
       data-testid="first-run-notice"
-      className="flex items-start gap-2 rounded-md border border-line bg-surface-2/50 px-3 py-2.5"
+      className="flex items-start gap-2 rounded-md border border-warning-line bg-warning-quiet px-3 py-2.5"
     >
-      <Disclaimer className="flex-1 px-0">{FIRST_RUN}</Disclaimer>
+      <Disclaimer tone="bare" className="flex-1">
+        {FIRST_RUN}
+      </Disclaimer>
       <button
         type="button"
         aria-label="Dismiss"
-        className="-mt-0.5 shrink-0 rounded-xs p-0.5 text-fg-subtle transition-colors hover:text-fg"
+        className="-mt-0.5 shrink-0 rounded-xs p-0.5 text-warning-strong/70 transition-colors hover:text-warning-strong"
         onClick={() => dismiss(key)}
       >
         <XIcon className="size-3.5" aria-hidden />
