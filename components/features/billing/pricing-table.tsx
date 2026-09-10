@@ -343,7 +343,7 @@ function ComparisonTable({ plans }: { plans: Plan[] }) {
 
   return (
     <Panel className="mt-6 overflow-x-auto">
-      <table className="w-full min-w-[640px] border-collapse text-left">
+      <table className="w-full min-w-160 border-collapse text-left">
         <thead>
           <tr className="border-b border-line">
             <th scope="col" className="px-4 py-2.5 text-[12px] font-medium text-fg-muted">
