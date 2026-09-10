@@ -1,0 +1,14 @@
+node_modules
+.next
+.next-capture
+.git
+.env*
+coverage
+test-results
+playwright-report
+blob-report
+.playwright
+e2e
+*.tsbuildinfo
+Dockerfile
+.dockerignore
