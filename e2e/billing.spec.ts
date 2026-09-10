@@ -39,7 +39,7 @@ test("the pricing page can be read in dollars and still names the charge", async
   // writes does not. Writing it directly is what a returning visitor's browser
   // does anyway, and it keeps this test signed out like the page it covers.
   await page.goto("/pricing");
-  await page.evaluate(() => localStorage.setItem("stackforge-currency", "usd"));
+  await page.evaluate(() => localStorage.setItem("aiveda-currency", "usd"));
   await page.reload();
 
   await expect(page.getByText("$5.99", { exact: true })).toBeVisible();

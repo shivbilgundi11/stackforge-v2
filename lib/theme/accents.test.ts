@@ -272,7 +272,7 @@ describe("the stylesheet and the declarations", () => {
 describe("the pre-paint script", () => {
   it("applies a stored accent to the document element", () => {
     document.documentElement.removeAttribute("data-accent");
-    localStorage.setItem("stackforge-accent", "purple");
+    localStorage.setItem("aiveda-accent", "purple");
 
     new Function(ACCENT_SCRIPT)();
 
@@ -283,7 +283,7 @@ describe("the pre-paint script", () => {
     // The stored value is attacker-adjacent: anything can write to
     // localStorage, and it lands in a DOM attribute.
     document.documentElement.removeAttribute("data-accent");
-    localStorage.setItem("stackforge-accent", '" onload="alert(1)');
+    localStorage.setItem("aiveda-accent", '" onload="alert(1)');
 
     new Function(ACCENT_SCRIPT)();
 
@@ -292,7 +292,7 @@ describe("the pre-paint script", () => {
 
   it("does nothing when nothing is stored", () => {
     document.documentElement.removeAttribute("data-accent");
-    localStorage.removeItem("stackforge-accent");
+    localStorage.removeItem("aiveda-accent");
 
     new Function(ACCENT_SCRIPT)();
 

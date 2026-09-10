@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ─────────────────────────────────────────────────────────────────────────────
-# StackForge web — Next.js 16 standalone
+# AIVeda web — Next.js 16 standalone
 #
 # NEXT_PUBLIC_* are read by the browser bundle, so they are baked in at BUILD
 # time, not at run time. Changing NEXT_PUBLIC_API_URL means rebuilding this

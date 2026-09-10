@@ -86,7 +86,7 @@ function useBreadcrumbs(): { label: string; href: string }[] {
 
   const group = findGroupByHref(pathname);
   if (!group) {
-    const label = pathname.split("/").filter(Boolean).at(-1) ?? "StackForge";
+    const label = pathname.split("/").filter(Boolean).at(-1) ?? "AIVeda";
     return [{ label: titleCase(label), href: pathname }];
   }
 

@@ -25,7 +25,7 @@ import {
  * at first paint anyway.
  */
 
-const CURRENCY_EVENT = "stackforge:currency";
+const CURRENCY_EVENT = "aiveda:currency";
 
 /**
  * Set only where storage is unavailable — a locked-down browser, or private

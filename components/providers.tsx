@@ -41,7 +41,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       defaultTheme="light"
       enableSystem
       disableTransitionOnChange
-      storageKey="stackforge-theme"
+      storageKey="aiveda-theme"
     >
       <QueryClientProvider client={queryClient}>
         <NuqsAdapter>

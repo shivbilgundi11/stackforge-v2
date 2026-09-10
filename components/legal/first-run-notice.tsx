@@ -62,7 +62,7 @@ function dismiss(key: string): void {
 }
 
 export function FirstRunNotice({ tool }: { tool: string }) {
-  const key = `stackforge.first-run.${tool}`;
+  const key = `aiveda.first-run.${tool}`;
   const dismissed = useSyncExternalStore(
     subscribe,
     () => dismissedIn(key),

@@ -5,7 +5,7 @@
 
 ## 1. Agreement to Terms
 
-By accessing and using Stackforge ("Platform," "Service," "We," "Us"), you ("User," "You") agree to be bound by these Terms and Conditions ("Terms").
+By accessing and using AIVeda ("Platform," "Service," "We," "Us"), you ("User," "You") agree to be bound by these Terms and Conditions ("Terms").
 
 If you do not agree to all of these Terms, you may not use the Platform.
 
@@ -39,7 +39,7 @@ You agree to use the Platform only for lawful purposes and in ways that don't in
 - **Spam:** Spamming support channels or other users
 - **Exploitation:** Attempting to exploit minors or vulnerable individuals
 - **Scraping:** Automated collection of data without permission
-- **Competitive Intelligence:** Using Stackforge to gather competitive intelligence without permission
+- **Competitive Intelligence:** Using AIVeda to gather competitive intelligence without permission
 - **Compliance Violation:** Violating any laws, regulations, or third-party rights
 
 ### Consequences:
@@ -153,7 +153,7 @@ We're not responsible for:
 - Copyright/IP infringement in user content
 
 ### 6.4 Limitation of Liability
-**Stackforge's total liability is limited to:**
+**AIVeda's total liability is limited to:**
 - For paid users: Amount you paid in the last 12 months
 - For free users: $0 (zero)
 
@@ -166,7 +166,7 @@ We're not responsible for:
 Even if we've been advised of the possibility of such damages.
 
 ### 6.5 Indemnification
-You agree to indemnify and hold harmless Stackforge from:
+You agree to indemnify and hold harmless AIVeda from:
 - Your violation of these Terms
 - Your violation of any law or third-party right
 - Claims from third parties arising from your use of the Platform
@@ -196,7 +196,7 @@ You agree to indemnify and hold harmless Stackforge from:
 ### 7.4 Refunds
 - **30-day guarantee:** Refund if unsatisfied within 30 days of purchase
 - **No refunds for:** Partial month usage, downgrade, etc.
-- **Refund process:** Email support@stackforge.io with details
+- **Refund process:** Email support@aiveda.dev with details
 - **Refund timeline:** Within 5-10 business days via original payment method
 
 ### 7.5 Free Trial
@@ -214,7 +214,7 @@ You agree to indemnify and hold harmless Stackforge from:
 ### 7.7 Invoices
 - Invoices emailed automatically after payment
 - Available in your account under "Billing"
-- Contact billing@stackforge.io for invoicing questions
+- Contact billing@aiveda.dev for invoicing questions
 
 ---
 
@@ -253,7 +253,7 @@ We aim for 99.5% uptime (Pro) / 99.9% (Team+), but make no guarantee.
 - Security measures
 - Cookies and tracking
 
-By using Stackforge, you agree to our Privacy Policy.
+By using AIVeda, you agree to our Privacy Policy.
 
 ---
 
@@ -266,7 +266,7 @@ These Terms are governed by the laws of **[Jurisdiction]**, without regard to co
 If a dispute arises:
 
 1. **Informal Resolution (60 days):**
-   - Contact us at [hello@stackforge.io](mailto:hello@stackforge.io)
+   - Contact us at [hello@aiveda.dev](mailto:hello@aiveda.dev)
    - Describe the dispute
    - We'll respond within 15 days
    - Good-faith attempt to resolve for 60 days
@@ -289,7 +289,7 @@ You waive any right to participate in class actions or class arbitrations agains
 ---
 
 ## 11. Limitation on Dispute Resolution
-You and Stackforge agree that:
+You and AIVeda agree that:
 - All disputes must be brought within **1 year** of the claim arising
 - Claims after 1 year are barred
 - We're not liable for non-performance due to causes beyond our control (force majeure)
@@ -364,7 +364,7 @@ If any provision of these Terms is found unenforceable:
 
 ## 17. Entire Agreement
 
-These Terms, combined with our Privacy Policy and any referenced terms, constitute the entire agreement between you and Stackforge regarding the Platform.
+These Terms, combined with our Privacy Policy and any referenced terms, constitute the entire agreement between you and AIVeda regarding the Platform.
 
 This supersedes any prior agreements, understandings, or negotiations.
 
@@ -373,16 +373,16 @@ This supersedes any prior agreements, understandings, or negotiations.
 ## 18. Contact & Support
 
 **Support Inquiries:**
-[support@stackforge.io](mailto:support@stackforge.io)
+[support@aiveda.dev](mailto:support@aiveda.dev)
 
 **Legal Questions:**
-[legal@stackforge.io](mailto:legal@stackforge.io)
+[legal@aiveda.dev](mailto:legal@aiveda.dev)
 
 **General Contact:**
-[hello@stackforge.io](mailto:hello@stackforge.io)
+[hello@aiveda.dev](mailto:hello@aiveda.dev)
 
 **Mailing Address:**
-Stackforge Inc.
+AIVeda Inc.
 [Address]
 [City], [State/Country]
 
@@ -418,17 +418,17 @@ By upgrading to Pro or Team:
 
 ## 20. Acknowledgment & Acceptance
 
-**By using Stackforge, you acknowledge that:**
+**By using AIVeda, you acknowledge that:**
 - You've read and understood these Terms
 - You agree to be bound by them
 - You understand our limitations of liability
 - You assume all risks associated with using the Platform
-- You understand Stackforge is a planning tool, not a guarantee
+- You understand AIVeda is a planning tool, not a guarantee
 - Production costs may differ from estimates
 
 ---
 
-**© 2025 Stackforge Inc. All rights reserved.**
+**© 2025 AIVeda Inc. All rights reserved.**
 
 **Disclaimer:** This Terms & Conditions is a template. It should be reviewed and customized by legal counsel before use. We recommend consulting with an attorney to ensure compliance with all applicable laws in your jurisdiction.
 

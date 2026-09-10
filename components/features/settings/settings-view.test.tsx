@@ -95,7 +95,7 @@ describe("currency", () => {
 
     await user.click(screen.getByRole("radio", { name: /us dollar/i }));
 
-    expect(localStorage.getItem("stackforge-currency")).toBe("usd");
+    expect(localStorage.getItem("aiveda-currency")).toBe("usd");
     expect(screen.getByRole("radio", { name: /us dollar/i })).toHaveAttribute(
       "aria-checked",
       "true",
@@ -132,7 +132,7 @@ describe("appearance", () => {
     await user.click(screen.getByRole("radio", { name: "Purple" }));
 
     expect(document.documentElement.getAttribute("data-accent")).toBe("purple");
-    expect(localStorage.getItem("stackforge-accent")).toBe("purple");
+    expect(localStorage.getItem("aiveda-accent")).toBe("purple");
   });
 
   it("removes the attribute for the default rather than naming it", async () => {
@@ -145,7 +145,7 @@ describe("appearance", () => {
     await user.click(screen.getByRole("radio", { name: "Orange" }));
 
     expect(document.documentElement.hasAttribute("data-accent")).toBe(false);
-    expect(localStorage.getItem("stackforge-accent")).toBe("orange");
+    expect(localStorage.getItem("aiveda-accent")).toBe("orange");
   });
 });
 

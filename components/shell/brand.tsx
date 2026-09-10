@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 
 /**
- * The mark. A forge anvil reduced to three strokes — legible at 16px, which is
- * the only size that matters for a sidebar and a favicon.
+ * The mark. A hexagonal shell with a spark inside, reduced to three strokes —
+ * legible at 16px, which is the only size that matters for a sidebar and a
+ * favicon.
  */
 export function BrandMark({ className }: { className?: string }) {
   return (
@@ -41,7 +42,7 @@ export function BrandLockup({
       {!collapsed && (
         <span className="flex min-w-0 flex-col leading-none">
           <span className="truncate text-[13.5px] font-semibold tracking-[-0.01em] text-fg">
-            StackForge
+            AIVeda
           </span>
           <span className="mt-0.5 truncate text-[10.5px] tracking-[0.03em] text-fg-subtle">
             AI engineering workbench

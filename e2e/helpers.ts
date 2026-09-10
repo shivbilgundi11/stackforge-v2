@@ -88,7 +88,7 @@ const PASSWORD_TAG = Array.from(E2E_PASSWORD)
 export function uniqueEmail(label: string, unique = false) {
   const suffix = unique ? `-${Date.now()}` : "";
   const worker = test.info().workerIndex;
-  return `e2e-${label}-${worker}-${PASSWORD_TAG}${suffix}@stackforge-e2e.com`;
+  return `e2e-${label}-${worker}-${PASSWORD_TAG}${suffix}@aiveda-e2e.com`;
 }
 
 /**

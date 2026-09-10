@@ -18,7 +18,7 @@ import { readDates, readLegalDocument } from "@/lib/marketing/legal";
 
 export const metadata: Metadata = {
   title: "Terms",
-  description: "The terms covering use of StackForge, its plans, and what its output is and is not.",
+  description: "The terms covering use of AIVeda, its plans, and what its output is and is not.",
   alternates: { canonical: "/legal/terms" },
   // Still noindex while the document is a draft. Terms a search engine has
   // cached are terms people rely on, and these are not in force yet.

@@ -5,7 +5,7 @@
 
 ## 1. Introduction
 
-Stackforge ("we," "us," "our," or "Company") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website stackforge.io and use our services.
+AIVeda ("we," "us," "our," or "Company") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website aiveda.dev and use our services.
 
 This Privacy Policy is compliant with:
 - **Digital Personal Data Protection Act, 2023 (DPDP Act)**
@@ -25,7 +25,7 @@ This Privacy Policy is compliant with:
 
 **Data Principal:** The natural person to whom Personal Data relates.
 
-**Data Fiduciary:** The entity (Stackforge) that determines the purposes and means of Processing Personal Data.
+**Data Fiduciary:** The entity (AIVeda) that determines the purposes and means of Processing Personal Data.
 
 **Consent:** Freely given, specific, informed, and unambiguous indication of the Data Principal's wishes.
 
@@ -142,7 +142,7 @@ We Process your Personal Data based on:
 - Processing payments and issuing invoices
 
 ### 5.2 Improving Our Services
-- Analytics to understand how users interact with Stackforge
+- Analytics to understand how users interact with AIVeda
 - Identifying bugs and errors
 - Optimizing performance
 - Developing new features based on usage patterns
@@ -239,12 +239,12 @@ You have the right to request access to your Personal Data. We will provide:
 - Purposes of Processing
 - Recipients of your data
 
-**How to exercise:** Email [privacy@stackforge.io](mailto:privacy@stackforge.io) with "Data Access Request" in subject. Response within 15 days.
+**How to exercise:** Email [privacy@aiveda.dev](mailto:privacy@aiveda.dev) with "Data Access Request" in subject. Response within 15 days.
 
 ### 8.2 Right to Correction
 You have the right to correct inaccurate or incomplete Personal Data.
 
-**How to exercise:** Log in to your account and update your profile. For data you can't access, email [privacy@stackforge.io](mailto:privacy@stackforge.io).
+**How to exercise:** Log in to your account and update your profile. For data you can't access, email [privacy@aiveda.dev](mailto:privacy@aiveda.dev).
 
 ### 8.3 Right to Erasure ("Right to be Forgotten")
 You have the right to request deletion of your Personal Data, except where:
@@ -257,12 +257,12 @@ You have the right to request deletion of your Personal Data, except where:
 ### 8.4 Right to Data Portability
 You have the right to receive your Personal Data in a structured, commonly-used format and transmit it to another service.
 
-**How to exercise:** Email [privacy@stackforge.io](mailto:privacy@stackforge.io) with "Data Portability Request." We'll provide JSON export of your account data within 30 days.
+**How to exercise:** Email [privacy@aiveda.dev](mailto:privacy@aiveda.dev) with "Data Portability Request." We'll provide JSON export of your account data within 30 days.
 
 ### 8.5 Right to Grievance Redressal
 You have the right to lodge a grievance regarding Processing of your Personal Data.
 
-**How to exercise:** Email [privacy@stackforge.io](mailto:privacy@stackforge.io) with detailed complaint. We'll acknowledge within 48 hours and resolve within 30-45 days.
+**How to exercise:** Email [privacy@aiveda.dev](mailto:privacy@aiveda.dev) with detailed complaint. We'll acknowledge within 48 hours and resolve within 30-45 days.
 
 ### 8.6 Right to Withdraw Consent
 You can withdraw consent for any optional Processing (marketing emails, analytics) at any time.
@@ -353,20 +353,20 @@ Our website may contain links to third-party websites. We are **not responsible*
 
 ## 13. Children's Privacy (COPPA/Legislation)
 
-Stackforge is not intended for children under 13 (or applicable age of digital consent). We do not knowingly collect data from children.
+AIVeda is not intended for children under 13 (or applicable age of digital consent). We do not knowingly collect data from children.
 
 **If we discover:**
 - We've inadvertently collected data from a child
 - We'll delete it immediately
 - We'll notify parents/guardians if possible
 
-**Parental Contact:** Email [privacy@stackforge.io](mailto:privacy@stackforge.io) if you believe we've collected a child's data.
+**Parental Contact:** Email [privacy@aiveda.dev](mailto:privacy@aiveda.dev) if you believe we've collected a child's data.
 
 ---
 
 ## 14. Privacy Shield & Adequacy
 
-Stackforge complies with:
+AIVeda complies with:
 - **DPDP Act (India)** – Primary compliance framework
 - **GDPR (EU)** – For EU users
 - **CCPA (California)** – For CA residents
@@ -379,12 +379,12 @@ Stackforge complies with:
 ## 15. Data Protection Officer & Grievance Redressal
 
 ### Data Protection Officer
-**Email:** [dpo@stackforge.io](mailto:dpo@stackforge.io)
+**Email:** [dpo@aiveda.dev](mailto:dpo@aiveda.dev)
 **Phone:** [Phone number]
 **Address:** [Registered office address]
 
 ### Grievance Officer (DPDP Act Requirement)
-**Email:** [privacy@stackforge.io](mailto:privacy@stackforge.io)
+**Email:** [privacy@aiveda.dev](mailto:privacy@aiveda.dev)
 **Response Time:** Acknowledgment within 48 hours, resolution within 30-45 days
 
 ---
@@ -436,19 +436,19 @@ Your continued use after updates constitutes acceptance.
 ## 19. Contact Us
 
 **Privacy Inquiries:**
-[privacy@stackforge.io](mailto:privacy@stackforge.io)
+[privacy@aiveda.dev](mailto:privacy@aiveda.dev)
 
 **Data Protection Officer:**
-[dpo@stackforge.io](mailto:dpo@stackforge.io)
+[dpo@aiveda.dev](mailto:dpo@aiveda.dev)
 
 **Grievance Officer:**
-[grievance@stackforge.io](mailto:grievance@stackforge.io)
+[grievance@aiveda.dev](mailto:grievance@aiveda.dev)
 
 **General Contact:**
-[hello@stackforge.io](mailto:hello@stackforge.io)
+[hello@aiveda.dev](mailto:hello@aiveda.dev)
 
 **Mailing Address:**
-Stackforge Inc.
+AIVeda Inc.
 [Address]
 [City], [State/Country]
 
@@ -456,7 +456,7 @@ Stackforge Inc.
 
 ## 20. Acknowledgment
 
-**By using Stackforge, you acknowledge:**
+**By using AIVeda, you acknowledge:**
 - You've read and understood this Privacy Policy
 - You consent to our Processing of your Personal Data as described
 - You understand your rights and how to exercise them
@@ -464,7 +464,7 @@ Stackforge Inc.
 
 ---
 
-**© 2025 Stackforge Inc. All rights reserved.**
+**© 2025 AIVeda Inc. All rights reserved.**
 
 **Disclaimer:** This Privacy Policy is a template. It should be reviewed and customized by legal counsel before use. We recommend consulting with a data protection attorney to ensure compliance with all applicable laws in your jurisdiction.
 

@@ -204,7 +204,7 @@ describe("PaymentWall", () => {
     // The one number on this screen that cannot be a conversion. Razorpay
     // debits INR, so a button reading "Pay $4.99" over a ₹499 statement line
     // is a different price from the one that was agreed to.
-    localStorage.setItem("stackforge-currency", "usd");
+    localStorage.setItem("aiveda-currency", "usd");
     // No trial on this product, so the button quotes the amount rather than
     // offering days.
     data.plans = [plan({ trial_days: 0 })];

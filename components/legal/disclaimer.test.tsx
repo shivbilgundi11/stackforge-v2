@@ -12,7 +12,7 @@ import * as legal from "@/lib/legal/disclaimers";
 import type { ToolGroup, ToolSpec } from "@/lib/tools/spec";
 
 /**
- * Disclaimers, per `Stackforge_Disclaimer_Checklist_and_Copy.md`.
+ * Disclaimers, per the disclaimer checklist and copy doc.
  *
  * The checklist's argument is that proximity does the work: a sentence beside
  * the number is worth more than a page of terms nobody opens. So what is
@@ -176,7 +176,7 @@ describe("the first-run notice", () => {
   it("is dismissed per tool, not once for all of them", () => {
     // The checklist asks for two separate triggers. Dismissing it on the ROI
     // calculator must not silently dismiss it on a tool nobody has opened.
-    window.localStorage.setItem("stackforge.first-run.roi", "1");
+    window.localStorage.setItem("aiveda.first-run.roi", "1");
 
     render(<FirstRunNotice tool="architect" />);
 

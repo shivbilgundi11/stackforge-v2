@@ -208,7 +208,7 @@ export function PaymentWall() {
           <div className="flex items-center gap-1.5 text-[11.5px] text-fg-subtle">
             <ShieldCheckIcon className="size-3.5 shrink-0" aria-hidden />
             <span>
-              Card and UPI details go to Razorpay, never to StackForge. Payment is taken in Indian
+              Card and UPI details go to Razorpay, never to AIVeda. Payment is taken in Indian
               rupees.
               {row && row.trial_days > 0 && !pastDue
                 ? ` You authorize a payment method now and are not charged until the ${row.trial_days}-day trial ends.`

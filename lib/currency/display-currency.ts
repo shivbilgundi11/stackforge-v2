@@ -18,7 +18,7 @@ export type DisplayCurrency = "inr" | "usd";
 
 export const DEFAULT_CURRENCY: DisplayCurrency = "inr";
 
-export const CURRENCY_STORAGE_KEY = "stackforge-currency";
+export const CURRENCY_STORAGE_KEY = "aiveda-currency";
 
 export const DISPLAY_CURRENCIES: {
   value: DisplayCurrency;

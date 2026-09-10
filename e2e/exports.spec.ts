@@ -95,7 +95,7 @@ test("a share link opens for a stranger and dies on revoke", async ({ page, brow
     await expect(visitor.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/i);
     await expect(visitor.getByRole("heading", { name: /plan your own stack/i })).toBeVisible();
     // Nothing about the owner reaches the page.
-    await expect(visitor.locator("body")).not.toContainText("stackforge-e2e.com");
+    await expect(visitor.locator("body")).not.toContainText("aiveda-e2e.com");
 
     await page.getByRole("button", { name: /revoke/i }).click();
     await expect(page.getByText(/revoked/i).first()).toBeVisible();

@@ -7,7 +7,7 @@ import { getCatalogStats } from "@/lib/marketing/data";
  * About (M22).
  *
  * Positioning and the principles the product is actually built to, with no
- * invented company history, team size, funding, or customer count. StackForge
+ * invented company history, team size, funding, or customer count. AIVeda
  * is early and the page says so — a claim we would have to retract later is
  * worth less than the credibility of the ones we can defend today (Q-02).
  */
@@ -17,7 +17,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Why StackForge exists, what it refuses to do, and the principles the product is built to.",
+    "Why AIVeda exists, what it refuses to do, and the principles the product is built to.",
   alternates: { canonical: "/about" },
 };
 
@@ -53,7 +53,7 @@ export default async function Page() {
         <SectionHeader
           eyebrow="About"
           title="The planning layer that should already exist."
-          lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. StackForge is the step in between — the one where the numbers get worked out while they can still change the decision."
+          lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. AIVeda is the step in between — the one where the numbers get worked out while they can still change the decision."
         />
       </Section>
 
@@ -64,7 +64,7 @@ export default async function Page() {
           </h2>
           <div className="flex max-w-[64ch] flex-col gap-4 text-[14.5px] leading-relaxed text-pretty text-fg-muted">
             <p>
-              StackForge is an engineering workbench for planning AI systems. You describe what you
+              AIVeda is an engineering workbench for planning AI systems. You describe what you
               are building and its constraints; it costs the options, scores them against each
               other, checks whether they work together, and hands back the artifacts — an
               architecture document, a diagram, a roadmap, and starter configuration.
@@ -103,7 +103,7 @@ export default async function Page() {
         <SectionHeader
           eyebrow="Where we are"
           title="Early, and saying so."
-          lede="StackForge is in active development. There are no customer logos on this site because there are no customers to name yet, and a wall of invented testimonials would tell you nothing except that we were willing to invent them. What we can show you is the product doing the work — which is why every screenshot here is a real result rather than a mockup."
+          lede="AIVeda is in active development. There are no customer logos on this site because there are no customers to name yet, and a wall of invented testimonials would tell you nothing except that we were willing to invent them. What we can show you is the product doing the work — which is why every screenshot here is a real result rather than a mockup."
         />
       </Section>
 

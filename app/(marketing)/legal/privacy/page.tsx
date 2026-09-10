@@ -18,7 +18,7 @@ import { readDates, readLegalDocument } from "@/lib/marketing/legal";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "What StackForge collects, why, how long it is kept, and who else sees it.",
+  description: "What AIVeda collects, why, how long it is kept, and who else sees it.",
   alternates: { canonical: "/legal/privacy" },
   // Still noindex while the document is a draft. A policy a search engine has
   // cached is one people rely on, and this one is not in force yet.

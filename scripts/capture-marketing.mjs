@@ -11,22 +11,32 @@
  * Run it against a production build. That is the point: `next dev` paints the
  * badge, and a marketing shot should be of the thing that ships anyway.
  *
- *     STACKFORGE_CAPTURE=1 npx next build
- *     STACKFORGE_CAPTURE=1 npx next start -p 3100
+ *     AIVEDA_CAPTURE=1 npx next build
+ *     AIVEDA_CAPTURE=1 npx next start -p 3100
  *     node scripts/capture-marketing.mjs
  *
  * Port 3100 because the backend already allows that origin through CORS, and
- * `STACKFORGE_CAPTURE` because it moves the build into its own directory — so
+ * `AIVEDA_CAPTURE` because it moves the build into its own directory — so
  * none of this disturbs a dev server already running on :3000.
  *
- * ## One browser context per shot
+ * ## It has to sign in
  *
- * Anonymous visitors get five tool runs a day (D-17) and there are seven
- * shots, so a single session runs out two tools in. A fresh context is a fresh
- * anonymous session, which also keeps the sidebar's plan card reading
- * "Anonymous Plan 0/5" exactly as the current shots do — the alternative,
- * raising the quota for the length of the run, would change the number in the
- * picture.
+ * These shots were originally captured anonymously, back when a signed-out
+ * visitor could run five tools a day. That tier is gone — `AuthGuard` wraps
+ * the whole `(app)` shell, so a `goto` to a calculator now lands on `/login`.
+ * The script therefore signs in once and reuses that session for all fourteen
+ * captures.
+ *
+ * The account is Pro on purpose. Free allows three AI calls a day against
+ * fourteen shots, so most of the run would render the non-AI path and the set
+ * would not agree with itself. Pro is unlimited on both counts, which is the
+ * only way fourteen images come out of one run looking like one product.
+ *
+ * Create the account once, then grant it the plan from the backend:
+ *
+ *     uv run python -m app.cli set-plan <email> pro
+ *
+ * Override the credentials with CAPTURE_EMAIL and CAPTURE_PASSWORD.
  */
 
 import { existsSync, mkdirSync } from "node:fs";
@@ -38,6 +48,8 @@ import { chromium } from "playwright";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "public", "marketing");
 const BASE = process.env.CAPTURE_BASE_URL ?? "http://localhost:3100";
+const EMAIL = process.env.CAPTURE_EMAIL ?? "press-kit@aivedashots.com";
+const PASSWORD = process.env.CAPTURE_PASSWORD ?? "Qr7!vTzm-Lp4Wdx";
 
 /** `ProductShot` declares this pair; the files have to match it. */
 const VIEWPORT = { width: 1440, height: 900 };
@@ -56,16 +68,55 @@ const SHOTS = [
 
 const THEMES = ["light", "dark"];
 
+/** Every `ToolGroup` in `lib/tools/spec.ts` — the first-run notice is keyed by it. */
+const TOOL_GROUPS = ["cost", "compare", "rag", "agents", "infra", "roi", "architect"];
+
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch();
 const written = [];
 
+/**
+ * Sign in on this page.
+ *
+ * Once per context, not once per run. Capturing one `storageState` and
+ * handing it to all fourteen contexts looks like the obvious saving and is a
+ * trap: refresh tokens rotate on use, so the second context presents a token
+ * the first already spent. The API reads a replayed refresh token as theft and
+ * revokes the whole family — `reuse_detected` in `api/v1/auth.py` — which
+ * strands every context after the first. The visible symptom is one good
+ * screenshot followed by a run that hangs until the timeout, so it reads as a
+ * slow tool rather than as a dead session.
+ *
+ * Fourteen logins cost a couple of seconds each. That is the price of every
+ * context owning its own session.
+ */
+async function signIn(page) {
+  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
+  await page.getByLabel("Email").fill(EMAIL);
+  await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
+  await page.getByRole("button", { name: /sign in|log in/i }).click();
+
+  // The dashboard is the landing route for an account that owes nothing. A
+  // timeout here is almost always the plan: an account on a paid tier with no
+  // subscription behind it is held at `/checkout` by the guard, and no tool
+  // page will render until `set-plan` has been run against it.
+  await page.waitForURL(/\/dashboard/, { timeout: 30_000 }).catch(() => {
+    throw new Error(
+      `signed in as ${EMAIL} but landed on ${page.url()} rather than /dashboard. ` +
+        "If this is /checkout the account is on a paid plan with no subscription; " +
+        "grant it with `uv run python -m app.cli set-plan <email> pro`.",
+    );
+  });
+
+}
+
 try {
   for (const shot of SHOTS) {
     for (const theme of THEMES) {
-      // New context per shot *and* per theme: fourteen runs is well past the
-      // five one anonymous session gets.
+      // New context per shot *and* per theme, each with its own session.
+      // Fresh contexts also keep the shots independent — a stray toast or an
+      // open popover from the previous capture cannot leak into the next.
       const context = await browser.newContext({
         viewport: VIEWPORT,
         deviceScaleFactor: SCALE,
@@ -75,12 +126,23 @@ try {
       // Written before the first paint, so the page never renders in one
       // theme and flips to the other — which a screenshot is fast enough to
       // catch in the act.
+      //
+      // The first-run notice is marked seen in the same script. It is a real
+      // banner a real first-time user gets, but it sits above the form and
+      // pushes the result out of a 900px frame — and every capture runs in a
+      // fresh context, so without this every shot is a first run.
       await context.addInitScript(
-        ([key, value]) => window.localStorage.setItem(key, value),
-        ["stackforge-theme", theme],
+        ([key, value, groups]) => {
+          window.localStorage.setItem(key, value);
+          for (const group of groups) {
+            window.localStorage.setItem(`aiveda.first-run.${group}`, "1");
+          }
+        },
+        ["aiveda-theme", theme, TOOL_GROUPS],
       );
 
       const page = await context.newPage();
+      await signIn(page);
       const errors = [];
       page.on("console", (message) => {
         if (message.type() === "error") errors.push(message.text());
@@ -115,7 +177,10 @@ try {
           response.request().method() === "POST" &&
           response.url().includes("/api/v1/") &&
           !response.url().includes("/auth/"),
-        { timeout: 60_000 },
+        // Measured at ~37s for the architect against a warm backend. The
+        // ceiling is for the slow tail of a live model call, not the norm —
+        // a run that genuinely hangs still fails, just later.
+        { timeout: 180_000 },
       );
       await submit.click();
       const response = await run;

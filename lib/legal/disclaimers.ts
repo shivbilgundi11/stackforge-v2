@@ -1,7 +1,7 @@
 /**
  * Every disclaimer the product shows, in one place.
  *
- * `Stackforge_Disclaimer_Checklist_and_Copy.md` closes with the reason: this
+ * The disclaimer checklist and copy doc closes with the reason: this
  * language will be revised — new jurisdictions, counsel's wording, a tweak
  * after a vendor complains — and hunting it through a dozen components is how
  * one copy of it silently stays wrong. Components import a key; nobody types
@@ -85,7 +85,7 @@ export const FIRST_RUN =
 
 /** Location 11 — the sitewide line, beside a link to the Terms. */
 export const FOOTER =
-  "Comparisons, cost estimates and recommendations on StackForge are planning guidance, " +
+  "Comparisons, cost estimates and recommendations on AIVeda are planning guidance, " +
   "not professional, financial or legal advice.";
 
 /** Location 11, in the app shell, where there is no footer and less room. */

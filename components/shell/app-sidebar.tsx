@@ -41,7 +41,7 @@ export function AppSidebar() {
         <Link
           href="/dashboard"
           className="rounded-md focus-visible:outline-none"
-          aria-label="StackForge home"
+          aria-label="AIVeda home"
         >
           <BrandLockup collapsed={collapsed} />
         </Link>

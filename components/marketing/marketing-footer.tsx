@@ -107,7 +107,7 @@ export function MarketingFooter() {
             for the complete disclaimers and limitations of liability.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} StackForge. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} AIVeda. All rights reserved.</p>
             <p>
               Prices and specifications are carried from vendor documentation and stamped with the
               date they were last verified.

@@ -30,8 +30,8 @@ const instrument = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: "StackForge — Plan your AI stack before you build",
-    template: "%s · StackForge",
+    default: "AIVeda — Plan your AI stack before you build",
+    template: "%s · AIVeda",
   },
   description:
     "An AI engineering workbench. Estimate cost, compare tools, design architectures, and export the artifacts to build them.",

@@ -28,7 +28,7 @@ import {
  * that does not read the value.
  */
 
-const ACCENT_EVENT = "stackforge:accent";
+const ACCENT_EVENT = "aiveda:accent";
 
 function subscribe(onChange: () => void): () => void {
   window.addEventListener(ACCENT_EVENT, onChange);

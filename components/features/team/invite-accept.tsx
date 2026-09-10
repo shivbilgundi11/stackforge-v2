@@ -163,7 +163,7 @@ function InvalidInvite() {
           Ask whoever invited you to send a fresh invitation.
         </p>
         <Button asChild variant="outline" size="sm">
-          <Link href="/">Back to StackForge</Link>
+          <Link href="/">Back to AIVeda</Link>
         </Button>
       </div>
     </AuthShell>

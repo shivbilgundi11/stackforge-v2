@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   // dev server is using. Giving the capture build its own directory is what
   // lets it run without stopping whatever is already on :3000. Nothing else
   // sets this variable.
-  distDir: process.env.STACKFORGE_CAPTURE === "1" ? ".next-capture" : undefined,
+  distDir: process.env.AIVEDA_CAPTURE === "1" ? ".next-capture" : undefined,
 
   // The production image copies `.next/standalone` and nothing else — no
   // `node_modules`, no source. That is the difference between a ~200 MB image

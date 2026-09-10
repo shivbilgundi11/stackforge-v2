@@ -22,7 +22,7 @@ import { Section, SectionHeader } from "@/components/marketing/section";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "How to reach the StackForge team, and the fastest routes to an answer.",
+  description: "How to reach the AIVeda team, and the fastest routes to an answer.",
   alternates: { canonical: "/contact" },
 };
 
@@ -31,7 +31,7 @@ const ROUTES = [
     title: "Something in the catalog is wrong or missing",
     body: "Every catalog page in the product has a flag control on the row itself. It carries the row and the value you are disputing, which is faster than describing it to us and much easier for us to act on.",
     href: "/signup",
-    cta: "Open StackForge",
+    cta: "Open AIVeda",
   },
   {
     title: "You want to know what a plan includes",
@@ -61,12 +61,12 @@ export default function Page() {
       <Section>
         <div className="grid gap-5 md:grid-cols-2">
           <a
-            href="mailto:hello@example.com"
+            href="mailto:hello@aiveda.dev"
             className="rounded-(--radius) border border-line bg-surface p-5 transition-colors hover:bg-surface-2"
           >
             <MailIcon className="size-4 text-ember" />
             <h2 className="mt-4 text-[14.5px] font-semibold text-fg">Email us</h2>
-            <p className="mt-1 text-[13.5px] text-fg-muted">hello@stackforge.io</p>
+            <p className="mt-1 text-[13.5px] text-fg-muted">hello@aiveda.dev</p>
           </a>
           <a
             href="tel:+910000000000"

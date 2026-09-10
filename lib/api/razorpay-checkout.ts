@@ -102,7 +102,7 @@ export async function openCheckout(
   new Razorpay({
     key: handle.key_id,
     subscription_id: handle.subscription_id,
-    name: "StackForge",
+    name: "AIVeda",
     description: "Subscription",
     // Razorpay sends this as a POST, so it must not target the GET-only page
     // that renders the confirmation UI. The callback route turns it into a

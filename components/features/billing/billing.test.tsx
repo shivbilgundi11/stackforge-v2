@@ -212,7 +212,7 @@ describe("PricingTable", () => {
     // A page that only ever showed dollars would send someone to a statement
     // line in a currency they never saw. The dollar figure is a reading; the
     // rupee one is the charge, and both are on the card.
-    localStorage.setItem("stackforge-currency", "usd");
+    localStorage.setItem("aiveda-currency", "usd");
     data.plans = [plan()];
 
     renderWith(<PricingTable />);
@@ -222,7 +222,7 @@ describe("PricingTable", () => {
   });
 
   it("says nothing about conversion when rupees are what is being read", () => {
-    localStorage.setItem("stackforge-currency", "inr");
+    localStorage.setItem("aiveda-currency", "inr");
     data.plans = [plan()];
 
     renderWith(<PricingTable />);

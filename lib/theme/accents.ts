@@ -113,7 +113,7 @@ export const ACCENTS: readonly Accent[] = [
 ];
 
 export const DEFAULT_ACCENT: AccentValue = "orange";
-export const ACCENT_STORAGE_KEY = "stackforge-accent";
+export const ACCENT_STORAGE_KEY = "aiveda-accent";
 
 export function isAccent(value: unknown): value is AccentValue {
   return ACCENTS.some((accent) => accent.value === value);

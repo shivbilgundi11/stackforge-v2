@@ -37,7 +37,7 @@ import { getCatalogStats } from "@/lib/marketing/data";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "StackForge — plan, cost, and compare your AI stack before you build",
+  title: "AIVeda — plan, cost, and compare your AI stack before you build",
   description:
     "An engineering workbench for AI systems. Cost a stack, compare the options, size the infrastructure, and leave with the architecture document — before writing code.",
   alternates: { canonical: "/" },
@@ -73,7 +73,7 @@ export default async function Page() {
           </h1>
 
           <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-pretty text-fg-muted">
-            StackForge is an engineering workbench for costing, comparing, and designing AI systems.
+            AIVeda is an engineering workbench for costing, comparing, and designing AI systems.
             Work out what it will actually spend, decide between the tools with the tradeoffs in
             front of you, and leave with the architecture document and the numbers to justify it.
           </p>
@@ -371,7 +371,7 @@ export default async function Page() {
         <SectionHeader
           eyebrow="What the numbers rest on"
           title="A catalog you can audit."
-          lede="StackForge has no customer logos to show you yet, so here is the thing that would actually matter if it did: what the recommendations are computed from."
+          lede="AIVeda has no customer logos to show you yet, so here is the thing that would actually matter if it did: what the recommendations are computed from."
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
