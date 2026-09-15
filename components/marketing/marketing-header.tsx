@@ -78,13 +78,20 @@ export function MarketingHeader() {
       <div className="absolute inset-0 -z-10 bg-bg/85" />
       <div className="mx-auto flex h-14 w-full max-w-280 items-center justify-between gap-4 px-5">
         <Link href="/" className="rounded-xs focus-visible:outline-2 focus-visible:outline-ember">
-          {/* The tagline is the first thing to go on a phone: the header row
-              is 55px over at 390px with it in, and a page that scrolls
-              sideways is a worse introduction than a missing subtitle. */}
-          <BrandLockup className="[&_[data-slot=brand-tagline]]:hidden sm:[&_[data-slot=brand-tagline]]:block" />
+          {/* The tagline is the first thing to go when the row runs out of
+              width, and a page that scrolls sideways is a worse introduction
+              than a missing subtitle. It waits for `lg` rather than `sm`
+              because "Sign in" appears at `sm` and the five nav links at `lg`,
+              so the row is at its tightest in between — the header was 55px
+              over at 390px and 48px over at 768px before this. */}
+          <BrandLockup className="[&_[data-slot=brand-tagline]]:hidden lg:[&_[data-slot=brand-tagline]]:block" />
         </Link>
 
-        <nav aria-label="Product" className="hidden items-center gap-1 md:flex">
+        {/* `lg`, not `md`: five links plus the theme control plus both CTAs do
+            not fit in a 768px row, and at that width the result was a
+            horizontal scrollbar on every page in the group. Below `lg` the
+            menu button below carries them. */}
+        <nav aria-label="Product" className="hidden items-center gap-1 lg:flex">
           {LINKS.map((link) => {
             const active = pathname === link.href;
             return (
@@ -136,7 +143,7 @@ export function MarketingHeader() {
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden"
+            className="lg:hidden"
             aria-expanded={open}
             aria-controls="marketing-menu"
             onClick={() => setOpen((v) => !v)}
@@ -151,7 +158,7 @@ export function MarketingHeader() {
         <nav
           id="marketing-menu"
           aria-label="Product"
-          className="border-t border-line bg-bg px-5 py-3 md:hidden"
+          className="border-t border-line bg-bg px-5 py-3 lg:hidden"
         >
           <ul className="flex flex-col">
             {LINKS.map((link) => (

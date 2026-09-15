@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRightIcon,
-  BadgeDollarSignIcon,
   BarChart3Icon,
   BoxIcon,
   BrainIcon,
@@ -102,11 +102,23 @@ import { getCatalogStats, getPlansStatic } from "@/lib/marketing/data";
  *     endorsed the product, and a wall of logos on a home page reads as
  *     exactly that claim.
  *
- * Only the hero and the worked example show real product output, and both go
- * through `ProductShot`, which is a capture of the running app. Everything
- * else that looks like a screenshot is drawn in DOM and is deliberately
- * flatter, so the difference between "here is the product" and "here is the
- * idea" is visible rather than asserted.
+ * The worked example is the one place that shows real product output. It goes
+ * through `ProductShot`, which is a capture of the running app, and it is the
+ * section that argues the numbers, so that is where the claim belongs.
+ *
+ * The hero is a rendered mockup — a laptop on a desk, supplied with the comps,
+ * with its callouts painted in. It is not a capture and does not claim to be
+ * one: the "a real result, not a mockup" caption that sat under the screenshot
+ * it replaced came off with it, because leaving that line under artwork would
+ * have been the exact kind of unearned claim the section above is about. The
+ * figures rendered on its screen are close to but not identical with the
+ * worked example's ($2,142 against $2,042, 24/35 components against 8), which
+ * is tolerable for a hero at the size it renders and would not be if the page
+ * cited it as a result.
+ *
+ * Everything else that looks like a screenshot is drawn in DOM and is
+ * deliberately flatter, so the difference between "here is the product" and
+ * "here is the idea" is visible rather than asserted.
  */
 
 export const revalidate = 3600;
@@ -176,8 +188,22 @@ export default async function Page() {
           className="bg-dots pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_70%_60%_at_70%_0%,black,transparent)] opacity-40"
           aria-hidden
         />
-        <div className="relative grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-10">
-          <div>
+        {/* Not a two-column grid. In the comps the photograph is a layer the
+            copy sits on, not a panel beside it — it runs off the top and right
+            of the frame and dissolves into the page on its left, with no edge
+            anywhere. A grid track cannot do that: a track has a boundary, and
+            the boundary is the thing the design does not have. So the copy is
+            one column with a reading measure, and the image is positioned
+            against the full-bleed `<section>` behind it.
+
+            This wrapper is deliberately *not* positioned. The image below is
+            `absolute`, and it has to resolve against the `<section>` — which
+            is full width — rather than against this container, which is held
+            to 80rem. Adding `relative` here would silently pull the photograph
+            back inside the measure and put the gutter it is meant to cross
+            right back. */}
+        <div>
+          <div className="relative z-10 lg:max-w-[34rem]">
             <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-[12px] text-fg-muted shadow-panel">
               <span className="size-1.5 rounded-full bg-ember" aria-hidden />
               {catalog.models} models · {catalog.tools} tools · {pairs} verified pairs
@@ -208,7 +234,15 @@ export default async function Page() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-11 gap-2.5 px-5 text-[14px]">
-                <Link href="/features">See what it does</Link>
+                <Link href="/features">
+                  <span
+                    className="flex size-6 items-center justify-center rounded-full bg-fg text-bg"
+                    aria-hidden
+                  >
+                    <PlayIcon className="size-2.5 fill-current" />
+                  </span>
+                  See what it does
+                </Link>
               </Button>
             </div>
 
@@ -218,7 +252,13 @@ export default async function Page() {
 
             {/* The catalog counts, at the point where a visitor is deciding
                 whether the rest of the page is worth reading. */}
-            <dl className="mt-10 grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0 sm:divide-x sm:divide-line">
+            {/* Narrower than the copy above it. The row is the lowest, widest
+                thing in the column, so it is the one element that reaches the
+                point where the photograph starts taking opacity — and these
+                are 12.5px labels, which is the worst possible text to set over
+                a picture of a plant. The labels are short enough that the lost
+                inches cost nothing. */}
+            <dl className="mt-10 grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0 sm:divide-x sm:divide-line lg:max-w-[30rem]">
               {heroStats.map((stat, i) => (
                 <div
                   key={stat.label}
@@ -241,53 +281,65 @@ export default async function Page() {
             </dl>
           </div>
 
-          {/* The one place on the page that claims to show real output. The
-              pills are anchored to the figure and not to this column, so they
-              cannot drift onto the caption when the shot changes aspect. */}
-          <div className="lg:-mr-6 xl:-mr-16">
-            <div className="relative">
-              <FloatPill
-                icon={LayersIcon}
-                tone="ember"
-                className="-top-5 left-2 z-10 max-w-44 xl:left-8"
-              >
-                From idea to architecture
-              </FloatPill>
-              <FloatPill icon={BarChart3Icon} tone="info" className="-top-9 right-0 z-10 max-w-44">
-                Compare models &amp; tools
-              </FloatPill>
-              <FloatPill
-                icon={BadgeDollarSignIcon}
-                tone="success"
-                className="-bottom-7 left-4 z-10 max-w-44"
-              >
-                Know the cost before deployment
-              </FloatPill>
-              <FloatPill
-                icon={FileTextIcon}
-                tone="forge"
-                className="-right-2 -bottom-11 z-10 max-w-48 xl:right-6"
-              >
-                Export documentation for your team
-              </FloatPill>
+          {/* The hero image from the comps: the workbench on a laptop on a
+              desk, with its three callouts already part of the artwork.
 
-              <ProductShot
-                src="stack-architect"
-                priority
-                alt="Stack Architect returning a recommended stack scored 85 out of 100 — Anthropic API, LangChain, Qdrant, SQLite, Valkey, Apache Airflow, Grafana and Vercel — with a score breakdown across ten weighted dimensions and an architecture diagram."
-              />
-            </div>
-            {/* The pills only exist at `lg`, so only `lg` needs the clearance. */}
-            <p className="mt-3 text-[12px] text-fg-subtle lg:mt-16">
-              A real result, not a mockup: RAG at medium scale on a $2,000/month budget.
-            </p>
-          </div>
+              No `FloatPill`s here any more — the pills are painted into the
+              image, and a DOM pill beside them would be a second one in a
+              slightly different typeface. The component is still used over the
+              worked example, where the shot underneath is a flat capture.
+
+              This is a rendered mockup, not a capture, so it does not carry
+              the "real result" caption the screenshot it replaced did. The
+              page's claim to show real output now rests entirely on the
+              worked example, which is the section that argues the numbers
+              anyway. See the note at the top of this file. */}
+          {/* Two layouts, one element.
+
+              Below `lg` it is an ordinary block under the copy, rounded like
+              any other figure — there is no room to set text over a photograph
+              at phone width, and the alternative of dropping it loses the only
+              picture of the product above the fold.
+
+              At `lg` it goes `absolute`, which resolves against the nearest
+              positioned ancestor — the `<section>`, not this container — so it
+              escapes the 80rem measure and bleeds to the viewport edge with no
+              margin arithmetic. `inset-y-0` takes it off the top and bottom of
+              the section too, and `object-cover` crops rather than letterboxes
+              into a box that is no longer 3:2.
+
+              The mask is what removes the seam: transparent at the left, fully
+              opaque by 32% in, so the bright blurred half of the photograph
+              dissolves into the page instead of ending at an edge. The copy's
+              34rem measure keeps every line clear of the point where the image
+              reaches even a third of its opacity. */}
+          <Image
+            src="/marketing/hero-laptop.webp"
+            width={1536}
+            height={1024}
+            priority
+            sizes="(max-width: 1024px) 100vw, 58vw"
+            alt="AIVeda open on a laptop, showing a RAG system designed in Stack Architect: the model, framework and vector database wired together, a stack score of 85 out of 100 with its cost, scalability and compatibility breakdown, and the estimated monthly cost."
+            className="mt-12 h-auto w-full rounded-xl lg:absolute lg:inset-y-0 lg:right-0 lg:mt-0 lg:h-full lg:w-[62%] lg:rounded-none lg:mask-[linear-gradient(to_right,transparent,black_32%)] lg:object-cover lg:object-right"
+          />
+
+          {/* The scrim. A photograph lit for a white page is a hole in a matte
+              black one, and the mask alone does not fix that — it fades the
+              left edge, which is exactly the part that was already quiet. This
+              carries the rest: a wash back to the page colour in dark, and
+              nothing at all in light, where the artwork already belongs. */}
+          <div
+            aria-hidden
+            className="pointer-events-none hidden lg:absolute lg:inset-y-0 lg:right-0 lg:block lg:w-[62%] dark:bg-linear-to-r dark:from-bg dark:via-bg/45 dark:to-bg/20"
+          />
         </div>
 
-        {/* Under both columns rather than under the copy: four of these do not
-            fit on one line in half the page, and a trust row that wraps
-            mid-list reads as an afterthought. */}
-        <ul className="relative mt-10 flex flex-wrap gap-x-7 gap-y-2.5 lg:mt-4">
+        {/* Held to the same measure as the copy, which costs it a second line
+            at this width. That is the right trade now the photograph is a
+            layer rather than a column: a run of 13px muted text crossing into
+            the opaque half of a photograph is unreadable, and two tidy lines
+            clear of it are merely two lines. */}
+        <ul className="relative mt-10 flex flex-wrap gap-x-7 gap-y-2.5 lg:max-w-[34rem]">
           {HERO_ASSURANCES.map((item) => (
             <li key={item} className="flex items-center gap-2 text-[13px] text-fg-muted">
               <CheckCircle2Icon className="size-4 shrink-0 text-success" aria-hidden />
@@ -696,7 +748,11 @@ export default async function Page() {
             </div>
           </div>
 
-          <div className="relative lg:-mr-6">
+          {/* 1.25rem, not 1.5rem, and only from 1280px up. Below the container's
+              max width the gutter *is* the container's 1.25rem padding, so
+              anything wider than that pulls the shot past the viewport and
+              gives the whole page a horizontal scrollbar. */}
+          <div className="relative min-[1280px]:-mr-5">
             <FloatPill
               icon={CheckCircle2Icon}
               tone="success"
@@ -841,7 +897,11 @@ export default async function Page() {
       </Section>
 
       {/* ── 7 · Workflows ────────────────────────────────────────────────── */}
-      <Section wide>
+      {/* Clipped because the layer diagram is skewed and translated, and a
+          transform paints outside its box without widening its parent — so it
+          reached 7px past the viewport at `lg` and nothing in the layout knew
+          it had. Nothing else in the section comes near the edge. */}
+      <Section wide className="overflow-hidden">
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
           <SectionHeader
             eyebrow="Workflows"
