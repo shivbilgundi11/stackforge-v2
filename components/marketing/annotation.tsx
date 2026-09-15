@@ -49,7 +49,7 @@ export function Annotation({
   return (
     <div aria-hidden className={cn("pointer-events-none hidden lg:block", className)}>
       {below ? <Arrow d={DIRECTIONS[direction]} className={arrowClassName} /> : null}
-      <p className="font-hand text-[19px] leading-[1.25] text-fg-muted">{children}</p>
+      <p className="font-hand text-[19px] leading-tight text-fg-muted">{children}</p>
       {below ? null : <Arrow d={DIRECTIONS[direction]} className={arrowClassName} />}
     </div>
   );
