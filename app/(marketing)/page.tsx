@@ -173,19 +173,19 @@ export default async function Page() {
       {/* ── 1 · Hero ─────────────────────────────────────────────────────── */}
       <Section bleed wide className="relative overflow-hidden">
         <div
-          className="bg-dots pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_70%_0%,black,transparent)] opacity-40"
+          className="bg-dots pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_70%_60%_at_70%_0%,black,transparent)] opacity-40"
           aria-hidden
         />
         <div className="relative grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-10">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-[12px] text-fg-muted shadow-[var(--shadow-panel)]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-[12px] text-fg-muted shadow-panel">
               <span className="size-1.5 rounded-full bg-ember" aria-hidden />
               {catalog.models} models · {catalog.tools} tools · {pairs} verified pairs
             </span>
 
             <h1 className="mt-6 font-serif text-[clamp(2.6rem,5.6vw,4.1rem)] leading-[1.03] tracking-[-0.03em] text-balance text-fg">
               Plan your AI stack{" "}
-              <span className="bg-gradient-to-r from-ember to-rose bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-ember to-rose bg-clip-text text-transparent">
                 before you build it.
               </span>
             </h1>
@@ -228,7 +228,7 @@ export default async function Page() {
                   }
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-tone-quiet text-tone">
-                    <stat.icon className="size-[18px]" aria-hidden />
+                    <stat.icon className="size-4.5" aria-hidden />
                   </span>
                   <div className="min-w-0">
                     <dd className="font-sans text-[21px] leading-none font-semibold text-fg tabular-nums">
@@ -412,7 +412,7 @@ export default async function Page() {
               {i < all.length - 1 ? (
                 <ArrowRightIcon
                   aria-hidden
-                  className="absolute top-1/2 -right-[18px] hidden size-4 -translate-y-1/2 text-fg-subtle xl:block"
+                  className="absolute top-1/2 -right-4.5 hidden size-4 -translate-y-1/2 text-fg-subtle xl:block"
                 />
               ) : null}
             </li>
@@ -594,7 +594,7 @@ export default async function Page() {
             <p className="font-mono text-[10.5px] tracking-[0.12em] text-ember uppercase">
               A worked example
             </p>
-            <h2 className="mt-3 font-serif text-[clamp(1.85rem,3.4vw,2.6rem)] leading-[1.1] tracking-[-0.025em] text-balance text-fg">
+            <h2 className="mt-3 font-serif text-[clamp(1.85rem,3.4vw,2.6rem)] leading-[1.1] tracking-tight text-balance text-fg">
               “RAG over internal documentation, medium scale,{" "}
               <span className="text-ember">$2,000 a month.</span>”
             </h2>
@@ -762,7 +762,7 @@ export default async function Page() {
 
             <div className="m-4 mt-auto flex flex-wrap items-center gap-4 rounded-lg border border-forge-line/60 bg-forge-quiet/60 px-4 py-3.5">
               <DatabaseIcon className="size-4 shrink-0 text-forge" aria-hidden />
-              <div className="min-w-[14rem] flex-1">
+              <div className="min-w-56 flex-1">
                 <p className="text-[13.5px] font-semibold text-fg">8 components working together</p>
                 <p className="mt-0.5 text-[12.5px] text-fg-muted">
                   Selected from {catalog.models} models and {catalog.tools} tools based on your
@@ -937,7 +937,7 @@ export default async function Page() {
               ].map((item) => (
                 <li key={item.title} data-tone={item.tone}>
                   <span className="inline-flex size-10 items-center justify-center rounded-lg bg-tone-quiet text-tone">
-                    <item.icon className="size-[18px]" aria-hidden />
+                    <item.icon className="size-4.5" aria-hidden />
                   </span>
                   <p className="mt-3 text-[14px] font-semibold text-fg">{item.title}</p>
                   <p className="mt-1 text-[12.5px] text-fg-muted">{item.note}</p>
@@ -979,7 +979,7 @@ export default async function Page() {
               data-tone="info"
               className="tone-wash mt-2 w-52 shrink-0 rounded-xl border border-tone-line/60 p-4 text-center"
             >
-              <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-surface text-tone shadow-[var(--shadow-panel)]">
+              <span className="mx-auto flex size-10 items-center justify-center rounded-full bg-surface text-tone shadow-panel">
                 <MessageCircleIcon className="size-5" aria-hidden />
               </span>
               <p className="mt-3 text-[13px] font-medium text-fg">Still have a question?</p>
@@ -1031,7 +1031,7 @@ export default async function Page() {
       <Section wide>
         <div className="relative overflow-hidden rounded-xl border border-line bg-surface px-6 py-14 sm:px-10">
           <div
-            className="bg-dots pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_60%_80%_at_50%_50%,black,transparent)] opacity-30"
+            className="bg-dots pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_60%_80%_at_50%_50%,black,transparent)] opacity-30"
             aria-hidden
           />
 
