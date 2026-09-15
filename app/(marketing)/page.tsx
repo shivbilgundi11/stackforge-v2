@@ -208,15 +208,7 @@ export default async function Page() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-11 gap-2.5 px-5 text-[14px]">
-                <Link href="/features">
-                  <span
-                    className="flex size-6 items-center justify-center rounded-full bg-fg text-bg"
-                    aria-hidden
-                  >
-                    <PlayIcon className="size-2.5 fill-current" />
-                  </span>
-                  See what it does
-                </Link>
+                <Link href="/features">See what it does</Link>
               </Button>
             </div>
 
