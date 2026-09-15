@@ -44,7 +44,14 @@ export function BrandLockup({
           <span className="truncate text-[13.5px] font-semibold tracking-[-0.01em] text-fg">
             AIVeda
           </span>
-          <span className="mt-0.5 truncate text-[10.5px] tracking-[0.03em] text-fg-subtle">
+          {/* Slotted so a caller can drop the tagline at a width where it does
+              not fit. The marketing header does exactly that: its row is the
+              lockup plus a theme control plus a CTA plus a menu button, which
+              is 55px too wide for a 390px phone with the tagline in. */}
+          <span
+            data-slot="brand-tagline"
+            className="mt-0.5 truncate text-[10.5px] tracking-[0.03em] text-fg-subtle"
+          >
             AI engineering workbench
           </span>
         </span>

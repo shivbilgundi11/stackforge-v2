@@ -102,6 +102,23 @@
   --danger-quiet: oklch(0.9531 0.0224 20);
   --danger-line: oklch(0.8484 0.0721 22);
 
+  /* ---- marketing tints --------------------------------------------------
+     Two accents that exist only for the public pages. The product shell has
+     three meaning-bearing colours and no decorative ones, which is right for
+     a console and wrong for a home page: the marketing sections are told
+     apart by tint before they are read, and three cannot carry five. These
+     are built at the same L/C as --forge, so a tinted card never reads
+     brighter than the one beside it.
+
+     They carry no meaning. Nothing inside the application may use them. */
+  --info: oklch(0.5455 0.1554 245);
+  --info-quiet: oklch(0.9498 0.0243 245);
+  --info-line: oklch(0.8395 0.0704 245);
+
+  --rose: oklch(0.5544 0.1689 5);
+  --rose-quiet: oklch(0.9531 0.0243 5);
+  --rose-line: oklch(0.8484 0.0704 5);
+
   /* ---- charts — six categoricals at constant L/C, rotated in hue only.
      More than six series means the chart is wrong, not that the palette is
      short: aggregate, facet, or filter. */
@@ -181,6 +198,14 @@
   --danger: oklch(0.6634 0.1731 25.7);
   --danger-quiet: oklch(0.2823 0.0503 25.7);
   --danger-line: oklch(0.3793 0.0793 25.7);
+
+  --info: oklch(0.6984 0.1234 245);
+  --info-quiet: oklch(0.2823 0.0483 245);
+  --info-line: oklch(0.3793 0.0743 245);
+
+  --rose: oklch(0.6934 0.1389 5);
+  --rose-quiet: oklch(0.2823 0.0503 5);
+  --rose-line: oklch(0.3793 0.0793 5);
 
   --chart-1: oklch(0.7024 0.1289 45);
   --chart-2: oklch(0.6884 0.1234 285);
@@ -363,6 +388,19 @@
   --color-danger-quiet: var(--danger-quiet);
   --color-danger-line: var(--danger-line);
 
+  --color-info: var(--info);
+  --color-info-quiet: var(--info-quiet);
+  --color-info-line: var(--info-line);
+  --color-rose: var(--rose);
+  --color-rose-quiet: var(--rose-quiet);
+  --color-rose-line: var(--rose-line);
+
+  /* Resolved per-tone by [data-tone] below, so one card component can be
+     tinted five ways without five sets of classes. */
+  --color-tone: var(--tone);
+  --color-tone-quiet: var(--tone-quiet);
+  --color-tone-line: var(--tone-line);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -404,6 +442,7 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-hand: var(--font-caveat), ui-rounded, "Segoe Print", cursive;
 
   --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
@@ -489,6 +528,50 @@
   }
 }
 
+/* ==========================================================================
+   Marketing tones
+
+   A section on the public site is told apart by its tint before it is read.
+   Rather than five hand-written colour sets, a card declares `data-tone` and
+   resolves `--tone` / `--tone-quiet` / `--tone-line` from it; everything
+   downstream — the icon square, the hairline, the gradient wash, the link —
+   reads those three and needs no variant of its own.
+
+   Only `components/marketing/*` may set `data-tone`. Inside the product a
+   colour means something, and a decorative tint there would be a lie.
+   ========================================================================== */
+
+[data-tone="ember"] {
+  --tone: var(--ember);
+  --tone-quiet: var(--ember-quiet);
+  --tone-line: var(--ember-line);
+}
+[data-tone="info"] {
+  --tone: var(--info);
+  --tone-quiet: var(--info-quiet);
+  --tone-line: var(--info-line);
+}
+[data-tone="forge"] {
+  --tone: var(--forge);
+  --tone-quiet: var(--forge-quiet);
+  --tone-line: var(--forge-line);
+}
+[data-tone="success"] {
+  --tone: var(--success);
+  --tone-quiet: var(--success-quiet);
+  --tone-line: var(--success-line);
+}
+[data-tone="rose"] {
+  --tone: var(--rose);
+  --tone-quiet: var(--rose-quiet);
+  --tone-line: var(--rose-line);
+}
+[data-tone="neutral"] {
+  --tone: var(--fg-muted);
+  --tone-quiet: var(--surface-2);
+  --tone-line: var(--line);
+}
+
 @layer utilities {
   /* The hairline grid used behind the home hero and empty states. */
   .bg-grid {
@@ -496,6 +579,25 @@
       linear-gradient(to right, var(--line) 1px, transparent 1px),
       linear-gradient(to bottom, var(--line) 1px, transparent 1px);
     background-size: 56px 56px;
+  }
+
+  /* The dot field behind the marketing sections. Quieter than .bg-grid, which
+     at 56px reads as a table and pulls the eye into itself — wrong behind a
+     headline, right behind an empty state. */
+  .bg-dots {
+    background-image: radial-gradient(var(--line-strong) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* The tinted wash on a marketing card: the tone at the top-left corner,
+     gone by the middle. Strong enough to group a row of cards by colour,
+     weak enough that 13.5px body copy still sits on something near-white. */
+  .tone-wash {
+    background-image: linear-gradient(
+      to bottom right,
+      color-mix(in oklch, var(--tone-quiet) 85%, var(--surface)),
+      var(--surface) 62%
+    );
   }
 
   .text-balance {

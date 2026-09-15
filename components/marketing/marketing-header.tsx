@@ -78,7 +78,10 @@ export function MarketingHeader() {
       <div className="absolute inset-0 -z-10 bg-bg/85" />
       <div className="mx-auto flex h-14 w-full max-w-280 items-center justify-between gap-4 px-5">
         <Link href="/" className="rounded-xs focus-visible:outline-2 focus-visible:outline-ember">
-          <BrandLockup />
+          {/* The tagline is the first thing to go on a phone: the header row
+              is 55px over at 390px with it in, and a page that scrolls
+              sideways is a worse introduction than a missing subtitle. */}
+          <BrandLockup className="[&_[data-slot=brand-tagline]]:hidden sm:[&_[data-slot=brand-tagline]]:block" />
         </Link>
 
         <nav aria-label="Product" className="hidden items-center gap-1 md:flex">

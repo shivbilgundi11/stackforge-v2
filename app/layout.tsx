@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Caveat, Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 
 import { Providers } from "@/components/providers";
 import { ACCENT_SCRIPT } from "@/lib/theme/accents";
@@ -25,6 +25,17 @@ const instrument = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-instrument",
+  display: "swap",
+});
+
+// Marketing only, and only for the margin notes — the aside a designer would
+// pencil next to a diagram. It carries no information the page does not
+// already state in the running copy, so `display: swap` falling back to a
+// system cursive costs nothing, and a screen reader that ignores the styling
+// entirely still gets a complete page.
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
   display: "swap",
 });
 
@@ -65,7 +76,7 @@ export default function RootLayout({
           which otherwise reports as a hydration mismatch we cannot fix. */}
       <body
         suppressHydrationWarning
-        className={`${inter.variable} ${jetbrains.variable} ${instrument.variable} antialiased`}
+        className={`${inter.variable} ${jetbrains.variable} ${instrument.variable} ${caveat.variable} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

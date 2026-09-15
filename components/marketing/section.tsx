@@ -18,16 +18,38 @@ export function Section({
   className,
   children,
   bleed = false,
+  wide = false,
+  flush = false,
 }: {
   id?: string;
   className?: string;
   children: React.ReactNode;
   /** Drop the hairline — for the hero, which sits under the header already. */
   bleed?: boolean;
+  /**
+   * 1280px instead of 1120px.
+   *
+   * The home page puts a figure beside the copy in almost every section, and
+   * two columns plus a gutter do not fit in the reading measure the text-only
+   * pages are set to. Opt-in rather than a new default, because `/about` and
+   * the legal pages are one column of prose and 1120px is already generous
+   * for that.
+   */
+  wide?: boolean;
+  /** Drop the vertical padding — for sections that carry their own panel. */
+  flush?: boolean;
 }) {
   return (
     <section id={id} className={cn(!bleed && "border-t border-line", className)}>
-      <div className="mx-auto w-full max-w-280 px-5 py-16 sm:py-20">{children}</div>
+      <div
+        className={cn(
+          "mx-auto w-full px-5",
+          wide ? "max-w-320" : "max-w-280",
+          flush ? "py-10" : "py-16 sm:py-20",
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 }
