@@ -6,6 +6,7 @@ import { Evidence } from "@/components/home/sections/evidence";
 import { Faq } from "@/components/home/sections/faq";
 import { Hero } from "@/components/home/sections/hero";
 import { Method } from "@/components/home/sections/method";
+import { Metrics } from "@/components/home/sections/metrics";
 import { Premise, Problem } from "@/components/home/sections/problem";
 import { Pricing } from "@/components/home/sections/pricing";
 import { Principles } from "@/components/home/sections/principles";
@@ -110,7 +111,9 @@ export default async function Page() {
     <>
       <ProgressRail chapters={CHAPTERS} />
 
-      <Hero
+      <Hero />
+
+      <Metrics
         models={catalog.models}
         tools={catalog.tools}
         gpus={catalog.gpus}
