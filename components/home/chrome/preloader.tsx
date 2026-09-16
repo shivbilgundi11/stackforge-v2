@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 
 import { EASE } from "@/components/home/fx/type";
@@ -47,10 +48,16 @@ const DURATION = 1400;
 export function Preloader() {
   const reduced = useReducedMotion();
   const shouldRun = useIntroShouldRun();
+  // The landing page only. `/about` and `/features` now share this shell, and
+  // they are pages a reader arrives at from somewhere — a nav item, a link in
+  // the middle of the home page, a search result. A curtain reading "loading
+  // the workbench" in front of those is the obstacle condition 2 below rules
+  // out, not an entrance.
+  const landing = usePathname() === "/";
   const [count, setCount] = React.useState(0);
   const [finished, setFinished] = React.useState(false);
 
-  const running = shouldRun && !reduced && !finished;
+  const running = landing && shouldRun && !reduced && !finished;
 
   React.useEffect(() => {
     if (!running) return;

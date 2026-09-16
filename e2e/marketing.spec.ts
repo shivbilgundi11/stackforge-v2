@@ -118,9 +118,20 @@ test("the pricing page renders the plans the API actually configures", async ({
   }
 });
 
-test("product screenshots ship in both themes", async ({ page, request }) => {
-  // A screenshot baked in one theme is the most obvious way for a themed page
-  // to look broken, so every shot is captured twice and swapped on `.dark`.
+test("every feature ships a screenshot, in both captures", async ({ page, request }) => {
+  // This used to assert that `/features` put *both* captures of every shot in
+  // the DOM and swapped them on `.dark`. That was right while the page
+  // followed the theme toggle. It no longer does: `/features` moved into the
+  // `(site)` group, whose palette is a fixed bone-and-ink that ignores the
+  // toggle entirely, so each chapter renders exactly one capture — light on a
+  // bone ground, dark on an ink one, chosen at build time from the section
+  // rather than at runtime from a class on `<html>`.
+  //
+  // What still matters is unchanged and is what this now checks: every feature
+  // has a shot, and both captures of it exist on disk. The second half is the
+  // part that catches a real failure — `(marketting)` and the product still
+  // theme-swap these same files, so a stem that ships only one capture breaks
+  // those pages even though `/features` looks fine.
   await page.goto("/features");
 
   const sources = await page
@@ -133,6 +144,9 @@ test("product screenshots ship in both themes", async ({ page, request }) => {
       .filter(Boolean) as string[],
   );
   expect(stems.size, "expected a screenshot per feature").toBeGreaterThanOrEqual(6);
+
+  // Exactly one capture per feature in the DOM, rather than a pair.
+  expect(sources.length, "expected one capture per feature, not a themed pair").toBe(stems.size);
 
   for (const stem of stems) {
     for (const theme of ["light", "dark"]) {
