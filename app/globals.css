@@ -489,11 +489,6 @@
     border-radius: var(--radius-xs);
   }
 
-  ::selection {
-    background-color: var(--ember-quiet);
-    color: var(--fg);
-  }
-
   /* Every figure that can change in place is tabular, so a column never
      shifts while a value updates. This is load-bearing for the whole
      "precision" impression the product sells. */
@@ -610,11 +605,18 @@
 }
 
 /* Motion is turned down deliberately; this honours the user's stated
-   preference by collapsing everything to a near-instant state change. */
+   preference by collapsing everything to a near-instant state change.
+
+   The `.home` subtree is excluded. That page opts out of the preference
+   entirely as a product decision — see `RESPECT_REDUCED_MOTION` in
+   `components/home/fx/use-client-fact.ts`, which is the one switch that
+   governs it — and a `!important` reset on `*` here would flatten its CSS
+   transitions even with every JS gate opened. The rest of the app, the
+   workbench included, still honours the preference. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :not(.home, .home *),
+  :not(.home, .home *)::before,
+  :not(.home, .home *)::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

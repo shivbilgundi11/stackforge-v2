@@ -1,0 +1,333 @@
+/* ==========================================================================
+   The home page's own design system.
+
+   ## Why this is not the product's design system
+
+   The workbench is a console: white panels, hairline separation, one accent,
+   and five decorative tints for the marketing pages. It is a good system for
+   reading dense tables and a bad one for the first eight seconds of a
+   stranger's attention, because everything in it is sized to be looked *past*.
+
+   This file is the opposite brief. Bone paper, ink type, one signal colour,
+   and a display scale four times larger than anything in the product. It is
+   scoped entirely to `.home`, imported only by `app/(home)/layout.tsx`, and
+   nothing in `(app)`, `(auth)` or `(marketing)` can see it.
+
+   ## It does not follow the theme toggle
+
+   Deliberately. The dark and light treatments here are *compositional* — the
+   page alternates bone and ink chapters, and which one you are in carries the
+   structure. A user-level theme flip would invert half the page's meaning and
+   leave the other half unchanged. So the home page is a designed artifact with
+   a fixed palette, and the toggle lives on every other surface where the
+   reader is working rather than being sold to.
+   ========================================================================== */
+
+.home {
+  /* --- paper and ink ---------------------------------------------------- */
+  --h-bone: #f2f1ec; /* the page */
+  --h-bone-2: #e9e8e1; /* a panel on the page */
+  --h-ink: #121210; /* type on bone, ground on dark chapters */
+  --h-ink-2: #1c1c17; /* a panel on an ink chapter */
+
+  /* Type levels, as alpha over whichever ground is current. Alpha rather
+     than fixed greys so one set of rules works on bone and on ink. */
+  --h-fg: var(--h-ink);
+  --h-fg-70: color-mix(in srgb, var(--h-ink) 70%, transparent);
+  --h-fg-45: color-mix(in srgb, var(--h-ink) 45%, transparent);
+  --h-line: color-mix(in srgb, var(--h-ink) 14%, transparent);
+  --h-line-2: color-mix(in srgb, var(--h-ink) 26%, transparent);
+  --h-ground: var(--h-bone);
+  --h-panel: var(--h-bone-2);
+
+  /* --- the one colour ---------------------------------------------------
+     Signal orange. It appears on the live dot, one clause in the hero, the
+     scroll rail, and link underlines — and nowhere else. A second decorative
+     colour would make this a palette instead of a signal. */
+  --h-acc: #ff4a1c;
+  --h-acc-ink: #ffffff;
+
+  /* --- motion ------------------------------------------------------------ */
+  --h-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --h-ease-io: cubic-bezier(0.76, 0, 0.24, 1);
+
+  background-color: var(--h-ground);
+  color: var(--h-fg);
+  font-family: var(--font-geist), "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* An ink chapter. Swaps the two grounds and every level derived from them, so
+   a component inside it needs no dark variant of its own — it reads `--h-fg`
+   and `--h-ground` and is correct in both. */
+.home [data-chapter="ink"],
+.home.home-ink {
+  --h-fg: var(--h-bone);
+  --h-fg-70: color-mix(in srgb, var(--h-bone) 70%, transparent);
+  --h-fg-45: color-mix(in srgb, var(--h-bone) 45%, transparent);
+  --h-line: color-mix(in srgb, var(--h-bone) 16%, transparent);
+  --h-line-2: color-mix(in srgb, var(--h-bone) 30%, transparent);
+  --h-ground: var(--h-ink);
+  --h-panel: var(--h-ink-2);
+
+  background-color: var(--h-ground);
+  color: var(--h-fg);
+}
+
+/* --------------------------------------------------------------------------
+   Reused product figures
+
+   The small diagrams in `components/marketing/home-visuals.tsx` are good and
+   they are accurate, so they are reused rather than redrawn. They are painted
+   against the *product's* tokens, which follow the theme toggle — and this
+   page does not. Left alone, the same figure would be a white card for one
+   reader and a near-black one for another, on identical ground.
+
+   So the product's neutral tokens are pinned here: to the light ramp on bone
+   chapters, to the dark ramp on ink ones. A figure is then a white specimen on
+   paper and a dark panel on ink, which is what it would have been if the
+   product had been asked to render it there.
+
+   ## Override `--color-*`, not `--surface`
+
+   This is the subtle half, and getting it wrong fails invisibly in one theme
+   only. Tailwind's `@theme inline` block in `globals.css` emits
+   `--color-surface: var(--surface)` **on `:root`**, and a custom property's
+   `var()` is substituted where the property is *declared*, not where it is
+   used. So `--color-surface` computes once, at `:root`, from `:root`'s
+   `--surface` — and redefining `--surface` further down the tree does nothing
+   to any utility that reads `--color-surface`.
+
+   Both names are set below. `--color-*` is the one the utilities actually
+   read; `--surface` and friends are set too because the figures also use a few
+   raw `var(--surface)` references in inline styles.
+
+   The accent tokens are deliberately untouched — inside these figures a colour
+   means something, and flattening them would spend the signal.
+   -------------------------------------------------------------------------- */
+
+.home {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f5f5;
+  --surface-3: #ebebeb;
+  --surface-inset: #f0f0f0;
+  --line: #e5e5e5;
+  --line-strong: #d4d4d4;
+  --fg: #0a0a0a;
+  --fg-muted: #636363;
+  --fg-subtle: #868686;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-inset: var(--surface-inset);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+}
+
+.home [data-chapter="ink"] {
+  --bg: #0a0a0a;
+  --surface: #181818;
+  --surface-2: #202020;
+  --surface-3: #2a2a2a;
+  --surface-inset: #121212;
+  --line: #282828;
+  --line-strong: #3a3a3a;
+  --fg: #ededed;
+  --fg-muted: #a3a3a3;
+  --fg-subtle: #6f6f6f;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-inset: var(--surface-inset);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+}
+
+/* ==========================================================================
+   Type
+   ========================================================================== */
+
+/* The display face. Line-height 1 and tracking tightened as the size grows —
+   optical tracking, the thing that separates a big heading from a heading
+   that is merely large. */
+.home .t-display {
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.042em;
+  text-wrap: balance;
+}
+
+.home .t-head {
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.032em;
+  text-wrap: balance;
+}
+
+/* The micro-label. Every section, every figure, every column is introduced by
+   one of these — it is the page's connective tissue and the reason a reader
+   always knows which chapter they are in. */
+.home .t-mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home .t-body {
+  font-size: clamp(0.95rem, 1.05vw, 1.0625rem);
+  line-height: 1.55;
+  letter-spacing: -0.011em;
+  color: var(--h-fg-70);
+  text-wrap: pretty;
+}
+
+/* ==========================================================================
+   Primitives
+   ========================================================================== */
+
+/* The rule that opens a section. Draws itself in when the section arrives. */
+.home .rule {
+  height: 1px;
+  width: 100%;
+  background-color: var(--h-line);
+  transform-origin: left;
+}
+
+/* A link whose underline wipes in from the left and out to the right, rather
+   than fading — the direction is what makes it read as a gesture. */
+.home .u-link {
+  position: relative;
+  display: inline-block;
+}
+.home .u-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s var(--h-ease);
+}
+.home .u-link:hover::after,
+.home .u-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* The button: a pill whose fill rises from the bottom on hover, with the
+   label crossfading between the two inks. Two stacked labels rather than a
+   colour transition, so the swap is exactly as fast as the fill. */
+.home .btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid var(--h-line-2);
+  padding: 0.95rem 1.6rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  isolation: isolate;
+  transition: border-color 0.4s var(--h-ease);
+}
+.home .btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--h-fg);
+  transform: translateY(101%);
+  transition: transform 0.5s var(--h-ease);
+}
+.home .btn:hover {
+  border-color: var(--h-fg);
+  color: var(--h-ground);
+}
+.home .btn:hover::before {
+  transform: translateY(0);
+}
+
+.home .btn-acc {
+  border-color: var(--h-acc);
+  background-color: var(--h-acc);
+  color: var(--h-acc-ink);
+}
+.home .btn-acc::before {
+  background-color: var(--h-fg);
+}
+.home .btn-acc:hover {
+  border-color: var(--h-fg);
+  color: var(--h-ground);
+}
+
+/* ==========================================================================
+   Texture
+   ========================================================================== */
+
+.home .grain-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The column rules that run the full height of a section. They are the page's
+   underlying grid, made visible — not a decoration but the actual measure
+   everything else is set to. */
+.home .col-rules {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+}
+.home .col-rules > span {
+  border-left: 1px solid var(--h-line);
+}
+.home .col-rules > span:first-child {
+  border-left: 0;
+}
+
+/* ==========================================================================
+   Reduced motion
+
+   This page does not honour `prefers-reduced-motion`. That is a deliberate
+   product decision recorded, with its cost, on `RESPECT_REDUCED_MOTION` in
+   `components/home/fx/use-client-fact.ts`; every gate on the page reads that
+   one constant, and `globals.css` excludes `.home` from its global reset for
+   the same reason.
+
+   There is therefore nothing to undo here, and the block that used to sit at
+   this point has gone. It forced `.rule` and `[data-anim-hidden]` to their
+   finished state, which would now pin those elements to "already revealed" for
+   readers whose animations are in fact running normally.
+
+   If the constant is ever flipped back to `true`, restore a rule for `.rule`
+   only. Its starting `scaleX(0)` is written by Motion's `initial`, not by CSS
+   — the CSS below sets only `transform-origin` — so an element whose animation
+   never runs would sit at zero width. The old block's `[data-anim-hidden]`
+   half needs nothing: no component in `components/home/` emits that attribute.
+   ========================================================================== */
