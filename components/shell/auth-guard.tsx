@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth/auth-provider";
 import { safeNextPath } from "@/lib/auth/schemas";
@@ -35,7 +35,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const search = useSearchParams();
 
   const authenticated = status === "authenticated";
   const wall = isPaymentWall(pathname);
@@ -68,14 +67,21 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       // it is a plan chosen on the marketing site — and sending back the
       // pathname alone dropped that choice on the floor at the login screen,
       // landing them on an undifferentiated grid to choose all over again.
-      const next = search.toString() ? `${pathname}?${search}` : pathname;
-      router.replace(`/login?next=${encodeURIComponent(next)}`);
+      //
+      // Read from `window`, not `useSearchParams`. That hook opts its entire
+      // subtree out of prerendering unless every page beneath it carries a
+      // Suspense boundary, and this component wraps all of `(app)` — using it
+      // here failed the production build on pages that had no reason to care.
+      // Nothing is lost: this value is only ever read inside this effect,
+      // which does not run on the server, where `window.location` is exactly
+      // as current as the hook would have been.
+      router.replace(`/login?next=${encodeURIComponent(`${pathname}${window.location.search}`)}`);
       return;
     }
     if (authenticated && owesPayment) {
       router.replace("/checkout");
     }
-  }, [status, authenticated, owesPayment, router, pathname, search]);
+  }, [status, authenticated, owesPayment, router, pathname]);
 
   if (authenticated && !undecided && !owesPayment) return <>{children}</>;
 
@@ -151,11 +157,17 @@ function ShellSkeleton() {
 export function GuestOnly({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
-  const search = useSearchParams();
 
   useEffect(() => {
-    if (status === "authenticated") router.replace(safeNextPath(search.get("next")));
-  }, [status, router, search]);
+    if (status !== "authenticated") return;
+    // `window.location`, for the reason given in `AuthGuard` above: this sits
+    // in the `(auth)` layout, and reading `useSearchParams` here bailed
+    // /login, /signup, /forgot-password, /reset-password and /verify-email out
+    // of prerendering at once — none of which had a Suspense boundary, because
+    // until now none of them needed one.
+    const next = new URLSearchParams(window.location.search).get("next");
+    router.replace(safeNextPath(next));
+  }, [status, router]);
 
   if (status === "authenticated") return null;
   return <>{children}</>;

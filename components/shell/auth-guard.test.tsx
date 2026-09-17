@@ -22,10 +22,6 @@ const replace = vi.hoisted(() => vi.fn());
 const state = vi.hoisted(() => ({
   status: "authenticated" as "authenticated" | "signed-out" | "loading",
   pathname: "/dashboard",
-  // The query string the guard has to carry across a login bounce: a plan
-  // chosen on the marketing site arrives as `/upgrade?plan=pro`, and the
-  // pathname alone is a different destination.
-  search: "",
   subscription: undefined as Subscription | undefined,
   isError: false,
   enabledCalls: [] as boolean[],
@@ -34,8 +30,17 @@ const state = vi.hoisted(() => ({
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
   usePathname: () => state.pathname,
-  useSearchParams: () => new URLSearchParams(state.search),
 }));
+
+/**
+ * The guards read the query string off `window`, not through
+ * `useSearchParams` — that hook opts the whole subtree out of prerendering
+ * and failed the production build on every auth page. So the tests put the
+ * query where the component looks for it.
+ */
+function setSearch(search: string) {
+  window.history.replaceState({}, "", `${state.pathname}${search}`);
+}
 
 vi.mock("@/lib/auth/auth-provider", () => ({
   useAuth: () => ({ status: state.status, user: null }),
@@ -51,7 +56,7 @@ vi.mock("@/lib/api/hooks", () => ({
   },
 }));
 
-const { AuthGuard } = await import("@/components/shell/auth-guard");
+const { AuthGuard, GuestOnly } = await import("@/components/shell/auth-guard");
 
 function subscription(overrides: Partial<Subscription> = {}): Subscription {
   return {
@@ -83,10 +88,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   state.status = "authenticated";
   state.pathname = "/dashboard";
-  state.search = "";
   state.subscription = undefined;
   state.isError = false;
   state.enabledCalls = [];
+  setSearch("");
 });
 
 describe("AuthGuard", () => {
@@ -106,7 +111,7 @@ describe("AuthGuard", () => {
     // undifferentiated grid to make it a second time.
     state.status = "signed-out";
     state.pathname = "/upgrade";
-    state.search = "plan=pro";
+    setSearch("?plan=pro");
 
     renderGuard();
 
@@ -213,5 +218,59 @@ describe("AuthGuard", () => {
 
     expect(screen.getByText("Protected content")).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
+  });
+});
+
+describe("GuestOnly", () => {
+  function renderGuest() {
+    return render(
+      <GuestOnly>
+        <h1>Sign in form</h1>
+      </GuestOnly>,
+    );
+  }
+
+  it("shows the form to somebody without a session", () => {
+    state.status = "signed-out";
+
+    renderGuest();
+
+    expect(screen.getByText("Sign in form")).toBeInTheDocument();
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it("hands a signed-in visitor on to where the link was going", async () => {
+    // A plan card on the marketing site links here when the session has not
+    // resolved yet, so this is a live path rather than an edge case: it is how
+    // an already-signed-in reader who clicked during that window still reaches
+    // the upgrade page instead of a bare dashboard.
+    state.status = "authenticated";
+    state.pathname = "/login";
+    setSearch(`?next=${encodeURIComponent("/upgrade?plan=pro")}`);
+
+    renderGuest();
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/upgrade?plan=pro"));
+  });
+
+  it("falls back to the dashboard when the link said nothing", async () => {
+    state.status = "authenticated";
+    state.pathname = "/login";
+
+    renderGuest();
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+  });
+
+  it("refuses a next that points off the site", async () => {
+    // `safeNextPath` is the open-redirect guard. A login link is exactly the
+    // thing an attacker would want to send somewhere else.
+    state.status = "authenticated";
+    state.pathname = "/login";
+    setSearch(`?next=${encodeURIComponent("https://evil.test/steal")}`);
+
+    renderGuest();
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
   });
 });
