@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 
+import { Shortcut } from "@/components/shell/shortcut";
 import { qk } from "@/lib/api/query-keys";
 import { searchWorkspace } from "@/lib/api/workspace";
 import { useAuth } from "@/lib/auth/auth-provider";
@@ -22,11 +23,15 @@ import { ALL_TOOLS, NAV_GROUPS, WORKSPACE_NAV } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 /**
- * ⌘K over everything.
+ * ⌘K — or Ctrl+K, which is the same binding — over everything.
  *
  * Reads the navigation registry, so a tool added there appears here with no
  * further work. In a product with 28 tools across 7 groups, the palette is
  * the primary navigation and the sidebar is the map.
+ *
+ * The handler below has always accepted either modifier. What did not work on
+ * Windows was the *advertising* of it, which hardcoded the Apple glyph; see
+ * `components/shell/shortcut.tsx`.
  */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -225,11 +230,15 @@ const itemClass = cn(
 );
 
 /** The header's search affordance. Shows the palette exists, which is most of
- *  the battle — an unadvertised ⌘K is used by nobody. */
+ *  the battle — an unadvertised shortcut is used by nobody, and one advertised
+ *  in a modifier the reader does not have is unadvertised. */
 export function CommandTrigger() {
   const openPalette = () => {
+    // Both modifiers, so the synthetic event does not claim a Command key was
+    // pressed on a machine that has none. The listener takes either, so this
+    // is about the event being describable rather than about it working.
     document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }),
+      new KeyboardEvent("keydown", { key: "k", metaKey: true, ctrlKey: true, bubbles: true }),
     );
   };
 
@@ -245,9 +254,10 @@ export function CommandTrigger() {
     >
       <SearchIcon className="size-3.5 shrink-0" />
       <span className="flex-1 text-left">Search…</span>
-      <kbd className="hidden rounded-xs border border-line bg-surface-2 px-1.5 py-px font-mono text-[10px] sm:block">
-        ⌘K
-      </kbd>
+      <Shortcut
+        keyName="K"
+        className="hidden rounded-xs border border-line bg-surface-2 px-1.5 py-px font-mono text-[10px] sm:block"
+      />
     </button>
   );
 }

@@ -4,6 +4,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { RecentRuns } from "@/components/features/tools/recent-runs";
 import { PageHeader } from "@/components/forge/page-header";
 import { Panel } from "@/components/forge/panel";
+import { Shortcut } from "@/components/shell/shortcut";
 import type { NavGroup } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -68,9 +69,10 @@ export function ToolHub({ group }: { group: NavGroup }) {
           <span className="text-fg-subtle">·</span>
           <span>
             Press{" "}
-            <kbd className="rounded-xs border border-line bg-surface-2 px-1.5 py-px font-mono text-[10.5px]">
-              ⌘K
-            </kbd>{" "}
+            <Shortcut
+              keyName="K"
+              className="rounded-xs border border-line bg-surface-2 px-1.5 py-px font-mono text-[10.5px]"
+            />{" "}
             to jump to any tool without leaving the keyboard.
           </span>
         </div>
