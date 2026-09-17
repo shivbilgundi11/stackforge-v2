@@ -196,3 +196,29 @@ describe("the first-run notice", () => {
     getItem.mockRestore();
   });
 });
+
+describe("the wording of every disclaimer", () => {
+  // Written against the module rather than against a list, so a disclaimer
+  // added later is covered the day it is added. A test naming the ten current
+  // keys would pass forever while the eleventh went out unlabelled.
+  const entries = Object.entries(legal).filter(
+    (entry): entry is [string, string] => typeof entry[1] === "string",
+  );
+
+  it("exports the disclaimers this suite thinks it does", () => {
+    // Guards the filter above: if the module stopped exporting strings, every
+    // assertion below would vacuously pass over an empty list.
+    expect(entries.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it.each(entries)("%s opens with the word", (_key, text) => {
+    expect(text.startsWith("Disclaimer: ")).toBe(true);
+  });
+
+  it.each(entries)("%s says something after the word", (_key, text) => {
+    const body = text.slice("Disclaimer: ".length);
+    expect(body.length).toBeGreaterThan(20);
+    // Catches a double prefix from someone adding the word to the body too.
+    expect(body).not.toMatch(/^disclaimer\b/i);
+  });
+});
