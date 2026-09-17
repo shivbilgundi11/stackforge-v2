@@ -115,12 +115,75 @@ describe("PlanCards", () => {
     expect(screen.queryByText("three")).not.toBeInTheDocument();
   });
 
-  it("shows no price at all when the catalog is unreachable", () => {
+  it("links the free tier at sign-up, not at the contact page", () => {
+    // The API reports `self_serve: false` for Free, because the flag mirrors
+    // whether the tier goes through checkout and Free has nothing to charge.
+    // Keying the link on it sent "Get started" to /contact.
+    render(
+      <PlanCards
+        plans={[
+          plan({
+            key: "free",
+            label: "Free",
+            monthly_minor: 0,
+            self_serve: false,
+            cta: "Get started",
+          }),
+        ]}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Get started" })).toHaveAttribute("href", "/signup");
+  });
+
+  it("sends a plan with no price to the contact page", () => {
+    render(<PlanCards plans={[ENTERPRISE]} />);
+    expect(screen.getByRole("link", { name: "Talk to sales" })).toHaveAttribute("href", "/contact");
+  });
+});
+
+/**
+ * The unreachable catalog.
+ *
+ * This used to replace the grid with a single line saying prices were loading,
+ * which protected the two charged amounts by throwing away four tiers and
+ * their feature lists — on the page whose job is to name them. The fallback
+ * now keeps everything that is not a price. Both halves of that need a test:
+ * the plans have to survive, and no amount may.
+ */
+describe("PlanCards with no catalog", () => {
+  it("still names every tier and what is in it", () => {
     render(<PlanCards plans={null} />);
 
-    expect(screen.getByText(/loading from the catalog/i)).toBeInTheDocument();
-    // The failure this guards is a card that renders with a blank or stale
-    // amount, which reads as a real price.
-    expect(screen.queryByText(/\$/)).not.toBeInTheDocument();
+    for (const label of ["Free", "Pro", "Team", "Enterprise"]) {
+      expect(
+        screen.getByRole("heading", { name: label }),
+        `the ${label} tier disappears when the catalog is unreachable`,
+      ).toBeInTheDocument();
+    }
+
+    // One highlight per tier, to prove the feature lists render rather than
+    // just the headings. Asserting all nineteen would make this a copy test.
+    expect(screen.getByText("25 tool runs a day")).toBeInTheDocument();
+    expect(screen.getByText("Unlimited tool runs")).toBeInTheDocument();
+    expect(screen.getByText("Shared workspace, roles, and approvals")).toBeInTheDocument();
+    expect(screen.getByText("SSO and an audit trail")).toBeInTheDocument();
+  });
+
+  it("withholds the charged amounts rather than remembering them", () => {
+    render(<PlanCards plans={null} />);
+
+    // The failure this guards is a card rendering a stale or blank amount that
+    // reads as a real price. No currency symbol may appear in any locale.
+    expect(screen.queryByText(/[$₹€£]/)).not.toBeInTheDocument();
+    expect(screen.getAllByText("Price unavailable")).toHaveLength(2);
+    expect(screen.getByText(/temporarily unavailable/i)).toBeInTheDocument();
+  });
+
+  it("says Free is free, because that is not a quote", () => {
+    // Nothing is charged for it, so there is no figure the checkout could
+    // contradict — and a Free card showing an em dash reads as broken.
+    render(<PlanCards plans={null} />);
+    expect(screen.getByText("Free", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByText("Forever")).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
 
-import { Reveal, Stagger, StaggerItem } from "@/components/home/fx/type";
+import { Stagger, StaggerItem } from "@/components/home/fx/type";
 import { CtaBand } from "@/components/home/sections/cta-band";
 import { Section, SectionHead } from "@/components/home/sections/head";
 import { PageHead } from "@/components/home/sections/page-head";
@@ -28,9 +28,11 @@ import { getPlansStatic } from "@/lib/marketing/data";
  * This page used `PricingTable`, a client component fetching on mount. The
  * read is now `getPlansStatic()` in the server component, which puts the
  * amounts in the HTML rather than after hydration and keeps the page in the
- * prerendered set. It also fails soft: the API being unreachable renders the
- * catalog-unavailable state rather than an empty page, which is what the
- * group's "must render with the API down" rule requires.
+ * prerendered set. It also fails soft, which is what the group's "must render
+ * with the API down" rule requires — and the soft failure is narrow: `PlanCards`
+ * falls back to the checked-in plan structure, so an unreachable catalog costs
+ * the two charged amounts and nothing else. The tiers, the taglines and the
+ * feature lists are all still on the page. See `lib/marketing/plans.ts`.
  */
 
 export const revalidate = 3600;
@@ -88,12 +90,6 @@ export default async function Page() {
       {/* ── The plans ─────────────────────────────────────────────────────── */}
       <Section chapter="ink">
         <PlanCards plans={plans} className="border-t-0" />
-
-        <Reveal delay={0.1} className="mt-10">
-          <p className="t-mono text-[var(--h-fg-45)]">
-            Prices render from the same configuration the checkout charges from
-          </p>
-        </Reveal>
       </Section>
 
       {/* ── What you keep ─────────────────────────────────────────────────── */}

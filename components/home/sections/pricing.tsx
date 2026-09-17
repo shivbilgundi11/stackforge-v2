@@ -44,12 +44,6 @@ export function Pricing({ plans }: { plans: Plan[] | null }) {
         </div>
 
         <PlanCards plans={plans} maxHighlights={6} className="mt-16" />
-
-        <Reveal delay={0.1} className="mt-10">
-          <p className="t-mono text-[var(--h-fg-45)]">
-            Prices render from the same configuration the checkout charges from
-          </p>
-        </Reveal>
       </div>
     </section>
   );
