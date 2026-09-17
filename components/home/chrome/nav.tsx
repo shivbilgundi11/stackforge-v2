@@ -12,18 +12,21 @@ import { useAuth } from "@/lib/auth/auth-provider";
 import { cn } from "@/lib/utils";
 
 /**
- * The home page's own navigation.
+ * The navigation for the whole public surface.
  *
- * ## Why it is not `MarketingHeader`
+ * ## It replaced `MarketingHeader`, which is gone
  *
- * That header is correct for `/pricing`, `/about` and the legal pages: a solid
- * bar, a hairline under it, five links and two buttons in the product's token
- * palette. Dropped onto this page it would be a strip of the console sitting
- * across the top of an editorial layout, in the wrong typeface and the wrong
- * colours, and it would put a hard horizontal edge across a hero whose type
- * deliberately runs into the corners. So the home page has its own route group
- * with its own layout, and every other marketing page keeps the shared header
- * untouched.
+ * That header was a solid bar in the product's token palette — a hairline
+ * under it, five links and two buttons — and it was correct while `/pricing`,
+ * `/about` and the legal pages were console-styled documents. Dropped onto
+ * this design it reads as a strip of the console sitting across the top of an
+ * editorial layout, in the wrong typeface and the wrong colours, and it puts a
+ * hard horizontal edge across a hero whose type deliberately runs into the
+ * corners.
+ *
+ * Every public page now lives in `(site)` and uses this instead, so there is
+ * one header again rather than two. The old one was deleted with the group it
+ * served; `git log` has it if the argument ever needs revisiting.
  *
  * ## Behaviour
  *
