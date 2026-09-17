@@ -80,7 +80,15 @@ export function Hero() {
     // the fixed nav but also push the centred column 36px below the section's
     // true middle, and the ring is centred on that middle — which put the
     // bottom of the copy straight through the front of the ellipse.
-    <section className="grain-layer relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-5 py-28 sm:px-8 sm:py-32">
+    // `isolate` on the section is what keeps the numbers below from being the
+    // page's business. Everything in here sorts against the ring, whose items
+    // carry a z-index of 0–1000 read off their position around the ellipse, so
+    // the copy and the footer rail answer with 1000 of their own. `relative`
+    // alone opens no stacking context, so those 1000s were competing with the
+    // whole document — and beating the fixed header at 60 and the mobile menu
+    // at 55. The menu's background was opaque the entire time; the hero was
+    // simply painting on top of it, which reads as a transparent overlay.
+    <section className="grain-layer relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-5 py-28 sm:px-8 sm:py-32">
       <Orbit items={FEATURES} />
 
       {/* `isolate` gives the copy its own stacking context, so it clears the

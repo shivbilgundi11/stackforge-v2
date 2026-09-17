@@ -91,6 +91,18 @@ export function HomeNav() {
         initial={false}
         animate={{ y: hidden && !menu ? "-110%" : "0%" }}
         transition={{ duration: reduced ? 0 : 0.55, ease: EASE }}
+        // The bar sits *above* the menu it opens, so that the close control
+        // stays where the open control was. That means it also keeps the
+        // page's palette while an ink panel slides up underneath it — and on
+        // the bone pages that palette is near-black text, which is the menu's
+        // own background colour. The wordmark and both bars of the close
+        // button were being drawn in #121210 on #121210: not dimmed, exactly
+        // invisible, with no visible way to shut the menu again.
+        //
+        // Taking the chapter with it flips the whole bar to the ink palette,
+        // so its contents are bone and its ground matches the panel below —
+        // the two read as one surface rather than as a hole in the top of it.
+        data-chapter={menu ? "ink" : undefined}
         className={cn(
           "fixed inset-x-0 top-0 z-[60] transition-colors duration-500",
           solid && !menu && "bg-[var(--h-ground)]/80 backdrop-blur-xl",

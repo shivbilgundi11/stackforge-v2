@@ -279,11 +279,22 @@ export function Orbit({
     // turned, and all seven are reachable in `Workflows`. Spinning ornament is
     // not a control, and giving it a tab stop would only add a stop that leads
     // nowhere.
+    // `isolate` is load-bearing, not tidiness. Each item sets a `zIndex` of
+    // 0–1000 from its position around the ring, which is how an item at the
+    // front overlaps one at the back. Without a stacking context here those
+    // numbers are not local to the ring — they compete with the whole page,
+    // and 500-odd beats the fixed header at 60 and the mobile menu at 55. The
+    // symptom was hero stills painting straight through an opaque menu, so the
+    // overlay looked half-transparent when the fault was ordering, not colour.
+    //
+    // `isolation` rather than a `z-index` here: it opens a stacking context
+    // without inventing a layer for this element in its parent, so the ring
+    // keeps sitting exactly where the hero puts it.
     <div
       ref={host}
       aria-hidden
       data-cursor="Drag"
-      className={cn("absolute inset-0 touch-pan-y overflow-hidden select-none", className)}
+      className={cn("absolute inset-0 isolate touch-pan-y overflow-hidden select-none", className)}
     >
       {items.map((item, i) => {
         const t = (i / count) * Math.PI * 2;
