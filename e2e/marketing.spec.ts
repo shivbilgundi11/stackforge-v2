@@ -86,7 +86,12 @@ test("nothing on the marketing site links into the application", async ({ page }
     expect(hrefs.length, `${path} should link somewhere`).toBeGreaterThan(3);
 
     for (const href of hrefs) {
-      const route = href.split("#")[0] || "/";
+      // Query string as well as hash. The plan cards carry the chosen tier
+      // across to the app as `/login?next=/upgrade%3Fplan%3Dpro`, and a split
+      // on "#" alone read that whole string as the route and failed a link
+      // that obeys the rule — it goes to the login page, which is a sanctioned
+      // crossing, and it is the `next` inside it that names an app route.
+      const route = (href.split("#")[0] ?? "").split("?")[0] || "/";
       const allowed =
         AUTH.includes(route) ||
         MARKETING.some((prefix) =>
@@ -95,6 +100,32 @@ test("nothing on the marketing site links into the application", async ({ page }
       expect(allowed, `${path} links to ${href}, which is an application route`).toBe(true);
     }
   }
+});
+
+test("a signed-out visitor choosing a paid plan is sent to log in, plan and all", async ({
+  page,
+}) => {
+  // The upgrade path, from the outside in. What matters is both halves: the
+  // visitor is *not* dropped into the app they have no session for, and the
+  // tier they clicked is not forgotten on the way — arriving at an
+  // undifferentiated plan grid having already chosen is the failure this
+  // whole flow exists to prevent.
+  await page.goto("/pricing");
+
+  const pro = page.getByRole("link", { name: /upgrade to pro/i }).first();
+  const href = await pro.getAttribute("href");
+
+  expect(href, "the Pro card should link somewhere").toBeTruthy();
+  expect(href!.startsWith("/login"), `signed out, Pro linked to ${href}`).toBe(true);
+
+  const next = new URL(href!, "http://localhost").searchParams.get("next");
+  expect(next, "the login link should say where it was going").toBeTruthy();
+  expect(next!.startsWith("/upgrade")).toBe(true);
+  expect(new URL(next!, "http://localhost").searchParams.get("plan")).toBe("pro");
+
+  // And following it lands on the login form rather than bouncing anywhere.
+  await pro.click();
+  await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible();
 });
 
 test("the pricing page renders the plans the API actually configures", async ({

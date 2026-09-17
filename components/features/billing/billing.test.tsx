@@ -27,6 +27,13 @@ const data = vi.hoisted(() => ({
   plans: [] as Plan[],
   subscription: null as Subscription | null,
   usage: null as Usage | null,
+  // `?plan=`/`?interval=` on /upgrade, which carry a choice made on the
+  // marketing site into the in-app comparison.
+  search: "",
+}));
+
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(data.search),
 }));
 
 vi.mock("@/lib/api/hooks", () => ({
@@ -151,6 +158,7 @@ beforeEach(() => {
   data.plans = [];
   data.subscription = null;
   data.usage = null;
+  data.search = "";
   localStorage.clear();
 });
 
@@ -273,6 +281,72 @@ describe("PricingTable", () => {
     );
   });
 
+  it("marks the plan the visitor arrived having chosen", () => {
+    // `/upgrade?plan=team` is a decision made on the marketing site and
+    // carried across login. Landing on a grid that shows no sign of it asks
+    // the same question twice, which is the whole failure this flow fixes.
+    data.plans = [plan({ key: "pro", label: "Pro" }), plan({ key: "team", label: "Team" })];
+    data.search = "plan=team";
+
+    renderWith(<PricingTable />);
+
+    expect(screen.getByText("Chosen")).toBeInTheDocument();
+    // Pro keeps "Most picked". That is a fact about a different column, and
+    // suppressing it would be hiding information rather than deferring.
+    expect(screen.getByText("Most picked")).toBeInTheDocument();
+  });
+
+  it("does not tell a visitor what others picked on the column they picked", () => {
+    // Badge precedence within one column: "Chosen" outranks "Most picked",
+    // because somebody who has already decided does not need to be sold the
+    // same tier on the strength of other people's decisions.
+    data.plans = [plan({ key: "pro", label: "Pro" }), plan({ key: "team", label: "Team" })];
+    data.search = "plan=pro";
+
+    renderWith(<PricingTable />);
+
+    expect(screen.getByText("Chosen")).toBeInTheDocument();
+    expect(screen.queryByText("Most picked")).not.toBeInTheDocument();
+  });
+
+  it("marks nothing when the visitor already has the plan they chose", () => {
+    // A stale link, or a second visit after upgrading. The column's button
+    // already reads "Your plan", and "Chosen" over it describes nothing while
+    // pulling the eye away from the columns that are still a decision.
+    data.plans = [plan({ key: "pro", label: "Pro", current: true })];
+    data.search = "plan=pro";
+
+    renderWith(<PricingTable />);
+
+    expect(screen.queryByText("Chosen")).not.toBeInTheDocument();
+    expect(screen.getByText("Current")).toBeInTheDocument();
+  });
+
+  it("opens on the interval the link named, without charging anything", async () => {
+    data.plans = [plan()];
+    data.search = "plan=pro&interval=annual";
+
+    renderWith(<PricingTable />);
+
+    // Preselection is not a purchase: arriving must never open a payment
+    // sheet, only preselect the column and the interval.
+    expect(createCheckoutSession).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: /annual/i })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("ignores a plan it cannot sell rather than correcting it", () => {
+    // The query string is reader-supplied. `?plan=enterprise` names a real
+    // tier with no self-serve price, and the honest answer is the ordinary
+    // page rather than a marked column whose button is a contact link.
+    data.plans = [plan({ key: "pro", label: "Pro" })];
+    data.search = "plan=enterprise";
+
+    renderWith(<PricingTable />);
+
+    expect(screen.queryByText("Chosen")).not.toBeInTheDocument();
+    expect(screen.getByText("Most picked")).toBeInTheDocument();
+  });
+
   it("sends a plan that is not self-serve to a conversation, not a checkout", () => {
     data.plans = [
       plan({
@@ -387,7 +461,11 @@ describe("BillingSection", () => {
 
     renderWith(<BillingSection />);
 
-    expect(screen.getByRole("link", { name: /Upgrade/ })).toHaveAttribute("href", "/pricing");
+    // `/upgrade`, in the app. This pointed at `/pricing` on the marketing
+    // site, which took a signed-in customer out of the product to a page
+    // selling it to them whose only call to action was to create the account
+    // they were already signed in to.
+    expect(screen.getByRole("link", { name: /Upgrade/ })).toHaveAttribute("href", "/upgrade");
     expect(screen.queryByRole("button", { name: "Cancel plan" })).not.toBeInTheDocument();
   });
 });

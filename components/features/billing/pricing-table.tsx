@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { ArrowRightIcon, CheckIcon, MinusIcon } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -18,6 +19,8 @@ import {
   formatLimit,
   formatPrice,
   priceIn,
+  readIntervalParam,
+  readPlanParam,
   type Interval,
   type Plan,
   type PlanKey,
@@ -30,23 +33,42 @@ import { useDisplayCurrency } from "@/lib/currency/use-display-currency";
 import { cn } from "@/lib/utils";
 
 /**
- * The pricing page (M20).
+ * The in-app plan comparison, and the place a plan is bought (M20).
+ *
+ * Mounted at `/upgrade`. See that route for why it exists and how it differs
+ * from `/checkout`, which collects a debt rather than offering a choice.
  *
  * Every number on it comes from `GET /billing/plans`, including the limits —
  * which are read from the backend's `plan_quotas` table rather than from copy
- * kept alongside the layout. A marketing page with its own numbers drifts from
- * the enforcement, and the drift is invisible until a user hits a wall the page
+ * kept alongside the layout. A page with its own numbers drifts from the
+ * enforcement, and the drift is invisible until a user hits a wall the page
  * said was not there.
  *
  * Locked features are listed, not hidden. Consistent with M18: a gate has to be
  * seen to convert, and a comparison table that omits what you do not get is not
  * a comparison.
+ *
+ * ## The preselected plan
+ *
+ * `?plan=` and `?interval=` carry a decision made on the marketing site
+ * through login and into here, so somebody who clicked "Upgrade to Pro" out
+ * there does not arrive at an undifferentiated grid and have to make the same
+ * choice again. It is a *preselection*, not a purchase: the column is marked
+ * and its button is the primary one, and nothing is charged until it is
+ * pressed.
+ *
+ * An unrecognised value is ignored rather than corrected. The query string is
+ * reader-supplied, and the honest response to `?plan=enterprise` — a tier with
+ * no self-serve price — is the ordinary page.
  */
 export function PricingTable() {
   const { status } = useAuth();
   const plans = usePlans();
+  const params = useSearchParams();
   const { currency } = useDisplayCurrency();
-  const [interval, setInterval] = useState<Interval>("monthly");
+
+  const preselected = readPlanParam(params.get("plan"));
+  const [interval, setInterval] = useState<Interval>(readIntervalParam(params.get("interval")));
 
   const checkout = useMutation({
     mutationFn: async (plan: PlanKey) => {
@@ -68,8 +90,8 @@ export function PricingTable() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col">
       <PageHeader
-        title="Pricing"
-        description="Every tool is free to use. Paying is for keeping the work, exporting it in a format you can send someone, and being told when the numbers move."
+        title="Choose your plan"
+        description="Every tool stays free to use. Paying is for keeping the work, exporting it in a format you can send someone, and being told when the numbers move."
         actions={
           <IntervalToggle
             interval={interval}
@@ -98,6 +120,10 @@ export function PricingTable() {
               interval={interval}
               currency={currency}
               authenticated={status === "authenticated"}
+              // Never on the tier they are already on: "Chosen" over a column
+              // whose button reads "Your plan" describes nothing, and it would
+              // draw the eye away from the columns that are a decision.
+              preselected={preselected === plan.key && !plan.current}
               pending={checkout.isPending}
               onBuy={() => checkout.mutate(plan.key as PlanKey)}
             />
@@ -169,6 +195,7 @@ function PlanColumn({
   interval,
   currency,
   authenticated,
+  preselected,
   pending,
   onBuy,
 }: {
@@ -176,6 +203,7 @@ function PlanColumn({
   interval: Interval;
   currency: DisplayCurrency;
   authenticated: boolean;
+  preselected: boolean;
   pending: boolean;
   onBuy: () => void;
 }) {
@@ -184,13 +212,17 @@ function PlanColumn({
   const cents = amountFor(price, interval);
   const chargedCents = amountFor(charged, interval);
   const suffix = price.monthly_minor === null ? "" : interval === "annual" ? "/year" : "/month";
-  const featured = plan.key === "pro";
+  // "Most picked" is the default emphasis; an arriving choice outranks it,
+  // because a reader who already chose does not need to be told what other
+  // people chose.
+  const featured = preselected || plan.key === "pro";
 
   return (
     <Panel
       className={cn(
         "flex flex-col",
         featured && "border-ember/40 ring-1 ring-ember/15",
+        preselected && "ring-2 ring-ember/35",
         plan.current && "border-line",
       )}
     >
@@ -200,6 +232,8 @@ function PlanColumn({
             <h2 className="text-[15px] font-semibold text-fg">{plan.label}</h2>
             {plan.current ? (
               <Badge variant="secondary">Current</Badge>
+            ) : preselected ? (
+              <Badge>Chosen</Badge>
             ) : featured ? (
               <Badge>Most picked</Badge>
             ) : null}

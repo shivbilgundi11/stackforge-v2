@@ -35,6 +35,29 @@ export type PlanKey = "free" | "pro" | "team" | "enterprise";
 export type ChoosablePlanKey = "free" | "pro" | "team";
 export type Interval = "monthly" | "annual";
 
+/**
+ * A `?plan=` query parameter, narrowed to a plan that can actually be sold.
+ *
+ * `null` for anything else — absent, misspelled, or a hand-typed
+ * `?plan=enterprise`, which names a real tier that has no self-serve price and
+ * so cannot be the answer to "which plan is being bought". Callers supply
+ * their own default, because theirs differ: the signup form has to have *a*
+ * plan selected and falls back to Free, while the upgrade page preselects
+ * nothing and shows an ordinary comparison.
+ *
+ * Shared rather than parsed at each call site. Two copies of this is how one
+ * of them ends up accepting a key the other refuses, and the symptom is a
+ * checkout that 422s on a link the product itself produced.
+ */
+export function readPlanParam(value: string | null | undefined): ChoosablePlanKey | null {
+  return value === "pro" || value === "team" || value === "free" ? value : null;
+}
+
+/** The `?interval=` counterpart. Monthly unless annual is explicitly asked for. */
+export function readIntervalParam(value: string | null | undefined): Interval {
+  return value === "annual" ? "annual" : "monthly";
+}
+
 export function listPlans() {
   return apiFetch<Plan[]>("/api/v1/billing/plans");
 }

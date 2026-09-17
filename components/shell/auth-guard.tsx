@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useAuth } from "@/lib/auth/auth-provider";
+import { safeNextPath } from "@/lib/auth/schemas";
 import { useSubscription } from "@/lib/api/hooks";
 import { isPaymentWall } from "@/lib/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,6 +35,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const search = useSearchParams();
 
   const authenticated = status === "authenticated";
   const wall = isPaymentWall(pathname);
@@ -61,13 +63,19 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === "signed-out") {
-      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+      // The query string is part of where they were going, not decoration on
+      // it. `/upgrade?plan=pro` is a different destination from `/upgrade` —
+      // it is a plan chosen on the marketing site — and sending back the
+      // pathname alone dropped that choice on the floor at the login screen,
+      // landing them on an undifferentiated grid to choose all over again.
+      const next = search.toString() ? `${pathname}?${search}` : pathname;
+      router.replace(`/login?next=${encodeURIComponent(next)}`);
       return;
     }
     if (authenticated && owesPayment) {
       router.replace("/checkout");
     }
-  }, [status, authenticated, owesPayment, router, pathname]);
+  }, [status, authenticated, owesPayment, router, pathname, search]);
 
   if (authenticated && !undecided && !owesPayment) return <>{children}</>;
 
@@ -132,14 +140,22 @@ function ShellSkeleton() {
 /**
  * The mirror image, for `/login` and `/signup`: a signed-in user has no reason
  * to see them.
+ *
+ * It honours `?next=` rather than always landing on the dashboard. A link that
+ * says where it was going still says it when the person following it turns out
+ * to already have a session — someone who opens `/login?next=/upgrade?plan=pro`
+ * from a bookmark, a second tab, or an email wants the upgrade page, and
+ * dropping them on the dashboard makes them find it themselves. `safeNextPath`
+ * is what keeps that from being an open redirect.
  */
 export function GuestOnly({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
   const router = useRouter();
+  const search = useSearchParams();
 
   useEffect(() => {
-    if (status === "authenticated") router.replace("/dashboard");
-  }, [status, router]);
+    if (status === "authenticated") router.replace(safeNextPath(search.get("next")));
+  }, [status, router, search]);
 
   if (status === "authenticated") return null;
   return <>{children}</>;

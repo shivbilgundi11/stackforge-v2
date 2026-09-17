@@ -22,6 +22,10 @@ const replace = vi.hoisted(() => vi.fn());
 const state = vi.hoisted(() => ({
   status: "authenticated" as "authenticated" | "signed-out" | "loading",
   pathname: "/dashboard",
+  // The query string the guard has to carry across a login bounce: a plan
+  // chosen on the marketing site arrives as `/upgrade?plan=pro`, and the
+  // pathname alone is a different destination.
+  search: "",
   subscription: undefined as Subscription | undefined,
   isError: false,
   enabledCalls: [] as boolean[],
@@ -30,6 +34,7 @@ const state = vi.hoisted(() => ({
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
   usePathname: () => state.pathname,
+  useSearchParams: () => new URLSearchParams(state.search),
 }));
 
 vi.mock("@/lib/auth/auth-provider", () => ({
@@ -78,6 +83,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   state.status = "authenticated";
   state.pathname = "/dashboard";
+  state.search = "";
   state.subscription = undefined;
   state.isError = false;
   state.enabledCalls = [];
@@ -91,6 +97,24 @@ describe("AuthGuard", () => {
 
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/login?next=%2Fdashboard"));
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
+  });
+
+  it("carries the query string across the login bounce", async () => {
+    // `/upgrade?plan=pro` is a plan chosen on the marketing site, not a
+    // decorated `/upgrade`. Sending back the pathname alone dropped that
+    // choice at the login screen and landed the visitor on an
+    // undifferentiated grid to make it a second time.
+    state.status = "signed-out";
+    state.pathname = "/upgrade";
+    state.search = "plan=pro";
+
+    renderGuard();
+
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(
+        `/login?next=${encodeURIComponent("/upgrade?plan=pro")}`,
+      ),
+    );
   });
 
   it("gates a tool page too, not only the account surfaces", async () => {

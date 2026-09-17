@@ -13,9 +13,21 @@ import { useFormErrors } from "@/components/features/auth/use-form-errors";
 import { IntervalChoice, PlanChoice } from "@/components/features/billing/plan-choice";
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/api/auth";
-import { formatPrice, priceIn, type Interval, type ChoosablePlanKey } from "@/lib/api/billing";
+import {
+  formatPrice,
+  priceIn,
+  readIntervalParam,
+  readPlanParam,
+  type Interval,
+  type ChoosablePlanKey,
+} from "@/lib/api/billing";
 import { usePlans } from "@/lib/api/hooks";
-import { passwordStrength, signupSchema, type SignupValues } from "@/lib/auth/schemas";
+import {
+  passwordStrength,
+  safeNextPath,
+  signupSchema,
+  type SignupValues,
+} from "@/lib/auth/schemas";
 import { useDisplayCurrency } from "@/lib/currency/use-display-currency";
 import { cn } from "@/lib/utils";
 
@@ -54,10 +66,10 @@ function SignupForm() {
   // Sending them through a pricing step would ask them to buy what they have
   // just been given.
   const [step, setStep] = useState<Step>(inviteToken ? "account" : "plan");
-  const [plan, setPlan] = useState<ChoosablePlanKey>(readPlanParam(params.get("plan")));
-  const [interval, setInterval] = useState<Interval>(
-    params.get("interval") === "annual" ? "annual" : "monthly",
-  );
+  // A form has to have *a* plan selected, so an absent or unsellable `?plan=`
+  // becomes Free here rather than nothing.
+  const [plan, setPlan] = useState<ChoosablePlanKey>(readPlanParam(params.get("plan")) ?? "free");
+  const [interval, setInterval] = useState<Interval>(readIntervalParam(params.get("interval")));
 
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -89,6 +101,20 @@ function SignupForm() {
 
   const paid = plan !== "free" && !inviteToken;
 
+  /**
+   * "Sign in", still carrying where they were going.
+   *
+   * The mirror of the "Create one" link on the login screen. Someone who came
+   * from a plan card, bounced to login, clicked through to signup and only
+   * then remembered they have an account must not lose the plan on the way
+   * back — that round trip is three hops, and dropping the destination on any
+   * one of them ends with the same undifferentiated dashboard.
+   */
+  const loginHref = (() => {
+    const next = params.get("next");
+    return next ? `/login?next=${encodeURIComponent(safeNextPath(next))}` : "/login";
+  })();
+
   const onSubmit = handleSubmit(async (values) => {
     clearFormError();
     setSubmitting(true);
@@ -114,6 +140,12 @@ function SignupForm() {
         // paid. Verification is not in the way of that: the address is proven
         // by the card, and holding a paying customer at an email link is the
         // easiest way to lose one. They still get the verification mail.
+        //
+        // `/checkout` whatever `next` said. Someone who reached signup from a
+        // plan card has already chosen, the server has already recorded it as
+        // pending, and the wall charges for that pending plan — sending them
+        // to `/upgrade` instead would show a comparison they have made and a
+        // buy button for a plan they already owe on.
         router.push(`/login?next=${encodeURIComponent("/checkout")}`);
         return;
       }
@@ -161,7 +193,7 @@ function SignupForm() {
         footer={
           <>
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-ember hover:text-ember-hover">
+            <Link href={loginHref} className="font-medium text-ember hover:text-ember-hover">
               Sign in
             </Link>
           </>
@@ -340,11 +372,4 @@ function ChosenPlan({ plan, onChange }: { plan: ChoosablePlanKey; onChange: () =
       </button>
     </div>
   );
-}
-
-/** Only the plans the form can actually sell. Anything else — a stale link, a
- *  hand-typed `?plan=enterprise` — falls back to Free rather than to a step
- *  that cannot be completed. */
-function readPlanParam(value: string | null): ChoosablePlanKey {
-  return value === "pro" || value === "team" ? value : "free";
 }

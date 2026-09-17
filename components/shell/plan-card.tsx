@@ -59,9 +59,12 @@ export function PlanCard() {
         {unlimited ? "Tool runs. No daily cap." : "Tool runs today. Resets at midnight UTC."}
       </p>
 
+      {/* `/upgrade`, not `/pricing`: this sits in the app sidebar, so everyone
+          who can see it is signed in, and sending them to the marketing site
+          to buy meant leaving the product in order to be sold it. */}
       {unlimited ? null : (
         <Link
-          href="/pricing"
+          href="/upgrade"
           className="mt-2 inline-block text-[11px] font-medium text-ember hover:text-ember-hover"
         >
           Upgrade for unlimited →

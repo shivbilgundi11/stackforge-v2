@@ -12,6 +12,7 @@ import { FormError, FormField } from "@/components/features/auth/form-field";
 import { useFormErrors } from "@/components/features/auth/use-form-errors";
 import { notify } from "@/components/toaster";
 import { Button } from "@/components/ui/button";
+import { readPlanParam } from "@/lib/api/billing";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { loginSchema, safeNextPath, type LoginValues } from "@/lib/auth/schemas";
 
@@ -41,6 +42,27 @@ function LoginForm() {
 
   const { formError, clearFormError, handleError } = useFormErrors<LoginValues>(setError);
 
+  /**
+   * "Create one", carrying where they were going.
+   *
+   * Someone sent here by a plan card on the marketing site arrives at
+   * `/login?next=/upgrade?plan=pro`. If they turn out not to have an account,
+   * a bare `/signup` link threw away both the destination and the plan, and
+   * they finished signing up on the dashboard with no sign of the thing they
+   * had clicked. The plan rides across as `?plan=` too, so the signup form's
+   * own plan step opens on the one they picked.
+   */
+  const next = params.get("next");
+  const signupHref = (() => {
+    if (!next) return "/signup";
+    const query = new URLSearchParams({ next: safeNextPath(next) });
+    // `next` is a path with its own query string, so its `plan` is read out of
+    // that rather than off this page's params.
+    const plan = readPlanParam(new URLSearchParams(next.split("?")[1] ?? "").get("plan"));
+    if (plan) query.set("plan", plan);
+    return `/signup?${query}`;
+  })();
+
   const onSubmit = handleSubmit(async (values) => {
     clearFormError();
     setSubmitting(true);
@@ -62,7 +84,7 @@ function LoginForm() {
       footer={
         <>
           No account?{" "}
-          <Link href="/signup" className="font-medium text-ember hover:text-ember-hover">
+          <Link href={signupHref} className="font-medium text-ember hover:text-ember-hover">
             Create one
           </Link>
         </>

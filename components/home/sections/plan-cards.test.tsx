@@ -1,7 +1,22 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PlanCards, orderPlans } from "@/components/home/sections/plan-cards";
+/**
+ * The cards branch on whether the reader has a session — a paid tier sends a
+ * customer straight to the in-app upgrade page and a stranger to log in first
+ * — so the tests drive that rather than standing up a real provider.
+ */
+const authStatus = vi.hoisted(() => ({ current: "signed-out" as string }));
+
+vi.mock("@/lib/auth/auth-provider", () => ({
+  useAuth: () => ({ status: authStatus.current, user: null, isVerified: false }),
+}));
+
+beforeEach(() => {
+  authStatus.current = "signed-out";
+});
+
+const { PlanCards, orderPlans } = await import("@/components/home/sections/plan-cards");
 import type { Plan } from "@/lib/api/billing";
 import { localeFor } from "@/lib/currency/display-currency";
 import { PLAN_CURRENCY, PLAN_OUTLINES } from "@/lib/marketing/plans";
@@ -117,6 +132,55 @@ describe("PlanCards", () => {
     render(<PlanCards plans={[wordy]} maxHighlights={2} />);
     expect(screen.getByText("two")).toBeInTheDocument();
     expect(screen.queryByText("three")).not.toBeInTheDocument();
+  });
+
+  it("sends a signed-in customer straight to the in-app upgrade page", () => {
+    // The whole point of the change: somebody who already has an account and
+    // is reading the marketing site should not be asked to sign up again, and
+    // should not be paying on the marketing site either.
+    authStatus.current = "authenticated";
+    render(<PlanCards plans={[PRO]} />);
+
+    expect(screen.getByRole("link", { name: "Start" })).toHaveAttribute(
+      "href",
+      "/upgrade?plan=pro",
+    );
+  });
+
+  it("sends a signed-out visitor to log in, carrying the plan", () => {
+    render(<PlanCards plans={[PRO]} />);
+
+    const href = screen.getByRole("link", { name: "Start" }).getAttribute("href") ?? "";
+    expect(href.startsWith("/login")).toBe(true);
+
+    const next = new URL(href, "http://x").searchParams.get("next");
+    expect(next).toBe("/upgrade?plan=pro");
+  });
+
+  it("treats a session that has not resolved yet as signed out", () => {
+    // `loading` is the first render on every cold load. Guessing the other way
+    // would link a stranger at a page that bounces them; guessing this way
+    // costs a signed-in reader nothing, because the login screen forwards them
+    // to the same `next`.
+    authStatus.current = "loading";
+    render(<PlanCards plans={[PRO]} />);
+
+    expect(screen.getByRole("link", { name: "Start" }).getAttribute("href")).toContain("/login");
+  });
+
+  it("never routes a priced plan through checkout on the marketing site", () => {
+    // Paying is an in-app act. A card that linked at /checkout would put the
+    // payment wall behind the marketing chrome, where there is no session to
+    // charge against.
+    for (const status of ["authenticated", "signed-out"]) {
+      authStatus.current = status;
+      const { unmount } = render(<PlanCards plans={[PRO, TEAM]} />);
+
+      for (const link of screen.getAllByRole("link")) {
+        expect(link.getAttribute("href") ?? "").not.toContain("/checkout");
+      }
+      unmount();
+    }
   });
 
   it("links the free tier at sign-up, not at the contact page", () => {

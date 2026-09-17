@@ -189,8 +189,13 @@ function PlanPanel({ subscription }: { subscription: Subscription | undefined })
           {/* No "manage payment" button. Razorpay has no portal to send them
               to, and the things it would have offered are already on this
               page: the invoice list below, and the cancel control beside it. */}
+          {/* `/upgrade`, not `/pricing`. This pointed at the marketing site,
+              which took a signed-in customer out of the product to a page
+              selling it to them, whose only call to action was to create the
+              account they were already signed in to. The in-app comparison
+              knows which plan they have and can charge the card on the spot. */}
           <Button asChild size="sm" variant={isPaid ? "ghost" : "default"}>
-            <Link href="/pricing">
+            <Link href="/upgrade">
               {isPaid ? "Compare plans" : "Upgrade"}
               <ArrowRightIcon className="size-3.5" aria-hidden />
             </Link>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from "@/components/home/fx/type";
 import { Magnetic } from "@/components/home/fx/ui";
 import type { Plan } from "@/lib/api/billing";
+import { useAuth } from "@/lib/auth/auth-provider";
 import { localeFor } from "@/lib/currency/display-currency";
 import { PLAN_CURRENCY, PLAN_OUTLINES } from "@/lib/marketing/plans";
 import { cn } from "@/lib/utils";
@@ -107,7 +108,40 @@ type Priced = Pick<Plan, "key" | "label" | "tagline" | "monthly_minor" | "per_se
   highlights: readonly string[];
 };
 
-function toCard(source: Priced, currency: string): Card {
+/**
+ * Where a card's button goes.
+ *
+ * Three destinations, and which one depends on the tier and on whether the
+ * reader already has a session:
+ *
+ *   - **No list price** — Enterprise. A conversation, so `/contact`. Not
+ *     `plan.self_serve`: that mirrors the backend's `checkout` flag, which is
+ *     false for Free because there is nothing to charge, and keying on it sent
+ *     someone clicking "Get started" on the free tier to the contact page.
+ *   - **Free** — nothing to buy, so `/signup`.
+ *   - **A price** — the plan travels with them to the in-app upgrade page,
+ *     which is where money is taken. Signed in, that is direct. Signed out, it
+ *     is through the login screen, which hands them on afterwards.
+ *
+ * The plan is in the URL for the whole trip. Before this, every card linked to
+ * a bare `/signup`: a customer who already had an account was asked to make
+ * another one, and the tier they had just chosen was forgotten at the first
+ * hop, so they arrived somewhere with no memory of the button they pressed.
+ *
+ * `loading` is treated as signed out on purpose, and it costs nothing to be
+ * wrong. The session resolves after hydration, so a card clicked in that
+ * window points at `/login?next=…` — and `GuestOnly` forwards an already
+ * signed-in visitor straight through to the same destination.
+ */
+function hrefFor(key: string, minor: number | null, signedIn: boolean): string {
+  if (minor === null) return "/contact";
+  if (minor === 0) return "/signup";
+
+  const destination = `/upgrade?plan=${encodeURIComponent(key)}`;
+  return signedIn ? destination : `/login?next=${encodeURIComponent(destination)}`;
+}
+
+function toCard(source: Priced, currency: string, signedIn: boolean): Card {
   const minor = source.monthly_minor;
   const amount = minor === null ? null : formatMoney(minor, currency);
 
@@ -117,12 +151,7 @@ function toCard(source: Priced, currency: string): Card {
     tagline: source.tagline,
     highlights: [...source.highlights],
     cta: source.cta,
-    // Not `plan.self_serve`: that mirrors the backend's `checkout` flag, which
-    // is false for Free because there is nothing to charge — so keying the
-    // link on it sent someone clicking "Get started" on the free tier to the
-    // contact page. A plan with no price is a conversation; a plan with one,
-    // including zero, is a sign-up.
-    href: minor === null ? "/contact" : "/signup",
+    href: hrefFor(source.key, minor, signedIn),
     amount,
     cadence:
       minor === 0
@@ -149,14 +178,16 @@ export function PlanCards({
   maxHighlights?: number;
   className?: string;
 }) {
+  const { status } = useAuth();
+  const signedIn = status === "authenticated";
   const configured = orderPlans(plans);
   //: True when the catalog could not be read and these amounts came from the
   //: snapshot. It changes one line of copy under the grid and nothing else —
   //: the cards are identical either way, because the two sources are.
   const snapshot = configured.length === 0;
   const cards: Card[] = snapshot
-    ? PLAN_OUTLINES.map((outline) => toCard(outline, PLAN_CURRENCY))
-    : configured.map((plan) => toCard(plan, plan.currency));
+    ? PLAN_OUTLINES.map((outline) => toCard(outline, PLAN_CURRENCY, signedIn))
+    : configured.map((plan) => toCard(plan, plan.currency, signedIn));
 
   return (
     <>
@@ -225,7 +256,10 @@ export function PlanCards({
               <Magnetic strength={9} className="mt-9 self-start">
                 <Link
                   href={card.href}
-                  data-cursor={card.href === "/signup" ? "Start" : "Contact"}
+                  // Three destinations now, so this can no longer be one
+                  // literal compared against: a paid tier goes to the upgrade
+                  // page, directly or via login, and both said "Contact".
+                  data-cursor={card.href.startsWith("/contact") ? "Contact" : "Start"}
                   className={cn("btn", featured && "btn-acc")}
                 >
                   {card.cta}
