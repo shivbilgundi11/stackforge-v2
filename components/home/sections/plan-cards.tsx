@@ -6,7 +6,7 @@ import { Reveal, Stagger, StaggerItem } from "@/components/home/fx/type";
 import { Magnetic } from "@/components/home/fx/ui";
 import type { Plan } from "@/lib/api/billing";
 import { localeFor } from "@/lib/currency/display-currency";
-import { PLAN_OUTLINES, type PlanOutline } from "@/lib/marketing/plans";
+import { PLAN_CURRENCY, PLAN_OUTLINES } from "@/lib/marketing/plans";
 import { cn } from "@/lib/utils";
 
 /**
@@ -14,13 +14,18 @@ import { cn } from "@/lib/utils";
  *
  * ## The one rule
  *
- * **No price is written down in this file.** Every amount renders from the
- * plan catalog the checkout charges from. A typed-in price drifts silently
- * into quoting one number and charging another, and the drift is invisible
- * until a customer notices — which makes it a trust problem rather than a
- * content problem. The feature lists come from each plan's own `highlights`
- * for the same reason: one hand-written list here and another on `/pricing`
- * would be two descriptions of one product, and they diverge.
+ * **No amount this component renders may disagree with what the checkout
+ * charges.** A price that drifts from the billing configuration quotes one
+ * number and charges another, the drift is invisible until a customer
+ * notices, and it is a trust problem rather than a content problem.
+ *
+ * Every figure therefore comes from the plan catalog: live from
+ * `GET /billing/plans`, or from the snapshot in `lib/marketing/plans.ts` that
+ * `npm run plans:check` diffs against `backend/app/data/plans.py` on every
+ * run. Nothing is typed into this file, and nothing anywhere can drift
+ * without failing the build. The feature lists ride along for the same
+ * reason: one hand-written list here and another on `/pricing` would be two
+ * descriptions of one product, and they diverge.
  *
  * That argument is also why this is one component and not two. The home page
  * and `/pricing` used to be a card grid and a separate table; keeping them as
@@ -35,19 +40,22 @@ import { cn } from "@/lib/utils";
  * nothing would fail until someone noticed the page was missing a tier.
  * `e2e/marketing.spec.ts` asserts every configured plan appears here.
  *
- * ## A missing catalog withholds the amounts, not the plans
+ * ## A missing catalog falls back to the snapshot, not to an empty page
  *
  * `plans` being `null` — the API unreachable at build — used to replace the
  * entire grid with a line saying prices were loading. That read as an outage
- * on the page whose job is to name the tiers, and it threw away four feature
- * lists to protect two numbers.
+ * on the page whose job is to name the tiers and what they cost.
  *
- * It now falls back to `PLAN_OUTLINES`: the same tiers, taglines, highlights
- * and calls to action, with every charged amount replaced by an explicit
- * "price unavailable" rather than a remembered figure. The rule is unchanged —
- * a price is never guessed at — but it is enforced on the price instead of on
- * the page. See `lib/marketing/plans.ts` for why the structure is safe to
- * mirror when an amount is not.
+ * It now falls back to `PLAN_OUTLINES`, which is the same plan configuration
+ * the API would have served, snapshotted and checked against the backend on
+ * every `npm run check`. That keeps the rule at the top of this file intact:
+ * the amount still cannot disagree with the checkout, because CI fails if the
+ * two ever differ. See `lib/marketing/plans.ts`.
+ *
+ * Both sources carry identical fields, so they normalise to one `Card` and
+ * render through one path — a fallback that rendered differently from the
+ * live page would be a second layout to keep correct, and the difference
+ * would show up exactly when nobody was looking.
  */
 
 const PREFERRED = ["free", "pro", "team"];
@@ -73,10 +81,8 @@ export function orderPlans(plans: Plan[] | null): Plan[] {
 /**
  * One card's worth of content, from either source.
  *
- * The two sources agree on everything except the amount, so normalising to
- * this up front is what keeps a single card renderer below — and it is why
- * `amount` is a formatted string or nothing. A card never sees minor units,
- * so it cannot format a price a second way.
+ * `amount` is a formatted string or nothing: a card never sees minor units, so
+ * it cannot format a price a second way than `toCard` did.
  */
 type Card = {
   key: string;
@@ -85,24 +91,32 @@ type Card = {
   highlights: string[];
   cta: string;
   href: string;
-  /** Formatted, or `null` when there is no figure to show. */
+  /** Formatted, or `null` for a tier with no list price. */
   amount: string | null;
-  /** The line under the amount: "Forever", "Per seat / month", "Custom"… */
+  /** The line under the amount: "Forever", "Per seat / month", "Custom". */
   cadence: string;
-  /** True when an amount exists but could not be read. Styles the card. */
-  withheld: boolean;
 };
 
-function fromPlan(plan: Plan): Card {
-  const minor = plan.monthly_minor;
-  const amount = minor === null ? null : formatMoney(minor, plan.currency);
+/**
+ * The fields the API's plan and the snapshot both carry, which is all of the
+ * ones a card renders. Typing the argument structurally rather than as
+ * `Plan | PlanOutline` is what makes the snapshot fail to compile if it drops
+ * a field the live plan has.
+ */
+type Priced = Pick<Plan, "key" | "label" | "tagline" | "monthly_minor" | "per_seat" | "cta"> & {
+  highlights: readonly string[];
+};
+
+function toCard(source: Priced, currency: string): Card {
+  const minor = source.monthly_minor;
+  const amount = minor === null ? null : formatMoney(minor, currency);
 
   return {
-    key: plan.key,
-    label: plan.label,
-    tagline: plan.tagline,
-    highlights: plan.highlights,
-    cta: plan.cta,
+    key: source.key,
+    label: source.label,
+    tagline: source.tagline,
+    highlights: [...source.highlights],
+    cta: source.cta,
     // Not `plan.self_serve`: that mirrors the backend's `checkout` flag, which
     // is false for Free because there is nothing to charge — so keying the
     // link on it sent someone clicking "Get started" on the free tier to the
@@ -114,29 +128,10 @@ function fromPlan(plan: Plan): Card {
       minor === 0
         ? "Forever"
         : amount
-          ? plan.per_seat
+          ? source.per_seat
             ? "Per seat / month"
             : "Per month"
           : "Custom",
-    withheld: false,
-  };
-}
-
-function fromOutline(outline: PlanOutline): Card {
-  const custom = outline.price === "custom";
-
-  return {
-    key: outline.key,
-    label: outline.label,
-    tagline: outline.tagline,
-    highlights: outline.highlights,
-    cta: outline.cta,
-    href: custom ? "/contact" : "/signup",
-    // "Free" is a word, not a quote — nothing is charged, so there is no
-    // figure the checkout could contradict. Every other tier gets nothing.
-    amount: outline.price === "free" ? "Free" : null,
-    cadence: outline.price === "free" ? "Forever" : custom ? "Custom" : "Price unavailable",
-    withheld: outline.price === "charged",
   };
 }
 
@@ -155,9 +150,13 @@ export function PlanCards({
   className?: string;
 }) {
   const configured = orderPlans(plans);
-  const cards: Card[] =
-    configured.length > 0 ? configured.map(fromPlan) : PLAN_OUTLINES.map(fromOutline);
-  const withheld = cards.some((card) => card.withheld);
+  //: True when the catalog could not be read and these amounts came from the
+  //: snapshot. It changes one line of copy under the grid and nothing else —
+  //: the cards are identical either way, because the two sources are.
+  const snapshot = configured.length === 0;
+  const cards: Card[] = snapshot
+    ? PLAN_OUTLINES.map((outline) => toCard(outline, PLAN_CURRENCY))
+    : configured.map((plan) => toCard(plan, plan.currency));
 
   return (
     <>
@@ -185,22 +184,24 @@ export function PlanCards({
                 {featured ? <span className="t-mono text-[var(--h-acc)]">Most popular</span> : null}
               </div>
 
-              {/* The amount sits in a fixed block, bottom-aligned, so the four
-                  cards keep one baseline whatever is in it. Without it a
-                  withheld card — whose mark is deliberately smaller than a
-                  price — pulls its own tagline and feature list up, and the
-                  row stops reading as a comparison. */}
+              {/* Bottom-aligned in a fixed block so the four cards keep one
+                  baseline, and a tier with no amount is set smaller so that it
+                  keeps it. "Talk to us" is ten characters where the others are
+                  four, and at the price scale it wraps to a second line in a
+                  quarter-width column — which pushed the Enterprise card's
+                  cadence, tagline and features below everyone else's and broke
+                  the row as a comparison. It is not a number, so it does not
+                  need a number's weight. */}
               <div className="mt-7 flex min-h-[clamp(3.1rem,6.8vw,5rem)] items-end">
                 <p
                   className={cn(
-                    "t-display text-[clamp(2.6rem,6vw,4.2rem)]",
-                    // An em dash at display size would read as a price of
-                    // nothing. Dropping it to the body scale says "not a
-                    // number" before the line underneath has to explain it.
-                    card.withheld && "text-[clamp(1.6rem,3vw,2.2rem)] text-[var(--h-fg-45)]",
+                    "t-display",
+                    card.amount
+                      ? "text-[clamp(2.6rem,6vw,4.2rem)]"
+                      : "text-[clamp(1.7rem,3.2vw,2.6rem)]",
                   )}
                 >
-                  {card.amount ?? (card.withheld ? "—" : "Talk to us")}
+                  {card.amount ?? "Talk to us"}
                 </p>
               </div>
               <p className="t-mono mt-3 text-[9px] text-[var(--h-fg-45)]">{card.cadence}</p>
@@ -236,13 +237,14 @@ export function PlanCards({
       </Stagger>
 
       {/* The footnote lives here rather than at each call site, because it is
-          a claim about what the grid just rendered — and during an outage the
-          usual line ("prices render from the configuration the checkout
-          charges from") would be printed under a grid showing no prices. */}
+          a claim about where the amounts above came from — and only this
+          component knows. Both sentences are true of the snapshot, but the
+          first is the stronger claim and it is only earned when the figure was
+          read live, so the fallback makes the weaker one. */}
       <Reveal delay={0.1} className="mt-10">
         <p className="t-mono text-[var(--h-fg-45)]">
-          {withheld
-            ? "Prices are temporarily unavailable — the current amount is always shown at checkout"
+          {snapshot
+            ? "Prices are checked against the configuration the checkout charges from on every build"
             : "Prices render from the same configuration the checkout charges from"}
         </p>
       </Reveal>

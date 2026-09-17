@@ -1,0 +1,64 @@
+{
+  "currency": "inr",
+  "plans": [
+    {
+      "key": "free",
+      "label": "Free",
+      "tagline": "Every tool, every catalog page, no card.",
+      "monthly_minor": 0,
+      "per_seat": false,
+      "highlights": [
+        "Every tool and every workflow",
+        "25 tool runs a day",
+        "Markdown export on every result",
+        "One saved stack"
+      ],
+      "cta": "Get started"
+    },
+    {
+      "key": "pro",
+      "label": "Pro",
+      "tagline": "For the person who has to defend the number.",
+      "monthly_minor": 49900,
+      "per_seat": false,
+      "highlights": [
+        "Unlimited tool runs",
+        "100 AI-assisted runs a day",
+        "PDF, JSON, YAML, CSV, and bundle export",
+        "20 projects and unlimited saved stacks",
+        "Price-change and deprecation alerts",
+        "The full template library"
+      ],
+      "cta": "Upgrade to Pro"
+    },
+    {
+      "key": "team",
+      "label": "Team",
+      "tagline": "One shared view of what the team has decided.",
+      "monthly_minor": 129900,
+      "per_seat": true,
+      "highlights": [
+        "Everything in Pro, per seat",
+        "300 AI-assisted runs a day",
+        "Shared workspace, roles, and approvals",
+        "Unlimited projects",
+        "500 exports a month"
+      ],
+      "cta": "Choose Team"
+    },
+    {
+      "key": "enterprise",
+      "label": "Enterprise",
+      "tagline": "Your procurement process, our numbers.",
+      "monthly_minor": null,
+      "per_seat": true,
+      "highlights": [
+        "Everything in Team, without the ceilings",
+        "Custom AI allowance",
+        "SSO and an audit trail",
+        "A named contact"
+      ],
+      "cta": "Talk to us"
+    }
+  ]
+}

@@ -12,11 +12,21 @@ import type { components } from "@/types/api";
  * ## Why the fallbacks are allowed to be stale but not invented
  *
  * A fallback that guesses is worse than no page. These numbers are the last
- * verified snapshot of the real catalog, and they are checked in CI against
- * the live endpoint — so if the catalog grows and this file does not, the
- * build tells someone. What must never happen is a marketing figure that was
- * never true (Q-02): the previous build's site claimed 200+ tools against a
- * catalog of 80, and 50,000 users against no users at all.
+ * verified snapshot of the real catalog. What must never happen is a marketing
+ * figure that was never true (Q-02): the previous build's site claimed 200+
+ * tools against a catalog of 80, and 50,000 users against no users at all.
+ *
+ * This docblock used to claim the numbers were "checked in CI against the live
+ * endpoint". Nothing checked them — grep for `CATALOG_FALLBACK` and this file
+ * is the only hit. The date on the constant below is therefore the only thing
+ * standing behind it, so re-verify it by hand when you touch it.
+ *
+ * The plan snapshot is the version of this that *is* enforced, because it can
+ * be: `data/plans.py` is static and importable with no database, so
+ * `npm run plans:check` re-derives it on every run. Catalog counts are live
+ * rows, so the same trick does not work here — closing this properly means a
+ * job that reads the deployed `/catalog/stats` and opens a PR when the
+ * snapshot drifts, which is worth doing and is not done.
  */
 
 const BASE_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:8000";
@@ -52,11 +62,16 @@ export async function getCatalogStats(): Promise<CatalogStats> {
 /**
  * The plan catalog, for the pricing page and the home-page teaser.
  *
- * `null` rather than a fallback: prices are the one thing this site must not
- * guess at. A pricing page that disagrees with the checkout is a support and
- * trust problem, so when the API is unreachable the page says the numbers are
- * temporarily unavailable and links to checkout, instead of rendering a
- * remembered price that may already have changed.
+ * `null` rather than a fallback *here*, because this layer has no way to tell
+ * a stale price from a current one — it either read the catalog or it did not,
+ * and saying so is the honest thing for it to return.
+ *
+ * The fallback lives one level up, in `PlanCards`, and it is a generated
+ * snapshot of `backend/app/data/plans.py` that `npm run plans:check` diffs
+ * against the backend on every run. That is what makes rendering a price
+ * without the API safe: not that the figure is remembered, but that it cannot
+ * differ from the billing configuration without failing the build. See
+ * `lib/marketing/plans.ts`.
  */
 export async function getPlansStatic(): Promise<Plan[] | null> {
   return fetchPublic<Plan[]>("/api/v1/billing/plans", HOUR);

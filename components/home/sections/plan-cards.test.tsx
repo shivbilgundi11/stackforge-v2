@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import { PlanCards, orderPlans } from "@/components/home/sections/plan-cards";
 import type { Plan } from "@/lib/api/billing";
+import { localeFor } from "@/lib/currency/display-currency";
+import { PLAN_CURRENCY, PLAN_OUTLINES } from "@/lib/marketing/plans";
 
 /**
  * The plan cards, which the home page and `/pricing` both render.
@@ -20,8 +22,10 @@ import type { Plan } from "@/lib/api/billing";
  *      literal price would be the second place a price lives, which is the
  *      failure the component exists to prevent.
  *
- * The unreachable-catalog state is third: it is a real state at build time, and
- * it must not silently render a card with a missing or remembered price.
+ * The unreachable-catalog state is third, and it is covered separately at the
+ * bottom of this file. It is a real state at build time, and what it must not
+ * do is quietly become a different page — either by dropping the plans or by
+ * rendering them some second way that nobody looks at.
  */
 
 function plan(over: Partial<Plan> & Pick<Plan, "key" | "label">): Plan {
@@ -145,45 +149,69 @@ describe("PlanCards", () => {
  * The unreachable catalog.
  *
  * This used to replace the grid with a single line saying prices were loading,
- * which protected the two charged amounts by throwing away four tiers and
- * their feature lists — on the page whose job is to name them. The fallback
- * now keeps everything that is not a price. Both halves of that need a test:
- * the plans have to survive, and no amount may.
+ * so a backend restart emptied the page that exists to name the tiers and what
+ * they cost. It now renders `PLAN_OUTLINES`, generated from the backend's own
+ * plan module and diffed against it by `npm run plans:check`.
+ *
+ * Nothing here asserts a literal price. The snapshot is the second place a
+ * price lives, and a test hardcoding one would be the third — the check script
+ * is what holds it to the billing configuration, and these assert only that
+ * the fallback renders the snapshot rather than something invented.
  */
 describe("PlanCards with no catalog", () => {
   it("still names every tier and what is in it", () => {
     render(<PlanCards plans={null} />);
 
-    for (const label of ["Free", "Pro", "Team", "Enterprise"]) {
+    for (const outline of PLAN_OUTLINES) {
       expect(
-        screen.getByRole("heading", { name: label }),
-        `the ${label} tier disappears when the catalog is unreachable`,
+        screen.getByRole("heading", { name: outline.label }),
+        `the ${outline.label} tier disappears when the catalog is unreachable`,
+      ).toBeInTheDocument();
+
+      // One highlight per tier proves the feature list renders rather than
+      // just the heading. Asserting all nineteen would make this a copy test.
+      expect(screen.getByText(outline.highlights[0]!)).toBeInTheDocument();
+    }
+  });
+
+  it("shows each tier's amount, formatted from the snapshot", () => {
+    render(<PlanCards plans={null} />);
+
+    for (const outline of PLAN_OUTLINES) {
+      if (outline.monthly_minor === null) continue;
+      const expected = new Intl.NumberFormat(localeFor(PLAN_CURRENCY), {
+        style: "currency",
+        currency: PLAN_CURRENCY.toUpperCase(),
+        maximumFractionDigits: 0,
+      }).format(outline.monthly_minor / 100);
+
+      expect(
+        screen.getByText(expected),
+        `${outline.label} shows no amount when the catalog is unreachable`,
       ).toBeInTheDocument();
     }
-
-    // One highlight per tier, to prove the feature lists render rather than
-    // just the headings. Asserting all nineteen would make this a copy test.
-    expect(screen.getByText("25 tool runs a day")).toBeInTheDocument();
-    expect(screen.getByText("Unlimited tool runs")).toBeInTheDocument();
-    expect(screen.getByText("Shared workspace, roles, and approvals")).toBeInTheDocument();
-    expect(screen.getByText("SSO and an audit trail")).toBeInTheDocument();
   });
 
-  it("withholds the charged amounts rather than remembering them", () => {
-    render(<PlanCards plans={null} />);
+  it("renders the snapshot through the same path as a live plan", () => {
+    // The failure this guards is the fallback drifting into a second layout
+    // that only appears during an outage, when nobody is looking at it.
+    const { container, unmount } = render(<PlanCards plans={null} />);
+    const offline = container.innerHTML;
+    unmount();
 
-    // The failure this guards is a card rendering a stale or blank amount that
-    // reads as a real price. No currency symbol may appear in any locale.
-    expect(screen.queryByText(/[$₹€£]/)).not.toBeInTheDocument();
-    expect(screen.getAllByText("Price unavailable")).toHaveLength(2);
-    expect(screen.getByText(/temporarily unavailable/i)).toBeInTheDocument();
+    const live = PLAN_OUTLINES.map((outline) =>
+      plan({ ...outline, currency: PLAN_CURRENCY, highlights: [...outline.highlights] }),
+    );
+    const { container: second } = render(<PlanCards plans={live} />);
+
+    // Identical but for the footnote, which is the one thing that should
+    // differ: it says where the amounts came from.
+    const strip = (html: string) => html.replace(/Prices [^<]*/, "");
+    expect(strip(second.innerHTML)).toBe(strip(offline));
   });
 
-  it("says Free is free, because that is not a quote", () => {
-    // Nothing is charged for it, so there is no figure the checkout could
-    // contradict — and a Free card showing an em dash reads as broken.
+  it("says where the amounts came from", () => {
     render(<PlanCards plans={null} />);
-    expect(screen.getByText("Free", { selector: "p" })).toBeInTheDocument();
-    expect(screen.getByText("Forever")).toBeInTheDocument();
+    expect(screen.getByText(/checked against the configuration/i)).toBeInTheDocument();
   });
 });
