@@ -163,7 +163,7 @@ export function PlanCards({
       <Stagger
         step={0.09}
         className={cn(
-          "grid border-t border-[var(--h-line)]",
+          "grid border-t border-(--h-line)",
           cards.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3",
           className,
         )}
@@ -175,13 +175,13 @@ export function PlanCards({
             <StaggerItem
               key={card.key}
               className={cn(
-                "flex flex-col border-b border-[var(--h-line)] px-0 py-9 lg:border-r lg:border-b-0 lg:px-8 lg:last:border-r-0",
-                featured && "lg:bg-[var(--h-panel)]",
+                "flex flex-col border-b border-(--h-line) px-0 py-9 lg:border-r lg:border-b-0 lg:px-8 lg:last:border-r-0",
+                featured && "lg:bg-(--h-panel)",
               )}
             >
               <div className="flex items-baseline justify-between gap-4">
                 <h3 className="t-mono">{card.label}</h3>
-                {featured ? <span className="t-mono text-[var(--h-acc)]">Most popular</span> : null}
+                {featured ? <span className="t-mono text-(--h-acc)">Most popular</span> : null}
               </div>
 
               {/* Bottom-aligned in a fixed block so the four cards keep one
@@ -204,17 +204,17 @@ export function PlanCards({
                   {card.amount ?? "Talk to us"}
                 </p>
               </div>
-              <p className="t-mono mt-3 text-[9px] text-[var(--h-fg-45)]">{card.cadence}</p>
+              <p className="t-mono mt-3 text-[9px] text-(--h-fg-45)">{card.cadence}</p>
 
               <p className="t-body mt-5 text-[14px]">{card.tagline}</p>
 
-              <ul className="mt-8 flex flex-1 flex-col gap-3 border-t border-[var(--h-line)] pt-7">
+              <ul className="mt-8 flex flex-1 flex-col gap-3 border-t border-(--h-line) pt-7">
                 {(maxHighlights ? card.highlights.slice(0, maxHighlights) : card.highlights).map(
                   (item) => (
-                    <li key={item} className="flex gap-3 text-[14px] text-[var(--h-fg-70)]">
+                    <li key={item} className="flex gap-3 text-[14px] text-(--h-fg-70)">
                       <span
                         aria-hidden
-                        className="mt-2 size-1 shrink-0 rounded-full bg-[var(--h-acc)]"
+                        className="mt-2 size-1 shrink-0 rounded-full bg-(--h-acc)"
                       />
                       {item}
                     </li>
@@ -242,7 +242,7 @@ export function PlanCards({
           first is the stronger claim and it is only earned when the figure was
           read live, so the fallback makes the weaker one. */}
       <Reveal delay={0.1} className="mt-10">
-        <p className="t-mono text-[var(--h-fg-45)]">
+        <p className="t-mono text-(--h-fg-45)">
           {snapshot
             ? "Prices are checked against the configuration the checkout charges from on every build"
             : "Prices render from the same configuration the checkout charges from"}

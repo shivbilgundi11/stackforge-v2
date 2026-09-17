@@ -85,7 +85,7 @@ export function Preloader() {
       {running ? (
         <motion.div
           aria-hidden
-          className="fixed inset-0 z-[90] flex flex-col justify-between bg-[var(--h-ink)] px-5 py-6 text-[var(--h-bone)] sm:px-8"
+          className="fixed inset-0 z-90 flex flex-col justify-between bg-[#1a1b1e] px-5 py-6 text-(--h-bone) sm:px-8"
           initial={{ opacity: 1 }}
           exit={{ y: "-100%", transition: { duration: 0.9, ease: EASE } }}
         >
@@ -104,7 +104,7 @@ export function Preloader() {
           {/* The progress hairline, along the very bottom edge. */}
           <span className="absolute inset-x-0 bottom-0 h-px bg-[color-mix(in_srgb,var(--h-bone)_25%,transparent)]">
             <span
-              className="block h-full origin-left bg-[var(--h-acc)]"
+              className="block h-full origin-left bg-(--h-acc)"
               style={{ transform: `scaleX(${count / 100})` }}
             />
           </span>

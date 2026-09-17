@@ -2,7 +2,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { HomeFooter } from "@/components/home/chrome/footer";
 import { HomeNav } from "@/components/home/chrome/nav";
-import { Preloader } from "@/components/home/chrome/preloader";
 import { SmoothScroll } from "@/components/home/fx/scroll";
 import { Cursor } from "@/components/home/fx/ui";
 
@@ -72,7 +71,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
       {/* Order matters: the curtain is above everything, the cursor is above
           the content but below the curtain, and the smooth-scroll driver wraps
           the lot because it owns the only animation clock on the page. */}
-      <Preloader />
+      {/* <Preloader /> */}
       <Cursor />
 
       <SmoothScroll>
