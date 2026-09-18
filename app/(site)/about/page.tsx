@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Parallax, ProgressRail } from "@/components/home/fx/scroll";
+import { ProgressRail } from "@/components/home/fx/scroll";
 import { MaskLines, Reveal, Rule, Stagger, StaggerItem } from "@/components/home/fx/type";
 import { CtaBand } from "@/components/home/sections/cta-band";
 import { Section, SectionHead } from "@/components/home/sections/head";
@@ -173,34 +173,58 @@ export default async function Page() {
 
           {/* An opaque photograph, unlike the home page's two cut-outs, so it
               takes the framed treatment `Shot` gives screenshots — a bare
-              rectangle on the bone ground reads as pasted on. Shown whole, not
-              cropped to the column's height: it is a scene, and cropping it to
-              fit would cut people out of it.
+              rectangle on the bone ground reads as pasted on.
+
+              From `lg` it runs the full height of the heading and prose
+              beside it. The text decides the row's height and the photo only
+              covers it: the image is absolutely positioned inside its frame,
+              so it contributes no height of its own and cannot stretch the
+              row. A 3:2 scene in a column taller than it is wide has to be
+              cropped to do that, and `object-cover` crops the sides. The
+              focus sits at 66%, placed so the narrowest crop (about half the
+              frame, at laptop widths) still holds the presenter's face at its
+              left edge and the whole of the screen's Output list at its
+              right. It gives up the handwriting on the wall and most of the
+              man at the far right; wider layouts show progressively more.
+
+              No `Parallax` here, unlike the home page's pictures. Those float
+              free of the type; this one is matched to it at both edges, and a
+              drift of any size shows as a misaligned top or bottom.
+
+              Below `lg` it is uncropped at its natural 3:2 — there is no text
+              beside it to match, and cropping a scene with no reason to loses
+              people from it.
 
               Captioned, for the reason stated at the top of this file: this
               page claims no team, headcount or customers, and a staged scene
               of three people at a whiteboard is exactly what a reader takes
               for a photo of the team. Its "$1,920 / mo, ↓38%" is the
               picture's, too — not a figure the catalog produced. */}
-          <Parallax distance={36}>
-            <Reveal from="none" duration={1.1}>
-              <figure>
-                <div className="overflow-hidden rounded-xl border border-[var(--h-line-2)]">
-                  <Image
-                    src="/marketing/about-workbench.webp"
-                    alt="Illustration: a small team planning an AI system at a wall screen that maps models through plan, compare, optimise and deploy into an architecture, a cost estimate, an implementation plan and starter configuration."
-                    width={1536}
-                    height={1024}
-                    loading="lazy"
-                    // The same column as the home page's illustrations.
-                    sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
-                    className="h-auto w-full"
-                  />
-                </div>
-                <figcaption className="t-mono mt-3 text-[var(--h-fg-45)]">Illustration</figcaption>
-              </figure>
-            </Reveal>
-          </Parallax>
+          <Reveal from="none" duration={1.1}>
+            <figure className="relative overflow-hidden rounded-xl border border-[var(--h-line-2)] lg:h-full">
+              <Image
+                src="/marketing/about-workbench.webp"
+                alt="Illustration: a small team planning an AI system at a wall screen that maps models through plan, compare, optimise and deploy into an architecture, a cost estimate, an implementation plan and starter configuration."
+                width={1536}
+                height={1024}
+                loading="lazy"
+                // Cropped by width, so the file has to cover the column's
+                // *height* at 3:2 — around 1.5x the column's width, up to
+                // ~900px on the widest layout. Sized from the column, as the
+                // home page's are, it would be upscaled into the crop.
+                sizes="(max-width: 1024px) 100vw, 56rem"
+                className="h-auto w-full lg:absolute lg:inset-0 lg:h-full lg:object-cover lg:object-[66%_50%]"
+              />
+              {/* On the photo rather than under it: a caption below the frame
+                    takes its height out of the picture, and the frame then
+                    stops short of the text it is meant to match. Set on a dark
+                    chip because the photo is dark at that corner and the
+                    page's grey would vanish into it. */}
+              <figcaption className="t-mono absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 text-[9px] text-white/85 backdrop-blur-sm">
+                Illustration
+              </figcaption>
+            </figure>
+          </Reveal>
         </div>
       </Section>
 
