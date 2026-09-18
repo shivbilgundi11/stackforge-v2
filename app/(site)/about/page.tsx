@@ -95,7 +95,7 @@ export default async function Page() {
           "The planning layer",
           "that should",
           <Fragment key="last">
-            already exist<span className="text-[var(--h-acc)]">.</span>
+            already exist<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
         lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. AIVeda is the step in between — the one where the numbers get worked out while they can still change the decision."
@@ -114,8 +114,8 @@ export default async function Page() {
             `SectionHead` uses, so the chapter still matches the other two. */}
         <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
           <Reveal from="none" duration={0.6}>
-            <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-              <span className="text-[var(--h-acc)]">01</span>
+            <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+              <span className="text-(--h-acc)">01</span>
               What it is
             </p>
           </Reveal>
@@ -160,11 +160,7 @@ export default async function Page() {
               </Reveal>
 
               <Reveal delay={0.24} className="mt-9">
-                <Link
-                  href="/features"
-                  data-cursor="Read"
-                  className="u-link t-mono text-[var(--h-acc)]"
-                >
+                <Link href="/features" data-cursor="Read" className="u-link t-mono text-(--h-acc)">
                   What each surface does →
                 </Link>
               </Reveal>
@@ -200,7 +196,7 @@ export default async function Page() {
               which is the picture's figure rather than one the catalog
               produced. */}
           <Reveal from="none" duration={1.1}>
-            <figure className="relative overflow-hidden border border-[var(--h-line-2)] lg:h-full">
+            <figure className="relative overflow-hidden border border-(--h-line-2) lg:h-full">
               <Image
                 src="/marketing/about-workbench.webp"
                 alt="Illustration: a small team planning an AI system at a wall screen that maps models through plan, compare, optimise and deploy into an architecture, a cost estimate, an implementation plan and starter configuration."
@@ -250,14 +246,14 @@ export default async function Page() {
             </Reveal>
           </div>
 
-          <Stagger step={0.06} className="border-t border-[var(--h-line)]">
+          <Stagger step={0.06} className="border-t border-(--h-line)">
             {PRINCIPLES.map((principle) => (
               <StaggerItem
                 key={principle.n}
-                className="group border-b border-[var(--h-line)] py-7 lg:py-9"
+                className="group border-b border-(--h-line) py-7 lg:py-9"
               >
                 <div className="flex gap-6 lg:gap-10">
-                  <span className="t-mono shrink-0 pt-1 text-[var(--h-fg-45)] transition-colors duration-300 group-hover:text-[var(--h-acc)]">
+                  <span className="t-mono shrink-0 pt-1 text-(--h-fg-45) transition-colors duration-300 group-hover:text-(--h-acc)">
                     {principle.n}
                   </span>
                   <div>
