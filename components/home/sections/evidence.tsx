@@ -68,7 +68,9 @@ const DIMENSIONS: [string, number, number][] = [
 
 export function Evidence() {
   return (
-    <Section>
+    // Clipped for the same reason as the premise: the illustration waits past
+    // the page edge before it slides in.
+    <Section className="overflow-x-clip">
       <Rule />
       {/* Chapter mark, prompt, illustration — the same three-column row as
           the premise, at the same 1.25:1 between the last two, so the two
@@ -247,19 +249,21 @@ export function Evidence() {
 function EvidenceVisual() {
   return (
     <Parallax distance={36} className="lg:pt-6">
-      <figure>
-        <Image
-          src="/marketing/evidence-rag-flow.webp"
-          alt="Illustration of retrieval-augmented generation: internal PDFs, Notion, Drive, Confluence, GitHub and web research feeding one retrieval step, which answers a question with relevant context, a grounded answer and citations."
-          width={1536}
-          height={1024}
-          loading="lazy"
-          // Same column as the premise's, measured the same way.
-          sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
-          className="h-auto w-full"
-        />
-        <figcaption className="t-mono mt-3 text-(--h-fg-45)">Illustration</figcaption>
-      </figure>
+      <Reveal from="right" distance={96} duration={1.1}>
+        <figure>
+          <Image
+            src="/marketing/evidence-rag-flow.webp"
+            alt="Illustration of retrieval-augmented generation: internal PDFs, Notion, Drive, Confluence, GitHub and web research feeding one retrieval step, which answers a question with relevant context, a grounded answer and citations."
+            width={1536}
+            height={1024}
+            loading="lazy"
+            // Same column as the premise's, measured the same way.
+            sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
+            className="h-auto w-full"
+          />
+          <figcaption className="t-mono mt-3 text-(--h-fg-45)">Illustration</figcaption>
+        </figure>
+      </Reveal>
     </Parallax>
   );
 }

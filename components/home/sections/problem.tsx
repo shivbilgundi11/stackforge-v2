@@ -64,7 +64,12 @@ const ROWS = [
 
 export function Premise() {
   return (
-    <Section>
+    // `overflow-x-clip`: the illustration waits 96px to the right of its slot
+    // before it slides in, which is past the page edge on any viewport narrower
+    // than the container — and would add a horizontal scrollbar until it did.
+    // `clip`, not `hidden`: it opens no scroll container, so nothing sticky
+    // further up the tree stops sticking.
+    <Section className="overflow-x-clip">
       <Rule />
       {/* Three columns from `lg`: the chapter mark, the claim, and the picture
           of it. The last two are fractional rather than a fixed image width,
@@ -116,21 +121,26 @@ export function Premise() {
 function PremiseVisual() {
   return (
     <Parallax distance={36} className="lg:pt-6">
-      <Image
-        src="/marketing/premise-plan-vs-built.webp"
-        alt="The same build planned in advance — use case, model, data layer, infrastructure, and a $1,920 a month estimate — beside the version costed only after it shipped, at $4,870 a month and 143% over, with the reasoning for each choice scattered across old Slack, Notion and Gmail messages."
-        width={1371}
-        height={1148}
-        loading="lazy"
-        // Measured, not guessed. The column is `1fr` of a `1.25fr 1fr` split
-        // after the 14rem chapter mark and two 4rem gaps, which works out at
-        // roughly `0.44vw - 185px` until the 110rem container stops growing
-        // and the slot settles at ~600px. A first pass said 34rem and Next
-        // served a 544px file into a 597px box — under-resolution on any
-        // display, and visibly soft on a retina one.
-        sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
-        className="h-auto w-full"
-      />
+      {/* Slides left into place as it arrives. Inside the parallax rather than
+          around it, so the two transforms stay on separate elements: one moves
+          it in, the other drifts it with the scroll. */}
+      <Reveal from="right" distance={96} duration={1.1}>
+        <Image
+          src="/marketing/premise-plan-vs-built.webp"
+          alt="The same build planned in advance — use case, model, data layer, infrastructure, and a $1,920 a month estimate — beside the version costed only after it shipped, at $4,870 a month and 143% over, with the reasoning for each choice scattered across old Slack, Notion and Gmail messages."
+          width={1371}
+          height={1148}
+          loading="lazy"
+          // Measured, not guessed. The column is `1fr` of a `1.25fr 1fr` split
+          // after the 14rem chapter mark and two 4rem gaps, which works out at
+          // roughly `0.44vw - 185px` until the 110rem container stops growing
+          // and the slot settles at ~600px. A first pass said 34rem and Next
+          // served a 544px file into a 597px box — under-resolution on any
+          // display, and visibly soft on a retina one.
+          sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
+          className="h-auto w-full"
+        />
+      </Reveal>
     </Parallax>
   );
 }

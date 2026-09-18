@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 
 import { HomeFooter } from "@/components/home/chrome/footer";
 import { HomeNav } from "@/components/home/chrome/nav";
@@ -46,11 +46,15 @@ import "./home.css";
  * likewise per-page — each page passes its own chapter list, and the short
  * ones pass none.
  *
- * ## The fonts are declared here, not in the root layout
+ * ## The display face is declared here, not in the root layout
  *
- * `next/font` works in any layout, and these two faces are used by exactly
- * this group. Declaring them at the root would add two more preloaded families
- * to the workbench, which already ships four and uses none of these.
+ * `next/font` works in any layout, and Geist is used by exactly this group.
+ * Declaring it at the root would add a preloaded family to the workbench,
+ * which already ships four and does not use it.
+ *
+ * The micro-labels (`.t-mono`) used to have a face of their own here too,
+ * Geist Mono. They are set in Inter now, which the root layout already loads
+ * for the workbench — so the marketing site downloads one family fewer.
  */
 
 const geist = Geist({
@@ -59,15 +63,9 @@ const geist = Geist({
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-});
-
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`home ${geist.variable} ${geistMono.variable}`}>
+    <div className={`home ${geist.variable}`}>
       {/* Order matters: the curtain is above everything, the cursor is above
           the content but below the curtain, and the smooth-scroll driver wraps
           the lot because it owns the only animation clock on the page. */}

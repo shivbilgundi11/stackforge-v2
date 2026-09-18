@@ -122,6 +122,7 @@ export function Reveal({
   delay = 0,
   from = "up",
   duration = 0.95,
+  distance,
   ...props
 }: Omit<HTMLMotionProps<"div">, "children"> & {
   children: React.ReactNode;
@@ -129,13 +130,25 @@ export function Reveal({
   delay?: number;
   from?: keyof typeof OFFSETS;
   duration?: number;
+  /**
+   * How far it travels, in px, overriding the default for `from`. The
+   * defaults (30–34px) are sized for type, where a long travel reads as the
+   * line coming loose; a large image needs more before the movement registers
+   * as a slide rather than a fade.
+   */
+  distance?: number;
 }) {
   const reduced = useReducedMotion();
+  const offset = OFFSETS[from];
+  const start =
+    distance === undefined
+      ? offset
+      : { x: Math.sign(offset.x) * distance, y: Math.sign(offset.y) * distance };
 
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : { opacity: 0, ...OFFSETS[from] }}
+      initial={reduced ? false : { opacity: 0, ...start }}
       whileInView={{ opacity: 1, y: 0, x: 0 }}
       viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
       transition={reduced ? STILL : { duration, delay, ease: EASE }}

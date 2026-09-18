@@ -109,7 +109,9 @@ export default async function Page() {
       />
 
       {/* ── 01 What it is ─────────────────────────────────────────────────── */}
-      <Section>
+      {/* Clipped because the photo waits past the page edge before it slides
+          in — see the premise chapter on the home page. */}
+      <Section className="overflow-x-clip">
         <Rule />
         {/* One row for the whole chapter: mark, then heading and prose
             together, then the picture — so the picture starts level with the
@@ -202,7 +204,7 @@ export default async function Page() {
               illustration and leaves out the photo's own "$1,920 / mo, ↓38%",
               which is the picture's figure rather than one the catalog
               produced. */}
-          <Reveal from="none" duration={1.1}>
+          <Reveal from="right" distance={96} duration={1.1}>
             <figure className="relative overflow-hidden border border-(--h-line-2) lg:h-full">
               <Image
                 src="/marketing/about-workbench.webp"

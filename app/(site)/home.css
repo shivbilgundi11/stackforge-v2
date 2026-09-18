@@ -181,7 +181,16 @@
    one of these — it is the page's connective tissue and the reason a reader
    always knows which chapter they are in. */
 .home .t-mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  /* Inter, loaded once in the root layout, rather than a mono face of its own.
+     The class keeps its name: it is used 143 times across 57 files, and it describes a
+     role — the uppercase micro-label — rather than a typeface.
+
+     `tabular-nums` keeps the one thing the mono face gave for free. Its digits
+     were all one width, so "01 of 07" and the counters never shifted as they
+     changed; Inter's proportional figures would, and its tabular set is the
+     same face with fixed-width digits. */
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.14em;
