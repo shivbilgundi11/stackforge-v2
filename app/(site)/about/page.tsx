@@ -171,9 +171,9 @@ export default async function Page() {
             </div>
           </div>
 
-          {/* An opaque photograph, unlike the home page's two cut-outs, so it
-              takes the framed treatment `Shot` gives screenshots — a bare
-              rectangle on the bone ground reads as pasted on.
+          {/* An opaque photograph, unlike the home page's two cut-outs. Square
+              corners with a hairline edge, so the dark photo still has a
+              defined boundary against the bone ground.
 
               From `lg` it runs the full height of the heading and prose
               beside it. The text decides the row's height and the photo only
@@ -195,13 +195,12 @@ export default async function Page() {
               beside it to match, and cropping a scene with no reason to loses
               people from it.
 
-              Captioned, for the reason stated at the top of this file: this
-              page claims no team, headcount or customers, and a staged scene
-              of three people at a whiteboard is exactly what a reader takes
-              for a photo of the team. Its "$1,920 / mo, ↓38%" is the
-              picture's, too — not a figure the catalog produced. */}
+              No visible caption, by choice. The alt text still says it is an
+              illustration and leaves out the photo's own "$1,920 / mo, ↓38%",
+              which is the picture's figure rather than one the catalog
+              produced. */}
           <Reveal from="none" duration={1.1}>
-            <figure className="relative overflow-hidden rounded-xl border border-[var(--h-line-2)] lg:h-full">
+            <figure className="relative overflow-hidden border border-[var(--h-line-2)] lg:h-full">
               <Image
                 src="/marketing/about-workbench.webp"
                 alt="Illustration: a small team planning an AI system at a wall screen that maps models through plan, compare, optimise and deploy into an architecture, a cost estimate, an implementation plan and starter configuration."
@@ -215,14 +214,6 @@ export default async function Page() {
                 sizes="(max-width: 1024px) 100vw, 56rem"
                 className="h-auto w-full lg:absolute lg:inset-0 lg:h-full lg:object-cover lg:object-[66%_50%]"
               />
-              {/* On the photo rather than under it: a caption below the frame
-                    takes its height out of the picture, and the frame then
-                    stops short of the text it is meant to match. Set on a dark
-                    chip because the photo is dark at that corner and the
-                    page's grey would vanish into it. */}
-              <figcaption className="t-mono absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 text-[9px] text-white/85 backdrop-blur-sm">
-                Illustration
-              </figcaption>
             </figure>
           </Reveal>
         </div>
