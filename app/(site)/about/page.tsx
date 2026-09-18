@@ -103,65 +103,86 @@ export default async function Page() {
 
       {/* ── 01 What it is ─────────────────────────────────────────────────── */}
       <Section>
-        <SectionHead
-          index="01"
-          label="What it is"
-          title={["An engineering", "workbench, not a", "code generator."]}
-        />
+        <Rule />
+        {/* One row for the whole chapter: mark, then heading and prose
+            together, then the picture — so the picture starts level with the
+            heading and runs down beside everything the chapter says.
 
-        {/* The prose keeps the chapter head's second column; the picture takes
-            a third, at the same 1.25:1 as the illustrated chapters on the
-            home page, so the two pages share one layout for this. */}
-        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
-          <div className="max-w-[62ch] lg:col-start-2">
-            <Reveal>
-              <p className="t-body">
-                You describe what you are building and its constraints; it costs the options, scores
-                them against each other, checks whether they work together, and hands back the
-                artifacts — an architecture document, a diagram, a roadmap, and starter
-                configuration.
-              </p>
-            </Reveal>
+            Composed here rather than through `SectionHead`, which sets the
+            heading in a row of its own; with the heading there, a third column
+            could only begin underneath it. The pieces are the same ones
+            `SectionHead` uses, so the chapter still matches the other two. */}
+        <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
+          <Reveal from="none" duration={0.6}>
+            <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
+              <span className="text-[var(--h-acc)]">01</span>
+              What it is
+            </p>
+          </Reveal>
 
-            <Reveal delay={0.08}>
-              <p className="t-body mt-6">
-                It is not a code generator and it does not want to be. Writing the application is
-                your job and you will do it better than a generator would. What is missing from most
-                teams is the step before that: the one where somebody works out whether the plan
-                survives contact with a budget.
-              </p>
-            </Reveal>
+          <div>
+            {/* The other chapter heads scale with `5.6vw` across a full-width
+                column. This one shares its row with the picture, so it scales
+                a little slower to keep "workbench, not a" on one line down to
+                laptop widths, and still tops out at the same 4.4rem. */}
+            <MaskLines
+              as="h2"
+              lines={["An engineering", "workbench, not a", "code generator."]}
+              className="t-head max-w-[18ch] text-[clamp(2rem,4.2vw,4.4rem)]"
+            />
 
-            <Reveal delay={0.16}>
-              <p className="t-body mt-6">
-                Underneath is a catalog of {catalog.models} priced models, {catalog.tools} tools,{" "}
-                {catalog.gpus} GPUs, and {pairs} scored compatibility pairs. The counts on this site
-                are read from that catalog rather than typed into the page, so they cannot quietly
-                become wrong.
-              </p>
-            </Reveal>
+            <div className="mt-14 max-w-[62ch]">
+              <Reveal>
+                <p className="t-body">
+                  You describe what you are building and its constraints; it costs the options,
+                  scores them against each other, checks whether they work together, and hands back
+                  the artifacts — an architecture document, a diagram, a roadmap, and starter
+                  configuration.
+                </p>
+              </Reveal>
 
-            <Reveal delay={0.24} className="mt-9">
-              <Link
-                href="/features"
-                data-cursor="Read"
-                className="u-link t-mono text-[var(--h-acc)]"
-              >
-                What each surface does →
-              </Link>
-            </Reveal>
+              <Reveal delay={0.08}>
+                <p className="t-body mt-6">
+                  It is not a code generator and it does not want to be. Writing the application is
+                  your job and you will do it better than a generator would. What is missing from
+                  most teams is the step before that: the one where somebody works out whether the
+                  plan survives contact with a budget.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.16}>
+                <p className="t-body mt-6">
+                  Underneath is a catalog of {catalog.models} priced models, {catalog.tools} tools,{" "}
+                  {catalog.gpus} GPUs, and {pairs} scored compatibility pairs. The counts on this
+                  site are read from that catalog rather than typed into the page, so they cannot
+                  quietly become wrong.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.24} className="mt-9">
+                <Link
+                  href="/features"
+                  data-cursor="Read"
+                  className="u-link t-mono text-[var(--h-acc)]"
+                >
+                  What each surface does →
+                </Link>
+              </Reveal>
+            </div>
           </div>
 
           {/* An opaque photograph, unlike the home page's two cut-outs, so it
               takes the framed treatment `Shot` gives screenshots — a bare
-              rectangle on the bone ground reads as pasted on.
+              rectangle on the bone ground reads as pasted on. Shown whole, not
+              cropped to the column's height: it is a scene, and cropping it to
+              fit would cut people out of it.
 
               Captioned, for the reason stated at the top of this file: this
               page claims no team, headcount or customers, and a staged scene
               of three people at a whiteboard is exactly what a reader takes
               for a photo of the team. Its "$1,920 / mo, ↓38%" is the
               picture's, too — not a figure the catalog produced. */}
-          <Parallax distance={36} className="lg:pt-1">
+          <Parallax distance={36}>
             <Reveal from="none" duration={1.1}>
               <figure>
                 <div className="overflow-hidden rounded-xl border border-[var(--h-line-2)]">
@@ -193,8 +214,8 @@ export default async function Page() {
               heading is gone by the time the evidence starts. */}
           <div className="lg:sticky lg:top-32 lg:self-start">
             <Reveal from="none" duration={0.6}>
-              <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-                <span className="text-[var(--h-acc)]">02</span>
+              <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+                <span className="text-(--h-acc)">02</span>
                 Principles
               </p>
             </Reveal>
