@@ -1,6 +1,8 @@
 "use client";
 
-import { ScrubText } from "@/components/home/fx/scroll";
+import Image from "next/image";
+
+import { Parallax, ScrubText } from "@/components/home/fx/scroll";
 import { Reveal, Rule } from "@/components/home/fx/type";
 import { HoverPreview } from "@/components/home/fx/ui";
 import { Section } from "@/components/home/sections/head";
@@ -64,7 +66,12 @@ export function Premise() {
   return (
     <Section>
       <Rule />
-      <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">
+      {/* Three columns from `lg`: the chapter mark, the claim, and the picture
+          of it. The last two are fractional rather than a fixed image width,
+          because the illustration is the claim drawn — sized against the type
+          it argues with, it holds its share of the row at every width instead
+          of shrinking into a thumbnail beside a headline that keeps growing. */}
+      <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
         <Reveal from="none" duration={0.6}>
           <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
             <span className="text-[var(--h-acc)]">01</span>
@@ -76,8 +83,55 @@ export function Premise() {
           text="Most AI systems are costed after they are built. By then the architecture is decided, the bill is a surprise, and the reasoning behind the choices lives in a thread nobody can find. AIVeda moves all of that to the front — where changing your mind is still free."
           className="t-head max-w-[24ch] text-[clamp(1.7rem,4.4vw,3.4rem)]"
         />
+
+        <PremiseVisual />
       </div>
     </Section>
+  );
+}
+
+/**
+ * The premise, drawn: the same system planned up front beside the same system
+ * costed after the fact.
+ *
+ * ## It is not a `Shot`
+ *
+ * `Shot` frames product screenshots — a rounded border, a light and a dark
+ * capture chosen from the ground it sits on. This is neither. It is a
+ * transparent illustration with a deliberately torn edge, so a frame would cut
+ * that edge off and a second capture does not exist. It also carries no
+ * product UI, so nothing about it goes stale when a screen is redesigned.
+ *
+ * ## The alt text is the argument, not the inventory
+ *
+ * Listing the panels ("a diagram showing Use Case, Model Selection…") would
+ * describe the picture and withhold the point. What a sighted reader takes
+ * from it is the pair of numbers and the gap between them, so that is what is
+ * written down — the same rule `Shot` states for screenshots.
+ *
+ * `Parallax` gives it the short travel every other figure on this page has.
+ * The type beside it stays put, which is what makes the drift read as depth
+ * rather than as the row coming apart.
+ */
+function PremiseVisual() {
+  return (
+    <Parallax distance={36} className="lg:pt-6">
+      <Image
+        src="/marketing/premise-plan-vs-built.webp"
+        alt="The same build planned in advance — use case, model, data layer, infrastructure, and a $1,920 a month estimate — beside the version costed only after it shipped, at $4,870 a month and 143% over, with the reasoning for each choice scattered across old Slack, Notion and Gmail messages."
+        width={1371}
+        height={1148}
+        loading="lazy"
+        // Measured, not guessed. The column is `1fr` of a `1.25fr 1fr` split
+        // after the 14rem chapter mark and two 4rem gaps, which works out at
+        // roughly `0.44vw - 185px` until the 110rem container stops growing
+        // and the slot settles at ~600px. A first pass said 34rem and Next
+        // served a 544px file into a 597px box — under-resolution on any
+        // display, and visibly soft on a retina one.
+        sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
+        className="h-auto w-full"
+      />
+    </Parallax>
   );
 }
 
