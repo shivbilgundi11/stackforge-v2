@@ -34,7 +34,7 @@ import { FAQ } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "What AIVeda does, where its numbers come from, what you can export, and what happens to your work if you never sign up.",
+    "What Buildtact does, where its numbers come from, what you can export, and what happens to your work if you never sign up.",
   alternates: { canonical: "/faq" },
 };
 

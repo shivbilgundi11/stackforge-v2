@@ -54,7 +54,7 @@ export default function GlobalError({
           </p>
 
           <h1 style={{ margin: "0.5rem 0 0", fontSize: "15.5px", fontWeight: 600 }}>
-            AIVeda could not start.
+            Buildtact could not start.
           </h1>
           <p style={{ margin: "0.5rem 0 0", fontSize: "13.5px", color: "#525252" }}>
             Something failed before the page could render. Reloading usually clears it.

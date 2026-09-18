@@ -90,7 +90,7 @@ export function Preloader() {
           exit={{ y: "-100%", transition: { duration: 0.9, ease: EASE } }}
         >
           <div className="flex items-start justify-between">
-            <span className="t-mono">AIVeda</span>
+            <span className="t-mono">Buildtact</span>
             <span className="t-mono">Plan before you build</span>
           </div>
 

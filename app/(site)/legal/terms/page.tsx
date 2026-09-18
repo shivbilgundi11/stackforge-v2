@@ -12,7 +12,7 @@ import { LegalPage } from "@/components/home/sections/legal";
 
 export const metadata: Metadata = {
   title: "Terms",
-  description: "The terms covering use of AIVeda, its plans, and what its output is and is not.",
+  description: "The terms covering use of Buildtact, its plans, and what its output is and is not.",
   alternates: { canonical: "/legal/terms" },
   // Still noindex while the document is a draft.
   robots: { index: false, follow: true },

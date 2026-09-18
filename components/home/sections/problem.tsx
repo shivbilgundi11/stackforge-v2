@@ -80,7 +80,7 @@ export function Premise() {
         </Reveal>
 
         <ScrubText
-          text="Most AI systems are costed after they are built. By then the architecture is decided, the bill is a surprise, and the reasoning behind the choices lives in a thread nobody can find. AIVeda moves all of that to the front — where changing your mind is still free."
+          text="Most AI systems are costed after they are built. By then the architecture is decided, the bill is a surprise, and the reasoning behind the choices lives in a thread nobody can find. Buildtact moves all of that to the front — where changing your mind is still free."
           className="t-head max-w-[24ch] text-[clamp(1.7rem,4.4vw,3.4rem)]"
         />
 

@@ -5,7 +5,7 @@ import { MermaidDiagram } from "@/components/forge/mermaid-diagram";
 import { cn } from "@/lib/utils";
 
 /**
- * Rendered Markdown, in the AIVeda console.
+ * Rendered Markdown, in the Buildtact console.
  *
  * A **server** component. `react-markdown` runs during the render, so the
  * prose is in the HTML a crawler receives rather than assembled by a client

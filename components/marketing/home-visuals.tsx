@@ -412,7 +412,7 @@ export function ComposeVisual() {
   const lines = [
     "services:",
     "  app:",
-    "    image: aiveda/app:latest",
+    "    image: buildtact/app:latest",
     "    ports:",
     '      - "8000:8000"',
     "    environment:",

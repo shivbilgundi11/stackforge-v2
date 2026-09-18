@@ -15,7 +15,7 @@ export default function Error({
       reset={reset}
       title="This invitation could not be loaded."
       description="The link may have expired, been revoked, or already been accepted."
-      homeLabel="Go to AIVeda"
+      homeLabel="Go to Buildtact"
     />
   );
 }

@@ -118,10 +118,10 @@ function InviteFlow({ token }: { token: string }) {
         ) : status === "authenticated" ? (
           <div className="flex flex-col gap-2.5">
             <p className="text-[12.5px] leading-relaxed text-fg-muted">
-              This invitation was sent to <span className="font-medium text-fg">{invite.email}</span>,
-              but you are signed in as{" "}
-              <span className="font-medium text-fg">{user?.email}</span>. Sign out, then sign in
-              or sign up with the invited address.
+              This invitation was sent to{" "}
+              <span className="font-medium text-fg">{invite.email}</span>, but you are signed in as{" "}
+              <span className="font-medium text-fg">{user?.email}</span>. Sign out, then sign in or
+              sign up with the invited address.
             </p>
             <Button type="button" variant="outline" onClick={() => void signOut()}>
               Sign out and switch accounts
@@ -163,7 +163,7 @@ function InvalidInvite() {
           Ask whoever invited you to send a fresh invitation.
         </p>
         <Button asChild variant="outline" size="sm">
-          <Link href="/">Back to AIVeda</Link>
+          <Link href="/">Back to Buildtact</Link>
         </Button>
       </div>
     </AuthShell>

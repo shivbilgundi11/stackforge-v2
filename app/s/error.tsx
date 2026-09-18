@@ -15,7 +15,7 @@ export default function Error({
       reset={reset}
       title="This shared result could not be loaded."
       description="The link may have expired or been revoked by the person who shared it."
-      homeLabel="Go to AIVeda"
+      homeLabel="Go to Buildtact"
     />
   );
 }

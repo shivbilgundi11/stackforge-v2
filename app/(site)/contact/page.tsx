@@ -25,7 +25,7 @@ import { PageHead } from "@/components/home/sections/page-head";
  *
  * ## The placeholder details are the reason this page is thin
  *
- * `hello@aiveda.dev` and the phone number below came from the previous build
+ * `hello@buildtact.ai` and the phone number below came from the previous build
  * and neither has been confirmed as monitored. They are rendered because
  * removing them would leave a contact page with no way to make contact, but
  * they are the first thing to check before launch — a published address that
@@ -34,7 +34,7 @@ import { PageHead } from "@/components/home/sections/page-head";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "How to reach the AIVeda team, and the fastest routes to an answer.",
+  description: "How to reach the Buildtact team, and the fastest routes to an answer.",
   alternates: { canonical: "/contact" },
 };
 
@@ -44,7 +44,7 @@ const ROUTES = [
     title: "Something in the catalog is wrong or missing",
     body: "Every catalog page in the product has a flag control on the row itself. It carries the row and the value you are disputing, which is faster than describing it to us and much easier for us to act on.",
     href: "/signup",
-    cta: "Open AIVeda",
+    cta: "Open Buildtact",
   },
   {
     n: "02",
@@ -82,11 +82,11 @@ export default function Page() {
           <Reveal>
             <p className="t-mono text-[var(--h-fg-45)]">Email</p>
             <a
-              href="mailto:hello@aiveda.dev"
+              href="mailto:hello@buildtact.ai"
               data-cursor="Write"
               className="t-head u-link mt-5 block text-[clamp(1.5rem,3.4vw,2.6rem)]"
             >
-              hello@aiveda.dev
+              hello@buildtact.ai
             </a>
           </Reveal>
 

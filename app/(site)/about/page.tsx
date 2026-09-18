@@ -16,7 +16,7 @@ import { getCatalogStats } from "@/lib/marketing/data";
  * ## What this page may claim
  *
  * Positioning and the principles the product is built to, with no invented
- * company history, team size, funding or customer count. AIVeda is early and
+ * company history, team size, funding or customer count. Buildtact is early and
  * the page says so: a claim we would have to retract later is worth less than
  * the credibility of the ones we can defend today. That is Q-02, and it is the
  * reason the only figures here are catalog counts read live from the API — the
@@ -42,7 +42,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Why AIVeda exists, what it refuses to do, and the principles the product is built to.",
+    "Why Buildtact exists, what it refuses to do, and the principles the product is built to.",
   alternates: { canonical: "/about" },
 };
 
@@ -98,7 +98,7 @@ export default async function Page() {
             already exist<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
-        lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. AIVeda is the step in between — the one where the numbers get worked out while they can still change the decision."
+        lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. Buildtact is the step in between — the one where the numbers get worked out while they can still change the decision."
       />
 
       {/* ── 01 What it is ─────────────────────────────────────────────────── */}
@@ -273,7 +273,7 @@ export default async function Page() {
           index="03"
           label="Where we are"
           title={["Early, and", "saying so."]}
-          lede="AIVeda is in active development. There are no customer logos on this site because there are no customers to name yet, and a wall of invented testimonials would tell you nothing except that we were willing to invent them."
+          lede="Buildtact is in active development. There are no customer logos on this site because there are no customers to name yet, and a wall of invented testimonials would tell you nothing except that we were willing to invent them."
         />
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">

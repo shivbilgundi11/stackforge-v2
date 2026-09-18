@@ -114,7 +114,7 @@ export function HomeNav() {
             solid && !menu && "border-b border-[var(--h-line)]",
           )}
         >
-          <Link href="/" aria-label="AIVeda home" className="group flex items-center gap-2.5">
+          <Link href="/" aria-label="Buildtact home" className="group flex items-center gap-2.5">
             <Wordmark />
           </Link>
 
@@ -248,13 +248,13 @@ export function Wordmark({ className }: { className?: string }) {
       )}
     >
       <span className="block transition-transform duration-500 ease-(--h-ease) group-hover:-translate-y-full">
-        AIVeda
+        Buildtact
       </span>
       <span
         aria-hidden
         className="absolute inset-x-0 top-full block text-[var(--h-acc)] transition-transform duration-500 ease-(--h-ease) group-hover:-translate-y-full"
       >
-        AIVeda
+        Buildtact
       </span>
     </span>
   );

@@ -42,7 +42,7 @@ export default async function SharedPage({ params }: { params: Promise<{ token: 
     <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-6 px-5 py-10">
       <header className="flex flex-col gap-1.5 border-b border-line pb-5">
         <p className="text-[11px] font-medium tracking-[0.08em] text-fg-subtle uppercase">
-          Shared from AIVeda
+          Shared from Buildtact
         </p>
         <h1 className="font-serif text-3xl leading-tight text-fg">{payload.title}</h1>
         <p className="text-sm text-fg-muted">{payload.subtitle}</p>
@@ -61,7 +61,7 @@ export default async function SharedPage({ params }: { params: Promise<{ token: 
       <aside className="mt-4 flex flex-col items-start gap-3 rounded-md border border-line bg-surface-2/50 px-5 py-5">
         <h2 className="text-[15px] font-semibold text-fg">Plan your own stack</h2>
         <p className="max-w-prose text-sm leading-relaxed text-fg-muted">
-          This was produced by AIVeda — costs, comparisons, and architectures computed from a
+          This was produced by Buildtact — costs, comparisons, and architectures computed from a
           hand-verified catalog, with every figure traceable to the date its source was checked.
           Running your own takes about a minute and does not need an account.
         </p>

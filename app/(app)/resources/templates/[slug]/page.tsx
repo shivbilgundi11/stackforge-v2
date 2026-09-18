@@ -60,7 +60,7 @@ export async function generateMetadata({
     keywords: [...(template.tags ?? []), ...(template.use_cases ?? [])],
     alternates: { canonical: url },
     openGraph: {
-      title: `${template.title} · AIVeda`,
+      title: `${template.title} · Buildtact`,
       description: template.summary,
       url,
       type: "article",
@@ -185,7 +185,7 @@ function structuredData(
     description: template.summary,
     url,
     dateModified: template.published_at ?? undefined,
-    author: { "@type": "Organization", name: "AIVeda" },
+    author: { "@type": "Organization", name: "Buildtact" },
     // Declared honestly. A premium template really is behind a paywall, and
     // claiming otherwise is exactly what gets a site penalised for cloaking.
     isAccessibleForFree: !template.is_premium,

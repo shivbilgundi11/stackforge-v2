@@ -115,13 +115,13 @@ export function HomeFooter() {
             in the page title, so announcing it a third time adds nothing. */}
         <div aria-hidden className="mt-20 overflow-hidden">
           <p className="t-display -mb-[0.13em] text-[clamp(4rem,19.5vw,17rem)] whitespace-nowrap text-[var(--h-fg)]">
-            AIVeda<span className="text-[var(--h-acc)]">.</span>
+            Buildtact<span className="text-[var(--h-acc)]">.</span>
           </p>
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--h-line)] pt-6">
           <p className="t-mono text-[var(--h-fg-45)]">
-            © {new Date().getFullYear()} AIVeda — plan before you build
+            © {new Date().getFullYear()} Buildtact — plan before you build
           </p>
           <p className="t-mono text-[var(--h-fg-45)]">
             <span className="tabular-nums">{now ?? "--:--:--"}</span> local

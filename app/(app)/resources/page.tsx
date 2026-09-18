@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "Stack templates, architecture blueprints, code starters, prompts, configs, and checklists for building AI systems — with the reasoning behind each decision.",
   alternates: { canonical: "/resources" },
   openGraph: {
-    title: "Resources · AIVeda",
+    title: "Resources · Buildtact",
     description:
       "Thirty templates for building AI systems: stacks, blueprints, starters, prompts, configs, and checklists.",
     type: "website",

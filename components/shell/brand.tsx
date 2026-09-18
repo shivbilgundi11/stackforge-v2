@@ -42,7 +42,7 @@ export function BrandLockup({
       {!collapsed && (
         <span className="flex min-w-0 flex-col leading-none">
           <span className="truncate text-[13.5px] font-semibold tracking-[-0.01em] text-fg">
-            AIVeda
+            Buildtact
           </span>
           {/* Slotted so a caller can drop the tagline at a width where it does
               not fit. The marketing header does exactly that: its row is the

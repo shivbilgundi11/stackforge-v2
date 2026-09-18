@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ==========================================================================
-   AIVeda — design tokens
+   Buildtact — design tokens
 
    Warm, light-first. Cream page, white panels, hairline separation, one ember
    accent. Colours are OKLCH so a hue rotation does not change apparent

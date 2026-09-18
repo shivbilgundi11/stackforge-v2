@@ -81,7 +81,9 @@ import { getCatalogStats, getPlansStatic } from "@/lib/marketing/data";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "AIVeda — plan, cost, and compare your AI stack before you build",
+  // `absolute`, so the root layout's "%s · Buildtact" template is not applied
+  // on top: this title already opens with the name, and the tab read it twice.
+  title: { absolute: "Buildtact — plan, cost, and compare your AI stack before you build" },
   description:
     "An engineering workbench for AI systems. Cost a stack, compare the options, size the infrastructure, and leave with the architecture document — before writing code.",
   alternates: { canonical: "/" },

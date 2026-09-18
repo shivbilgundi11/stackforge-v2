@@ -20,7 +20,7 @@ export function AuthShell({
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
       <header className="flex h-16 items-center px-5">
-        <Link href="/" aria-label="AIVeda home" className="rounded-md">
+        <Link href="/" aria-label="Buildtact home" className="rounded-md">
           <BrandLockup />
         </Link>
       </header>

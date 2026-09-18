@@ -116,7 +116,7 @@ export const FIRST_RUN = disclaimer(
 
 /** Location 11 — the sitewide line, beside a link to the Terms. */
 export const FOOTER = disclaimer(
-  "Comparisons, cost estimates and recommendations on AIVeda are planning guidance, " +
+  "Comparisons, cost estimates and recommendations on Buildtact are planning guidance, " +
     "not professional, financial or legal advice.",
 );
 
