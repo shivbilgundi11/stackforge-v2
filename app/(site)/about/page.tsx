@@ -1,8 +1,9 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
-import { ProgressRail } from "@/components/home/fx/scroll";
+import { Parallax, ProgressRail } from "@/components/home/fx/scroll";
 import { MaskLines, Reveal, Rule, Stagger, StaggerItem } from "@/components/home/fx/type";
 import { CtaBand } from "@/components/home/sections/cta-band";
 import { Section, SectionHead } from "@/components/home/sections/head";
@@ -108,8 +109,10 @@ export default async function Page() {
           title={["An engineering", "workbench, not a", "code generator."]}
         />
 
-        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">
-          {/* Set to the same second column as the chapter head above it. */}
+        {/* The prose keeps the chapter head's second column; the picture takes
+            a third, at the same 1.25:1 as the illustrated chapters on the
+            home page, so the two pages share one layout for this. */}
+        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
           <div className="max-w-[62ch] lg:col-start-2">
             <Reveal>
               <p className="t-body">
@@ -148,6 +151,35 @@ export default async function Page() {
               </Link>
             </Reveal>
           </div>
+
+          {/* An opaque photograph, unlike the home page's two cut-outs, so it
+              takes the framed treatment `Shot` gives screenshots — a bare
+              rectangle on the bone ground reads as pasted on.
+
+              Captioned, for the reason stated at the top of this file: this
+              page claims no team, headcount or customers, and a staged scene
+              of three people at a whiteboard is exactly what a reader takes
+              for a photo of the team. Its "$1,920 / mo, ↓38%" is the
+              picture's, too — not a figure the catalog produced. */}
+          <Parallax distance={36} className="lg:pt-1">
+            <Reveal from="none" duration={1.1}>
+              <figure>
+                <div className="overflow-hidden rounded-xl border border-[var(--h-line-2)]">
+                  <Image
+                    src="/marketing/about-workbench.webp"
+                    alt="Illustration: a small team planning an AI system at a wall screen that maps models through plan, compare, optimise and deploy into an architecture, a cost estimate, an implementation plan and starter configuration."
+                    width={1536}
+                    height={1024}
+                    loading="lazy"
+                    // The same column as the home page's illustrations.
+                    sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
+                    className="h-auto w-full"
+                  />
+                </div>
+                <figcaption className="t-mono mt-3 text-[var(--h-fg-45)]">Illustration</figcaption>
+              </figure>
+            </Reveal>
+          </Parallax>
         </div>
       </Section>
 
