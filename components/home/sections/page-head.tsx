@@ -135,11 +135,11 @@ type Backdrop = {
  * from the bottom: dark enough under the counts to hold their contrast, gone
  * by the upper half so the footage still reads as footage.
  *
- * No scrim is enough for text *in* the footage. The source had "PLAN YOUR AI
- * STACK" burned into its lower-right corner, landing behind the counts, and
- * under any darkness that left the numbers legible it still competed with
- * them. It was cropped out of the file instead; styling cannot do it, since
- * how much of the frame shows depends on the viewport.
+ * No scrim is enough for text *in* the footage. An earlier /features clip had
+ * a caption burned into the corner the counts sit in, and at any darkness that
+ * left the numbers legible it still competed with them. Text like that has to
+ * be cropped out of the file: styling cannot do it, since how much of the
+ * frame shows depends on the viewport.
  *
  * ## It starts itself, rather than autoplaying from the markup
  *

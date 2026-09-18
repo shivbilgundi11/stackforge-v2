@@ -73,14 +73,13 @@ export default async function Page() {
           ["GPUs", catalog.gpus],
           ["Verified pairs", catalog.compatibility_pairs],
         ]}
-        // Re-encoded from a 4.9 MB source: trimmed of its black-and-flicker
-        // intro, cropped above the "PLAN YOUR AI STACK" caption burned into its
-        // lower-right corner (it sat directly behind the catalog counts), and
-        // made a crossfade loop so it repeats without a cut. 0.74 MB at 1080p,
-        // 0.31 MB at 720p.
+        // A drifting network of the AI tools the catalog covers — which is what
+        // this page is about. The source already loops seamlessly (its last
+        // frame is within a normal frame-step of its first), so it was only
+        // re-encoded: 1.78 MB, index moved to the front of the file. One size:
+        // the source is 960x540, so a separate phone copy would buy nothing.
         backdrop={{
-          video: "/marketing/features-hero-1080.mp4",
-          mobileVideo: "/marketing/features-hero-720.mp4",
+          video: "/marketing/features-hero.mp4",
           poster: "/marketing/features-hero-poster.webp",
         }}
       />

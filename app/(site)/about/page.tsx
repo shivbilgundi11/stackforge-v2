@@ -99,6 +99,13 @@ export default async function Page() {
           </Fragment>,
         ]}
         lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. Buildtact is the step in between — the one where the numbers get worked out while they can still change the decision."
+        // Its first and last frames were a hard cut apart, so the final second
+        // dissolves into the first and the loop has no seam. 1.52 MB, one size:
+        // the source is 960x540.
+        backdrop={{
+          video: "/marketing/about-hero.mp4",
+          poster: "/marketing/about-hero-poster.webp",
+        }}
       />
 
       {/* ── 01 What it is ─────────────────────────────────────────────────── */}
