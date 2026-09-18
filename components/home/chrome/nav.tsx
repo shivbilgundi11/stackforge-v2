@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 
 import { useReducedMotion } from "@/components/home/fx/use-client-fact";
@@ -55,12 +56,43 @@ export function HomeNav() {
   const { status } = useAuth();
   const signedIn = status === "authenticated";
 
+  const pathname = usePathname();
+  const headerRef = React.useRef<HTMLElement>(null);
+
   const [hidden, setHidden] = React.useState(false);
   const [solid, setSolid] = React.useState(false);
   const [menu, setMenu] = React.useState(false);
+  const [overInk, setOverInk] = React.useState(false);
 
   React.useEffect(() => {
     let last = window.scrollY;
+
+    /**
+     * Is the bar floating over an ink chapter right now?
+     *
+     * Before it turns solid the bar has no ground of its own, so its type is
+     * drawn straight onto whatever is behind it — and it was only ever drawn
+     * in the page's colour, near-black on bone. That was fine while every page
+     * opened on bone. `/features` opens on footage under a black scrim, and
+     * near-black on that is the same invisible-wordmark bug the mobile menu
+     * had. So the bar asks what is under its own midline, skipping itself,
+     * and goes light over anything inside an ink chapter.
+     *
+     * Asked of the page rather than told by it: a page that opens dark only
+     * has to be dark, and there is no flag to keep in step with its markup.
+     * Pointer-transparent layers (the cursor, the orbit) are invisible to the
+     * hit test, which is what should happen.
+     */
+    const probe = () => {
+      const header = headerRef.current;
+      // Absent in jsdom. Every browser this ships to has it.
+      if (!header || typeof document.elementsFromPoint !== "function") return;
+      const y = header.getBoundingClientRect().height / 2;
+      const under = document
+        .elementsFromPoint(window.innerWidth / 2, y)
+        .find((element) => !header.contains(element));
+      setOverInk(Boolean(under?.closest('[data-chapter="ink"]')));
+    };
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -70,11 +102,18 @@ export function HomeNav() {
         last = y;
       }
       setSolid(y > window.innerHeight * 0.85);
+      probe();
     };
 
+    // Once the new page has painted: the nav outlives client navigation, so
+    // what it floated over a moment ago says nothing about this page.
+    const frame = requestAnimationFrame(probe);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [pathname]);
 
   // The overlay traps the page behind it; leaving the page scrollable under an
   // open full-screen menu is the classic version of this bug.
@@ -88,6 +127,7 @@ export function HomeNav() {
   return (
     <>
       <motion.header
+        ref={headerRef}
         initial={false}
         animate={{ y: hidden && !menu ? "-110%" : "0%" }}
         transition={{ duration: reduced ? 0 : 0.55, ease: EASE }}
@@ -106,6 +146,9 @@ export function HomeNav() {
         className={cn(
           "fixed inset-x-0 top-0 z-[60] transition-colors duration-500",
           solid && !menu && "bg-[var(--h-ground)]/80 backdrop-blur-xl",
+          // Only while groundless. Once solid, the bar paints the page's own
+          // ground behind itself, and the page's type colour is right again.
+          overInk && !solid && !menu && "text-[var(--h-bone)]",
         )}
       >
         <div

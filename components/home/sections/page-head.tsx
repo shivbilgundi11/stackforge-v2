@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { Counter, MaskLines, Reveal, Rule } from "@/components/home/fx/type";
+import { useReducedMotion } from "@/components/home/fx/use-client-fact";
 
 /**
  * The opening screen of an interior page.
@@ -25,6 +28,11 @@ import { Counter, MaskLines, Reveal, Rule } from "@/components/home/fx/type";
  * counts the home page opens with, read live by the server component that
  * renders this. They server-render at their final values and count up only as
  * decoration, so the numbers do not depend on JavaScript having run.
+ *
+ * ## The video backdrop
+ *
+ * Optional, and when given the head turns into an ink chapter: footage behind,
+ * a near-black scrim over it, and the type in bone. See `VideoBackdrop`.
  */
 
 export function PageHead({
@@ -32,15 +40,25 @@ export function PageHead({
   title,
   lede,
   stats,
+  backdrop,
 }: {
   eyebrow: string;
   /** Display lines, broken by hand. See `MaskLines` for why they are not wrapped. */
   title: React.ReactNode[];
   lede: string;
   stats?: [string, number][];
+  /** Footage behind the head. Its presence also switches the head to ink. */
+  backdrop?: Backdrop;
 }) {
   return (
-    <section className="grain-layer relative overflow-hidden px-5 pt-36 pb-16 sm:px-8 sm:pt-44 sm:pb-20">
+    <section
+      // Ink under footage, so the type goes bone. It also tells the nav — which
+      // floats over this with no ground of its own — to draw itself light.
+      data-chapter={backdrop ? "ink" : undefined}
+      className="grain-layer relative overflow-hidden px-5 pt-36 pb-16 sm:px-8 sm:pt-44 sm:pb-20"
+    >
+      {backdrop ? <VideoBackdrop {...backdrop} /> : null}
+
       {/* The same four column rules the home hero sets its type against. */}
       <div
         aria-hidden
@@ -90,5 +108,130 @@ export function PageHead({
         <Rule className="mt-16" />
       </div>
     </section>
+  );
+}
+
+type Backdrop = {
+  /** The full-size loop, served from `md` up. */
+  video: string;
+  /** A lighter encode for phones, which only ever see a crop of it. */
+  mobileVideo?: string;
+  /** The loop's own first frame, shown until it plays and instead of it. */
+  poster: string;
+};
+
+/**
+ * Looping footage behind the head, under a scrim that keeps the type legible.
+ *
+ * ## The scrim is two gradients, not one
+ *
+ * The horizontal one is the reference design's: near-black behind the type on
+ * the left (94%), thinning to let the footage through on the right (18%), and
+ * closing a little at the far edge (34%) so the frame has an end. It was
+ * designed for a hero with nothing on its right half.
+ *
+ * This head has the catalog counts there, sitting exactly where that gradient
+ * is thinnest, over the brightest part of the shot. So a second gradient rises
+ * from the bottom: dark enough under the counts to hold their contrast, gone
+ * by the upper half so the footage still reads as footage.
+ *
+ * No scrim is enough for text *in* the footage. The source had "PLAN YOUR AI
+ * STACK" burned into its lower-right corner, landing behind the counts, and
+ * under any darkness that left the numbers legible it still competed with
+ * them. It was cropped out of the file instead; styling cannot do it, since
+ * how much of the frame shows depends on the viewport.
+ *
+ * ## It starts itself, rather than autoplaying from the markup
+ *
+ * No `autoPlay` attribute and `preload="none"`: nothing is fetched until the
+ * effect decides it should play. That is the only way to honour a reduced-
+ * motion preference or a Save-Data connection *before* the download rather
+ * than after — an `autoPlay` attribute has the file on the wire before any
+ * script has run. The poster covers the gap, and it is the loop's first frame,
+ * so playback begins without a jump.
+ *
+ * `play()` can still be refused (iOS Low Power Mode, a strict autoplay
+ * policy), and the poster is the right thing to be left showing when it is.
+ *
+ * ## The sources
+ *
+ * 1080p from `md` up, 720p below. The full-size `<source>` comes first and
+ * carries the `media` query, deliberately: a browser too old to understand
+ * `media` on `<source>` takes the first playable one, and the safe failure is
+ * the sharp file on a phone, not the soft one on a desktop.
+ *
+ * Decorative throughout — `aria-hidden`, muted, no controls. The head's
+ * meaning is in its text, and a screen reader has nothing to gain from being
+ * told a video is playing.
+ */
+function VideoBackdrop({ video, mobileVideo, poster }: Backdrop) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const saveData =
+      (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData ===
+      true;
+    if (reduced || saveData) {
+      element.pause();
+      return;
+    }
+
+    const play = () => {
+      element.play().catch(() => {
+        // Refused — low-power mode or an autoplay policy. The poster stays up.
+      });
+    };
+
+    // Chrome pauses a muted video in a tab that is not showing, to save power,
+    // and resuming it is left to the page. Without this a visitor who switched
+    // tabs came back to a frozen frame.
+    const onVisibility = () => {
+      if (document.visibilityState === "visible" && element.paused) play();
+    };
+
+    element.preload = "auto";
+    play();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [reduced]);
+
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      <video
+        ref={ref}
+        muted
+        loop
+        playsInline
+        preload="none"
+        poster={poster}
+        className="absolute inset-0 h-full w-full object-cover object-bottom"
+      >
+        <source
+          src={video}
+          type="video/mp4"
+          media={mobileVideo ? "(min-width: 768px)" : undefined}
+        />
+        {mobileVideo ? <source src={mobileVideo} type="video/mp4" /> : null}
+      </video>
+
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, color-mix(in srgb, var(--h-ink) 94%, transparent) 0%, color-mix(in srgb, var(--h-ink) 74%, transparent) 43%, color-mix(in srgb, var(--h-ink) 18%, transparent) 78%, color-mix(in srgb, var(--h-ink) 34%, transparent) 100%)",
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(to top, color-mix(in srgb, var(--h-ink) 88%, transparent) 0%, color-mix(in srgb, var(--h-ink) 55%, transparent) 30%, transparent 60%)",
+        }}
+      />
+    </div>
   );
 }

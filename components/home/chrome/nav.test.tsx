@@ -70,6 +70,38 @@ describe("HomeNav", () => {
     expect(screen.getByRole("banner")).not.toHaveAttribute("data-chapter");
   });
 
+  it("draws itself light while floating over an ink chapter", async () => {
+    // /features opens on footage under a black scrim. The bar has no ground of
+    // its own until it turns solid, so drawn in the page's near-black it was
+    // invisible there — the mobile menu's bug, on a whole page.
+    const ink = document.createElement("section");
+    ink.setAttribute("data-chapter", "ink");
+    document.body.append(ink);
+    const probe = vi.fn(() => [ink]);
+    Object.defineProperty(document, "elementsFromPoint", { value: probe, configurable: true });
+
+    render(<HomeNav />);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    expect(await screen.findByRole("banner")).toHaveClass("text-[var(--h-bone)]");
+    ink.remove();
+  });
+
+  it("keeps the page's colour over a bone chapter", async () => {
+    const bone = document.createElement("section");
+    document.body.append(bone);
+    Object.defineProperty(document, "elementsFromPoint", {
+      value: vi.fn(() => [bone]),
+      configurable: true,
+    });
+
+    render(<HomeNav />);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    expect(screen.getByRole("banner")).not.toHaveClass("text-[var(--h-bone)]");
+    bone.remove();
+  });
+
   it("locks the page behind the open menu and releases it after", async () => {
     // A full-screen overlay with the page still scrolling underneath is the
     // classic version of this bug, and it is most obvious on the phone this
