@@ -78,14 +78,14 @@ export function ComparisonMatrix({ data }: { data: ToolRunResult }) {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-line">
-                <th className="w-[240px] px-4 py-2.5 text-left text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+                <th className="w-60 px-4 py-2.5 text-left text-[11px] font-medium tracking-wider text-fg-muted uppercase">
                   Criterion
                 </th>
                 {options.map((option) => (
                   <th
                     key={option.id}
                     className={cn(
-                      "min-w-[150px] px-4 py-2.5 text-left align-bottom",
+                      "min-w-37.5 px-4 py-2.5 text-left align-bottom",
                       option.is_winner && "bg-ember-quiet/40",
                     )}
                   >
@@ -285,7 +285,7 @@ function SensitivityTable({ rows }: { rows: Record<string, unknown>[] }) {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-line text-[11px] tracking-[0.05em] text-fg-muted uppercase">
+            <tr className="border-b border-line text-[11px] tracking-wider text-fg-muted uppercase">
               <th className="px-4 py-2 text-left font-medium">Build hours</th>
               <th className="px-4 py-2 text-left font-medium">Rate</th>
               <th className="px-4 py-2 text-right font-medium">Build (36m)</th>

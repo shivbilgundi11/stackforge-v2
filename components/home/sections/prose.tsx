@@ -40,10 +40,7 @@ import { cn } from "@/lib/utils";
 export function Prose({ content, className }: { content: string; className?: string }) {
   return (
     <div
-      className={cn(
-        "flex flex-col gap-4 text-[15px] leading-relaxed text-[var(--h-fg-70)]",
-        className,
-      )}
+      className={cn("flex flex-col gap-4 text-[15px] leading-relaxed text-(--h-fg-70)", className)}
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
@@ -53,28 +50,26 @@ export function Prose({ content, className }: { content: string; className?: str
           // second page title — two `h1`s in one document is the outline bug
           // this avoids.
           h1: ({ children }) => (
-            <h2 className="t-head mt-10 border-b border-[var(--h-line)] pb-3 text-[clamp(1.4rem,2.6vw,2rem)] text-[var(--h-fg)] first:mt-0">
+            <h2 className="t-head mt-10 border-b border-(--h-line) pb-3 text-[clamp(1.4rem,2.6vw,2rem)] text-(--h-fg) first:mt-0">
               {children}
             </h2>
           ),
           h2: ({ children }) => (
-            <h2 className="t-head mt-9 text-[clamp(1.2rem,2.2vw,1.6rem)] text-[var(--h-fg)] first:mt-0">
+            <h2 className="t-head mt-9 text-[clamp(1.2rem,2.2vw,1.6rem)] text-(--h-fg) first:mt-0">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="mt-7 text-[15px] font-semibold text-[var(--h-fg)] first:mt-0">
-              {children}
-            </h3>
+            <h3 className="mt-7 text-[15px] font-semibold text-(--h-fg) first:mt-0">{children}</h3>
           ),
           p: ({ children }) => <p className="text-pretty">{children}</p>,
           strong: ({ children }) => (
-            <strong className="font-semibold text-[var(--h-fg)]">{children}</strong>
+            <strong className="font-semibold text-(--h-fg)">{children}</strong>
           ),
           a: ({ href, children }) => (
             <a
               href={href}
-              className="u-link text-[var(--h-acc)]"
+              className="u-link text-(--h-acc)"
               // Only external links get this. An internal one opening a tab is
               // an internal one that loses the back button.
               {...(href?.startsWith("http")
@@ -85,24 +80,22 @@ export function Prose({ content, className }: { content: string; className?: str
             </a>
           ),
           ul: ({ children }) => (
-            <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-[var(--h-acc)]">
-              {children}
-            </ul>
+            <ul className="flex list-disc flex-col gap-2 pl-5 marker:text-(--h-acc)">{children}</ul>
           ),
           ol: ({ children }) => (
-            <ol className="flex list-decimal flex-col gap-2 pl-5 marker:text-[var(--h-fg-45)]">
+            <ol className="flex list-decimal flex-col gap-2 pl-5 marker:text-(--h-fg-45)">
               {children}
             </ol>
           ),
           li: ({ children }) => <li className="text-pretty">{children}</li>,
           blockquote: ({ children }) => (
-            <blockquote className="border-l-2 border-[var(--h-acc)] pl-4 text-[var(--h-fg-45)]">
+            <blockquote className="border-l-2 border-(--h-acc) pl-4 text-(--h-fg-45)">
               {children}
             </blockquote>
           ),
-          hr: () => <hr className="my-6 border-[var(--h-line)]" />,
+          hr: () => <hr className="my-6 border-(--h-line)" />,
           code: ({ children }) => (
-            <code className="rounded bg-[var(--h-panel)] px-1.5 py-0.5 font-mono text-[13px] text-[var(--h-fg)]">
+            <code className="rounded bg-(--h-panel) px-1.5 py-0.5 font-mono text-[13px] text-(--h-fg)">
               {children}
             </code>
           ),
@@ -112,12 +105,12 @@ export function Prose({ content, className }: { content: string; className?: str
             </div>
           ),
           th: ({ children }) => (
-            <th className="t-mono border-b border-[var(--h-line-2)] py-2.5 pr-4 align-top text-[var(--h-fg)]">
+            <th className="t-mono border-b border-(--h-line-2) py-2.5 pr-4 align-top text-(--h-fg)">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="border-b border-[var(--h-line)] py-2.5 pr-4 align-top">{children}</td>
+            <td className="border-b border-(--h-line) py-2.5 pr-4 align-top">{children}</td>
           ),
         }}
       >

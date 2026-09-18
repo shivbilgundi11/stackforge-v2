@@ -86,8 +86,8 @@ export function Workflows() {
         <Rule />
         <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">
           <Reveal from="none" duration={0.6}>
-            <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-              <span className="text-[var(--h-acc)]">05</span>
+            <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+              <span className="text-(--h-acc)">05</span>
               The workflows
             </p>
           </Reveal>
@@ -104,7 +104,7 @@ export function Workflows() {
             role="tablist"
             aria-label="Workflows"
             onKeyDown={onKeyDown}
-            className="border-t border-[var(--h-line)]"
+            className="border-t border-(--h-line)"
           >
             {WORKFLOWS.map((item, i) => {
               const selected = i === active;
@@ -123,20 +123,20 @@ export function Workflows() {
                   onPointerEnter={(event) => {
                     if (event.pointerType === "mouse") setActive(i);
                   }}
-                  className="group relative flex w-full items-center gap-5 border-b border-[var(--h-line)] py-6 text-left"
+                  className="group relative flex w-full items-center gap-5 border-b border-(--h-line) py-6 text-left"
                 >
                   {/* The fill that rises behind the selected row. */}
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute inset-0 -z-10 origin-bottom bg-[var(--h-panel)] transition-transform duration-500 ease-(--h-ease)",
+                      "absolute inset-0 -z-10 origin-bottom bg-(--h-panel) transition-transform duration-500 ease-(--h-ease)",
                       selected ? "scale-y-100" : "scale-y-0",
                     )}
                   />
                   <span
                     className={cn(
                       "t-mono w-8 shrink-0 transition-colors duration-300",
-                      selected ? "text-[var(--h-acc)]" : "text-[var(--h-fg-45)]",
+                      selected ? "text-(--h-acc)" : "text-(--h-fg-45)",
                     )}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -152,7 +152,7 @@ export function Workflows() {
                   <span
                     aria-hidden
                     className={cn(
-                      "mr-3 block h-px shrink-0 bg-[var(--h-acc)] transition-all duration-500 ease-(--h-ease)",
+                      "mr-3 block h-px shrink-0 bg-(--h-acc) transition-all duration-500 ease-(--h-ease)",
                       selected ? "w-10 opacity-100" : "w-0 opacity-0",
                     )}
                   />
@@ -162,7 +162,7 @@ export function Workflows() {
           </div>
 
           {/* ── The panel ──────────────────────────────────────────────── */}
-          <div className="relative min-h-[26rem]">
+          <div className="relative min-h-104">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={active}
@@ -173,9 +173,9 @@ export function Workflows() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduced ? undefined : { opacity: 0, y: -12 }}
                 transition={{ duration: 0.38, ease: EASE }}
-                className="border border-[var(--h-line)] bg-[var(--h-panel)] p-7 sm:p-9"
+                className="border border-(--h-line) bg-(--h-panel) p-7 sm:p-9"
               >
-                <p className="t-mono text-[var(--h-fg-45)]">It answers</p>
+                <p className="t-mono text-(--h-fg-45)">It answers</p>
                 <p className="t-head mt-4 text-[clamp(1.25rem,2.2vw,1.75rem)]">{ASKS[active]}</p>
 
                 <p className="t-body mt-7">{workflow?.body}</p>
@@ -187,7 +187,7 @@ export function Workflows() {
                 <Link
                   href={workflow?.href ?? "/features"}
                   data-cursor="Open"
-                  className="u-link t-mono mt-9 inline-flex items-center gap-3 text-[var(--h-acc)]"
+                  className="u-link t-mono mt-9 inline-flex items-center gap-3 text-(--h-acc)"
                 >
                   Read about {workflow?.label}
                   <span aria-hidden>→</span>

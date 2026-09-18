@@ -33,7 +33,7 @@ export async function LegalPage({ name, title }: { name: LegalDocument; title: s
     <section className="grain-layer relative px-5 pt-36 pb-24 sm:px-8 sm:pt-44 sm:pb-32">
       <div className="mx-auto w-full max-w-[110rem]">
         <Reveal from="none" duration={0.6}>
-          <p className="t-mono text-[var(--h-fg-45)]">Legal</p>
+          <p className="t-mono text-(--h-fg-45)">Legal</p>
         </Reveal>
 
         <Reveal delay={0.08}>
@@ -42,17 +42,17 @@ export async function LegalPage({ name, title }: { name: LegalDocument; title: s
 
         {effective || updated ? (
           <Reveal delay={0.16}>
-            <dl className="t-mono mt-8 flex flex-wrap gap-x-10 gap-y-2 text-[var(--h-fg-45)]">
+            <dl className="t-mono mt-8 flex flex-wrap gap-x-10 gap-y-2 text-(--h-fg-45)">
               {effective ? (
                 <div className="flex gap-2">
                   <dt>Effective</dt>
-                  <dd className="text-[var(--h-fg)]">{effective}</dd>
+                  <dd className="text-(--h-fg)">{effective}</dd>
                 </div>
               ) : null}
               {updated ? (
                 <div className="flex gap-2">
                   <dt>Last updated</dt>
-                  <dd className="text-[var(--h-fg)]">{updated}</dd>
+                  <dd className="text-(--h-fg)">{updated}</dd>
                 </div>
               ) : null}
             </dl>
@@ -86,8 +86,8 @@ export async function LegalPage({ name, title }: { name: LegalDocument; title: s
  */
 function DraftNotice() {
   return (
-    <Reveal role="note" className="border-l-2 border-[var(--h-acc)] bg-[var(--h-panel)] px-6 py-5">
-      <p className="t-mono text-[var(--h-acc)]">Draft — pending legal review</p>
+    <Reveal role="note" className="border-l-2 border-(--h-acc) bg-(--h-panel) px-6 py-5">
+      <p className="t-mono text-(--h-acc)">Draft — pending legal review</p>
       <p className="t-body mt-3 text-[14.5px]">
         This document describes how the product currently behaves and is accurate to the
         implementation, but it has not yet been reviewed by counsel and is not in force. It will be

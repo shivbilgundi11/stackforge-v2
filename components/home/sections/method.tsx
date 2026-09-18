@@ -66,13 +66,13 @@ export function Method({ pairs }: { pairs: string }) {
   return (
     <section data-chapter="ink" className="grain-layer relative">
       <PinnedTrack
-        className="lg:flex lg:h-[100svh] lg:items-center"
+        className="lg:flex lg:h-svh lg:items-center"
         trackClassName="px-5 py-20 sm:px-8 lg:py-0"
       >
         {/* Panel zero: the chapter head, inside the run rather than above it. */}
-        <div className="flex w-[78vw] shrink-0 snap-start flex-col justify-center pr-6 sm:w-[46vw] lg:w-[34rem] lg:pr-16">
-          <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-            <span className="text-[var(--h-acc)]">03</span>
+        <div className="flex w-[78vw] shrink-0 snap-start flex-col justify-center pr-6 sm:w-[46vw] lg:w-136 lg:pr-16">
+          <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+            <span className="text-(--h-acc)">03</span>
             The method
           </p>
           <h2 className="t-head mt-7 text-[clamp(2rem,5vw,3.6rem)]">
@@ -82,7 +82,7 @@ export function Method({ pairs }: { pairs: string }) {
             Four steps from an idea to an architecture you can put in front of a review — with{" "}
             {pairs} pairwise compatibility entries deciding what may sit next to what.
           </p>
-          <p className="t-mono mt-10 hidden items-center gap-3 text-[var(--h-fg-45)] lg:flex">
+          <p className="t-mono mt-10 hidden items-center gap-3 text-(--h-fg-45) lg:flex">
             Scroll to advance
             <span className="block h-px w-10 bg-current" />
           </p>
@@ -91,12 +91,12 @@ export function Method({ pairs }: { pairs: string }) {
         {STEPS.map((step) => (
           <article
             key={step.n}
-            className="flex w-[80vw] shrink-0 snap-start flex-col justify-between border border-[var(--h-line)] bg-[var(--h-panel)] p-7 sm:w-[54vw] lg:w-[30rem] lg:p-9"
+            className="flex w-[80vw] shrink-0 snap-start flex-col justify-between border border-(--h-line) bg-(--h-panel) p-7 sm:w-[54vw] lg:w-120 lg:p-9"
           >
             <div>
               <div className="flex items-baseline justify-between gap-4">
-                <span className="t-mono text-[var(--h-acc)]">{step.n}</span>
-                <span className="t-mono text-[var(--h-fg-45)]">Step</span>
+                <span className="t-mono text-(--h-acc)">{step.n}</span>
+                <span className="t-mono text-(--h-fg-45)">Step</span>
               </div>
 
               <h3 className="t-head mt-8 text-[clamp(1.5rem,2.6vw,2.1rem)]">{step.title}</h3>
@@ -111,7 +111,7 @@ export function Method({ pairs }: { pairs: string }) {
                   <ConstraintsVisual pairs={pairs} />
                 </div>
               )}
-              <p className="t-mono border-t border-[var(--h-line)] pt-5 text-[var(--h-fg-45)]">
+              <p className="t-mono border-t border-(--h-line) pt-5 text-(--h-fg-45)">
                 {step.aside}
               </p>
             </div>
@@ -124,7 +124,7 @@ export function Method({ pairs }: { pairs: string }) {
       </PinnedTrack>
 
       <Reveal from="none" className="mx-auto w-full max-w-[110rem] px-5 pb-16 sm:px-8 lg:hidden">
-        <p className="t-mono text-[var(--h-fg-45)]">Swipe to advance</p>
+        <p className="t-mono text-(--h-fg-45)">Swipe to advance</p>
       </Reveal>
     </section>
   );

@@ -75,21 +75,21 @@ export function Evidence() {
           illustrated chapters read as a pair. */}
       <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
         <Reveal from="none" duration={0.6}>
-          <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-            <span className="text-[var(--h-acc)]">04</span>
+          <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+            <span className="text-(--h-acc)">04</span>
             The evidence
           </p>
         </Reveal>
 
         <div>
-          <p className="t-mono text-[var(--h-fg-45)]">The prompt</p>
+          <p className="t-mono text-(--h-fg-45)">The prompt</p>
           <MaskLines
             as="blockquote"
             lines={[
               "“RAG over internal docs,",
               "medium scale,",
               <>
-                $2,000 a month<span className="text-[var(--h-acc)]">.”</span>
+                $2,000 a month<span className="text-(--h-acc)">.”</span>
               </>,
             ]}
             className="t-head mt-5 text-[clamp(1.8rem,5vw,4rem)]"
@@ -108,14 +108,14 @@ export function Evidence() {
       {/* ── The headline figures ───────────────────────────────────────────── */}
       <Stagger
         step={0.07}
-        className="mt-20 grid grid-cols-2 border-t border-[var(--h-line)] sm:grid-cols-3 lg:grid-cols-5"
+        className="mt-20 grid grid-cols-2 border-t border-(--h-line) sm:grid-cols-3 lg:grid-cols-5"
       >
         {HEADLINE.map((tile) => (
           <StaggerItem
             key={tile.label}
-            className="border-r border-b border-[var(--h-line)] px-5 py-8 last:border-r-0 sm:px-6"
+            className="border-r border-b border-(--h-line) px-5 py-8 last:border-r-0 sm:px-6"
           >
-            <p className="t-mono text-[var(--h-fg-45)]">{tile.label}</p>
+            <p className="t-mono text-(--h-fg-45)">{tile.label}</p>
             <p className="t-display mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)]">
               <Counter
                 value={tile.value}
@@ -127,7 +127,7 @@ export function Evidence() {
                 }
               />
             </p>
-            <p className="t-mono mt-3 text-[9px] text-[var(--h-fg-45)]">{tile.note}</p>
+            <p className="t-mono mt-3 text-[9px] text-(--h-fg-45)">{tile.note}</p>
           </StaggerItem>
         ))}
       </Stagger>
@@ -144,8 +144,8 @@ export function Evidence() {
               stop trusting the rest of the page. */}
           <Reveal>
             <div className="flex items-baseline justify-between gap-4 pb-4">
-              <p className="t-mono text-[var(--h-fg-45)]">RAG Planner · the pipeline it returned</p>
-              <p className="t-mono text-[var(--h-acc)]">Screen capture</p>
+              <p className="t-mono text-(--h-fg-45)">RAG Planner · the pipeline it returned</p>
+              <p className="t-mono text-(--h-acc)">Screen capture</p>
             </div>
           </Reveal>
           <Parallax distance={54}>
@@ -174,7 +174,7 @@ export function Evidence() {
         <div>
           {/* The stack it returned. */}
           <Reveal>
-            <p className="t-mono border-b border-[var(--h-line)] pb-4 text-[var(--h-fg-45)]">
+            <p className="t-mono border-b border-(--h-line) pb-4 text-(--h-fg-45)">
               Stack Architect · the stack it returned
             </p>
           </Reveal>
@@ -183,9 +183,9 @@ export function Evidence() {
               <StaggerItem
                 key={role}
                 from="none"
-                className="group flex items-baseline justify-between gap-6 border-b border-[var(--h-line)] py-3.5"
+                className="group flex items-baseline justify-between gap-6 border-b border-(--h-line) py-3.5"
               >
-                <span className="t-mono text-[var(--h-fg-45)]">{role}</span>
+                <span className="t-mono text-(--h-fg-45)">{role}</span>
                 <span className="text-[15px] font-medium transition-transform duration-500 ease-(--h-ease) group-hover:-translate-x-1">
                   {name}
                 </span>
@@ -195,7 +195,7 @@ export function Evidence() {
 
           {/* Where the score came from. */}
           <Reveal className="mt-14">
-            <p className="t-mono border-b border-[var(--h-line)] pb-4 text-[var(--h-fg-45)]">
+            <p className="t-mono border-b border-(--h-line) pb-4 text-(--h-fg-45)">
               Where the score came from
             </p>
           </Reveal>
@@ -204,12 +204,12 @@ export function Evidence() {
               <StaggerItem
                 key={label}
                 from="none"
-                className="flex items-center gap-4 border-b border-[var(--h-line)] py-3"
+                className="flex items-center gap-4 border-b border-(--h-line) py-3"
               >
-                <span className="min-w-0 flex-1 truncate text-[14px] text-[var(--h-fg-70)]">
+                <span className="min-w-0 flex-1 truncate text-[14px] text-(--h-fg-70)">
                   {label}
                 </span>
-                <span className="t-mono w-12 text-right text-[9px] text-[var(--h-fg-45)]">
+                <span className="t-mono w-12 text-right text-[9px] text-(--h-fg-45)">
                   {weight}%
                 </span>
                 <span className="font-mono text-[14px] tabular-nums">{score.toFixed(1)}</span>
@@ -258,7 +258,7 @@ function EvidenceVisual() {
           sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
           className="h-auto w-full"
         />
-        <figcaption className="t-mono mt-3 text-[var(--h-fg-45)]">Illustration</figcaption>
+        <figcaption className="t-mono mt-3 text-(--h-fg-45)">Illustration</figcaption>
       </figure>
     </Parallax>
   );

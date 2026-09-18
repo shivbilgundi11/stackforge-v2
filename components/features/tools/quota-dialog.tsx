@@ -89,7 +89,7 @@ export function QuotaDialog({ error, onClose }: { error: ApiError | null; onClos
 function Figure({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 px-3 py-2.5">
-      <dt className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">{label}</dt>
+      <dt className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">{label}</dt>
       <dd className="text-lg font-medium text-fg tabular-nums">{value}</dd>
     </div>
   );

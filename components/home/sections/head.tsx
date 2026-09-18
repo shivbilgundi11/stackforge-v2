@@ -44,8 +44,8 @@ export function SectionHead({
         )}
       >
         <Reveal from="none" duration={0.6}>
-          <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-            <span className="text-[var(--h-acc)]">{index}</span>
+          <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+            <span className="text-(--h-acc)">{index}</span>
             {label}
           </p>
         </Reveal>

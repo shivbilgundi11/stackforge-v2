@@ -62,19 +62,19 @@ export function CatalogBand({ verified }: { verified: string }) {
   return (
     <section data-chapter="ink" className="grain-layer relative overflow-hidden py-14">
       <div className="mx-auto mb-10 flex w-full max-w-[110rem] flex-wrap items-center justify-between gap-4 px-5 sm:px-8">
-        <p className="t-mono text-[var(--h-fg-45)]">In the catalog</p>
-        <p className="t-mono text-[var(--h-fg-45)]">
+        <p className="t-mono text-(--h-fg-45)">In the catalog</p>
+        <p className="t-mono text-(--h-fg-45)">
           Every row carries its source · oldest verified {verified}
         </p>
       </div>
 
-      <Marquee speed={44} className="border-y border-[var(--h-line)] py-5">
+      <Marquee speed={44} className="border-y border-(--h-line) py-5">
         {MODELS.map((name) => (
           <Item key={name} label={name} />
         ))}
       </Marquee>
 
-      <Marquee speed={56} reverse className="border-b border-[var(--h-line)] py-5">
+      <Marquee speed={56} reverse className="border-b border-(--h-line) py-5">
         {TOOLS.map((name) => (
           <Item key={name} label={name} />
         ))}
@@ -85,9 +85,9 @@ export function CatalogBand({ verified }: { verified: string }) {
 
 function Item({ label }: { label: string }) {
   return (
-    <span className="t-head flex shrink-0 items-center gap-8 px-8 text-[clamp(1.3rem,2.6vw,2.1rem)] whitespace-nowrap text-[var(--h-fg-70)]">
+    <span className="t-head flex shrink-0 items-center gap-8 px-8 text-[clamp(1.3rem,2.6vw,2.1rem)] whitespace-nowrap text-(--h-fg-70)">
       {label}
-      <span aria-hidden className="size-1 rounded-full bg-[var(--h-acc)]" />
+      <span aria-hidden className="size-1 rounded-full bg-(--h-acc)" />
     </span>
   );
 }

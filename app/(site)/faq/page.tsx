@@ -65,7 +65,7 @@ export default function Page() {
         title={[
           "Questions worth",
           <Fragment key="last">
-            a straight answer<span className="text-[var(--h-acc)]">.</span>
+            a straight answer<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
         lede="Including the ones where the answer is a qualified yes, or no."
@@ -75,15 +75,15 @@ export default function Page() {
         {/* One `div` between the `dl` and each `dt`/`dd` pair, which is the
             single level of wrapping a description list permits. The reveal is
             therefore on that div rather than around it. */}
-        <dl className="border-t border-[var(--h-line)]">
+        <dl className="border-t border-(--h-line)">
           {FAQ.map((item, i) => (
             <Reveal
               key={item.q}
               delay={Math.min(i, 4) * 0.04}
-              className="grid gap-4 border-b border-[var(--h-line)] py-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16"
+              className="grid gap-4 border-b border-(--h-line) py-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-16"
             >
               <dt className="t-head flex gap-6 text-[clamp(1.15rem,2.2vw,1.75rem)]">
-                <span className="t-mono shrink-0 pt-2 text-[var(--h-fg-45)]">
+                <span className="t-mono shrink-0 pt-2 text-(--h-fg-45)">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="max-w-[24ch]">{item.q}</span>

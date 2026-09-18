@@ -81,7 +81,7 @@ export default async function Page() {
           "Every tool is open.",
           "You pay to keep",
           <Fragment key="last">
-            the answer<span className="text-[var(--h-acc)]">.</span>
+            the answer<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
         lede="The calculators are not the paid part — free accounts get real, complete results. What Pro buys is taking the work out of the app and keeping it."
@@ -104,11 +104,11 @@ export default async function Page() {
             children, optionally through one wrapping `div` — and the reveal
             wrapper plus the two-column grid is two levels, which is invalid.
             These are short headed sections, so they are set as such. */}
-        <Stagger step={0.06} className="mt-14 border-t border-[var(--h-line)]">
+        <Stagger step={0.06} className="mt-14 border-t border-(--h-line)">
           {ANSWERS.map((item) => (
-            <StaggerItem key={item.n} className="group border-b border-[var(--h-line)] py-7">
+            <StaggerItem key={item.n} className="group border-b border-(--h-line) py-7">
               <div className="flex gap-6 lg:gap-10">
-                <span className="t-mono shrink-0 pt-1 text-[var(--h-fg-45)] transition-colors duration-300 group-hover:text-[var(--h-acc)]">
+                <span className="t-mono shrink-0 pt-1 text-(--h-fg-45) transition-colors duration-300 group-hover:text-(--h-acc)">
                   {item.n}
                 </span>
                 <div>

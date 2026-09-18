@@ -173,7 +173,7 @@ export function FileTree({ files, slug }: { files: TemplateFile[]; slug: string 
         </Button>
       </div>
 
-      <pre className="max-h-[32rem] overflow-auto bg-surface p-3 font-mono text-[11.5px] leading-relaxed text-fg">
+      <pre className="max-h-128 overflow-auto bg-surface p-3 font-mono text-[11.5px] leading-relaxed text-fg">
         {file.content}
       </pre>
     </div>

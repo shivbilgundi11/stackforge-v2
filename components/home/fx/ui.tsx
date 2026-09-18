@@ -101,12 +101,12 @@ export function Cursor() {
   if (!enabled) return null;
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-[70]">
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-70">
       {/* The dot keeps the accent: signal orange reads on bone and on ink
           alike, so it needs no help. */}
       <motion.span
         style={{ x, y }}
-        className="absolute -mt-[3px] -ml-[3px] size-1.5 rounded-full bg-[var(--h-acc)]"
+        className="absolute -mt-0.75 -ml-0.75 size-1.5 rounded-full bg-(--h-acc)"
       />
 
       {/* The ring does not — a hairline is thin enough that one colour is

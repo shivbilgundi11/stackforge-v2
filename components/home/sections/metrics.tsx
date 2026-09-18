@@ -56,7 +56,7 @@ export function Metrics({
                 <dd className="t-head text-[clamp(2.25rem,5vw,4rem)]">
                   <Counter value={value} />
                 </dd>
-                <dt className="t-mono mt-3 text-[var(--h-fg-45)]">{label}</dt>
+                <dt className="t-mono mt-3 text-(--h-fg-45)">{label}</dt>
               </dl>
             </StaggerItem>
           ))}

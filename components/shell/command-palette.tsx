@@ -217,10 +217,10 @@ export function CommandPalette() {
 }
 
 const groupClass = cn(
-  "[&_[cmdk-group-heading]]:text-fg-subtle [&_[cmdk-group-heading]]:px-2.5",
-  "[&_[cmdk-group-heading]]:pt-2.5 [&_[cmdk-group-heading]]:pb-1.5",
-  "[&_[cmdk-group-heading]]:text-[10.5px] [&_[cmdk-group-heading]]:font-medium",
-  "[&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.06em]",
+  "**:[[cmdk-group-heading]]:text-fg-subtle **:[[cmdk-group-heading]]:px-2.5",
+  "**:[[cmdk-group-heading]]:pt-2.5 **:[[cmdk-group-heading]]:pb-1.5",
+  "**:[[cmdk-group-heading]]:text-[10.5px] **:[[cmdk-group-heading]]:font-medium",
+  "**:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-[0.06em]",
 );
 
 const itemClass = cn(
@@ -248,7 +248,7 @@ export function CommandTrigger() {
       onClick={openPalette}
       className={cn(
         "border-line bg-surface text-fg-subtle hover:border-line-strong hover:text-fg-muted",
-        "flex h-8 w-full max-w-[280px] items-center gap-2 rounded-sm border px-2.5",
+        "flex h-8 w-full max-w-70 items-center gap-2 rounded-sm border px-2.5",
         "text-[12.5px] transition-colors",
       )}
     >

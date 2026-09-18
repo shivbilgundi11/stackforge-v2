@@ -37,7 +37,7 @@ export function BrandLockup({
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-ember text-ember-fg">
-        <BrandMark className="size-[18px]" />
+        <BrandMark className="size-4.5" />
       </span>
       {!collapsed && (
         <span className="flex min-w-0 flex-col leading-none">

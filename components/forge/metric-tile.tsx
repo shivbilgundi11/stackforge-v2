@@ -59,7 +59,7 @@ export function MetricTile({
 
   return (
     <div className={cn("flex min-w-0 flex-col gap-1.5 px-4 py-3.5", className)}>
-      <span className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+      <span className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">
         {label}
       </span>
 

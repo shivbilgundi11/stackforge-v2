@@ -88,17 +88,17 @@ export function Hero() {
     // whole document — and beating the fixed header at 60 and the mobile menu
     // at 55. The menu's background was opaque the entire time; the hero was
     // simply painting on top of it, which reads as a transparent overlay.
-    <section className="grain-layer relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-5 py-28 sm:px-8 sm:py-32">
+    <section className="grain-layer relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden px-5 py-28 sm:px-8 sm:py-32">
       <Orbit items={FEATURES} />
 
       {/* `isolate` gives the copy its own stacking context, so it clears the
           ring whatever z-index the near items are carrying this frame. */}
-      <div className="relative isolate z-[1000] flex w-full max-w-3xl flex-col items-center text-center">
+      <div className="relative isolate z-1000 flex w-full max-w-3xl flex-col items-center text-center">
         <Reveal from="none" duration={0.7}>
-          <p className="t-mono flex items-center gap-2.5 text-[var(--h-fg-45)]">
+          <p className="t-mono flex items-center gap-2.5 text-(--h-fg-45)">
             <span className="relative flex size-1.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-[var(--h-acc)]" />
-              <span className="relative size-1.5 rounded-full bg-[var(--h-acc)]" />
+              <span className="absolute inset-0 animate-ping rounded-full bg-(--h-acc)" />
+              <span className="relative size-1.5 rounded-full bg-(--h-acc)" />
             </span>
             Catalog live
           </p>
@@ -109,7 +109,7 @@ export function Hero() {
           lines={[
             "Plan your AI stack",
             <>
-              before you build it<span className="text-[var(--h-acc)]">.</span>
+              before you build it<span className="text-(--h-acc)">.</span>
             </>,
           ]}
           className="t-display mt-7 text-[clamp(2.25rem,6.4vw,5rem)]"
@@ -144,7 +144,7 @@ export function Hero() {
           column. Anything added below the buttons grows the column downwards
           into the front of the ring, and this line is the one piece of copy
           here that does not need to be read in sequence with the rest. */}
-      <div className="absolute inset-x-0 bottom-8 z-[1000] flex items-end justify-between gap-6 px-5 sm:px-8">
+      <div className="absolute inset-x-0 bottom-8 z-1000 flex items-end justify-between gap-6 px-5 sm:px-8">
         {/* Deliberately not a `Reveal`. Reveal fires on `whileInView` with a
             -10% viewport margin, and this line sits inside that excluded band
             at the very bottom of the screen — it would never enter view, and
@@ -152,7 +152,7 @@ export function Hero() {
             the bottom margin of a full-height section has to animate on mount
             rather than on intersection. */}
         <motion.p
-          className="t-mono text-[var(--h-fg-45)]"
+          className="t-mono text-(--h-fg-45)"
           initial={reduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={reduced ? { duration: 0 } : { duration: 0.9, delay: 0.66, ease: EASE }}
@@ -162,7 +162,7 @@ export function Hero() {
 
         <motion.p
           aria-hidden
-          className="t-mono hidden items-center gap-2 text-[var(--h-fg-45)] sm:flex"
+          className="t-mono hidden items-center gap-2 text-(--h-fg-45) sm:flex"
           animate={reduced ? undefined : { y: [0, 5, 0] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         >

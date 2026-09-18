@@ -70,7 +70,7 @@ export default function Page() {
         // Matched by `e2e/marketing.spec.ts` against /Get in touch/.
         title={[
           <Fragment key="last">
-            Get in touch<span className="text-[var(--h-acc)]">.</span>
+            Get in touch<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
         lede="A contact form is not live yet. Rather than put one here that quietly goes nowhere, these are the routes that reach us — or answer the question directly."
@@ -80,7 +80,7 @@ export default function Page() {
       <Section chapter="ink">
         <div className="grid gap-10 md:grid-cols-2 lg:gap-16">
           <Reveal>
-            <p className="t-mono text-[var(--h-fg-45)]">Email</p>
+            <p className="t-mono text-(--h-fg-45)">Email</p>
             <a
               href="mailto:hello@buildtact.ai"
               data-cursor="Write"
@@ -91,7 +91,7 @@ export default function Page() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className="t-mono text-[var(--h-fg-45)]">Phone</p>
+            <p className="t-mono text-(--h-fg-45)">Phone</p>
             <a
               href="tel:+910000000000"
               data-cursor="Call"
@@ -111,12 +111,12 @@ export default function Page() {
           title={["Some of these", "answer it without", "waiting on us."]}
         />
 
-        <Stagger step={0.07} className="mt-14 border-t border-[var(--h-line)]">
+        <Stagger step={0.07} className="mt-14 border-t border-(--h-line)">
           {ROUTES.map((route) => (
-            <StaggerItem key={route.n} className="group border-b border-[var(--h-line)] py-8">
+            <StaggerItem key={route.n} className="group border-b border-(--h-line) py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)_auto] lg:items-start lg:gap-12">
                 <h3 className="t-head flex gap-6 text-[clamp(1.1rem,2vw,1.5rem)]">
-                  <span className="t-mono shrink-0 pt-1.5 text-[var(--h-fg-45)] transition-colors duration-300 group-hover:text-[var(--h-acc)]">
+                  <span className="t-mono shrink-0 pt-1.5 text-(--h-fg-45) transition-colors duration-300 group-hover:text-(--h-acc)">
                     {route.n}
                   </span>
                   <span className="max-w-[22ch]">{route.title}</span>
@@ -128,7 +128,7 @@ export default function Page() {
                   <Link
                     href={route.href}
                     data-cursor="Open"
-                    className="u-link t-mono whitespace-nowrap text-[var(--h-acc)]"
+                    className="u-link t-mono whitespace-nowrap text-(--h-acc)"
                   >
                     {route.cta} →
                   </Link>
@@ -143,7 +143,7 @@ export default function Page() {
       <Section chapter="ink">
         <SectionHead index="03" label="Security" title={["Reporting", "something urgent."]} />
 
-        <Reveal className="mt-12 lg:pl-[calc(14rem+4rem)]">
+        <Reveal className="mt-12 lg:pl-72">
           <p className="t-body max-w-[62ch]">
             If you have found a security issue, please do not open it anywhere public. A dedicated
             disclosure address is being set up; until it is published here, hold the details and we

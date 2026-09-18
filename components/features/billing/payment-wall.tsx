@@ -122,7 +122,7 @@ export function PaymentWall() {
 
   if (subscription.isLoading) {
     return (
-      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-140 flex-col gap-4">
         <Skeleton className="h-20 rounded-md" />
         <Skeleton className="h-80 rounded-md" />
       </div>
@@ -130,7 +130,7 @@ export function PaymentWall() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[560px] flex-col">
+    <div className="mx-auto flex w-full max-w-140 flex-col">
       <PageHeader
         title={pastDue ? "Your payment did not go through" : "Complete your subscription"}
         description={

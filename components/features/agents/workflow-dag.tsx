@@ -147,7 +147,7 @@ export function WorkflowDag({ data }: { data: ToolRunResult }) {
                     onClick={() => setSelected(node.node === selected ? null : node.node)}
                     aria-pressed={node.node === selected}
                     className={cn(
-                      "min-w-[9.5rem] rounded-md border px-3 py-2 text-left transition-colors",
+                      "min-w-38 rounded-md border px-3 py-2 text-left transition-colors",
                       node.node === selected
                         ? "border-fg/40 bg-surface-2"
                         : "border-line bg-surface hover:border-fg/20 hover:bg-surface-2/60",
@@ -182,7 +182,7 @@ export function WorkflowDag({ data }: { data: ToolRunResult }) {
                 ["Tools", active.tools],
               ].map(([label, value]) => (
                 <div key={label}>
-                  <dt className="text-[11px] tracking-[0.05em] text-fg-muted uppercase">{label}</dt>
+                  <dt className="text-[11px] tracking-wider text-fg-muted uppercase">{label}</dt>
                   <dd className="mt-0.5 text-xs text-fg">{value}</dd>
                 </div>
               ))}
@@ -235,7 +235,7 @@ function ContractList({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[11px] tracking-[0.05em] text-fg-muted uppercase">{title}</span>
+      <span className="text-[11px] tracking-wider text-fg-muted uppercase">{title}</span>
       {edges.map((edge, index) => (
         <div
           key={`${edge.from}-${edge.to}-${index}`}

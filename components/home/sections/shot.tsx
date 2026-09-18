@@ -54,7 +54,7 @@ export function Shot({
   className?: string;
 }) {
   const figure = (
-    <figure className={cn("overflow-hidden rounded-xl border border-[var(--h-line-2)]", className)}>
+    <figure className={cn("overflow-hidden rounded-xl border border-(--h-line-2)", className)}>
       <Image
         src={`/marketing/${src}-${tone === "ink" ? "dark" : "light"}.png`}
         alt={alt}

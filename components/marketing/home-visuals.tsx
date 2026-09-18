@@ -58,7 +58,7 @@ function Frame({ className, children }: { className?: string; children: React.Re
     <div
       aria-hidden
       className={cn(
-        "rounded-lg border border-line bg-surface/80 p-3.5 shadow-[var(--shadow-panel)] backdrop-blur-[2px]",
+        "rounded-lg border border-line bg-surface/80 p-3.5 shadow-panel backdrop-blur-[2px]",
         className,
       )}
     >
@@ -90,7 +90,7 @@ function Chip({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2 py-1 text-[11.5px] font-medium text-fg shadow-[var(--shadow-panel)]",
+        "inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2 py-1 text-[11.5px] font-medium text-fg shadow-panel",
         className,
       )}
     >
@@ -125,7 +125,7 @@ function Tick() {
 export function InvoiceVisual({ className }: { className?: string }) {
   return (
     <div aria-hidden className={cn("relative", className)}>
-      <Frame className="rotate-[-3deg]">
+      <Frame className="-rotate-3">
         <FrameLabel>Cloud invoice</FrameLabel>
         <div className="flex flex-col gap-2">
           {[70, 55, 62].map((w, i) => (
@@ -147,7 +147,7 @@ export function InvoiceVisual({ className }: { className?: string }) {
         {[CloudIcon, ServerIcon, DatabaseIcon].map((Icon, i) => (
           <span
             key={i}
-            className="flex size-7 items-center justify-center rounded-lg border border-line bg-surface text-fg-muted shadow-[var(--shadow-panel)]"
+            className="flex size-7 items-center justify-center rounded-lg border border-line bg-surface text-fg-muted shadow-panel"
           >
             <Icon className="size-3.5" />
           </span>
@@ -186,13 +186,13 @@ export function ScatteredVisual({ className }: { className?: string }) {
         {[FileTextIcon, ListChecksIcon, ImageIcon].map((Icon, i) => (
           <span
             key={i}
-            className="flex size-8 items-center justify-center rounded-lg border border-line bg-surface text-fg-muted shadow-[var(--shadow-panel)]"
+            className="flex size-8 items-center justify-center rounded-lg border border-line bg-surface text-fg-muted shadow-panel"
           >
             <Icon className="size-4" />
           </span>
         ))}
       </div>
-      <Frame className="rotate-[2deg]">
+      <Frame className="rotate-2">
         <FrameLabel>Architecture?</FrameLabel>
         <div className="flex flex-col gap-1.5">
           {[100, 82, 90, 60].map((w, i) => (
@@ -422,7 +422,7 @@ export function ComposeVisual() {
   return (
     <div
       aria-hidden
-      className="overflow-hidden rounded-lg border border-line bg-surface-inset shadow-[var(--shadow-panel)]"
+      className="overflow-hidden rounded-lg border border-line bg-surface-inset shadow-panel"
     >
       <div className="flex items-center gap-1.5 border-b border-line px-2.5 py-1.5">
         <span className="rounded bg-surface px-1.5 py-0.5 font-mono text-[10px] text-fg">

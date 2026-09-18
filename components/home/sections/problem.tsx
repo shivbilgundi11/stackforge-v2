@@ -73,8 +73,8 @@ export function Premise() {
           of shrinking into a thumbnail beside a headline that keeps growing. */}
       <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
         <Reveal from="none" duration={0.6}>
-          <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-            <span className="text-[var(--h-acc)]">01</span>
+          <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+            <span className="text-(--h-acc)">01</span>
             The premise
           </p>
         </Reveal>
@@ -141,8 +141,8 @@ export function Problem() {
       <Rule />
       <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">
         <Reveal from="none" duration={0.6}>
-          <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-            <span className="text-[var(--h-acc)]">02</span>
+          <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+            <span className="text-(--h-acc)">02</span>
             What goes wrong
           </p>
         </Reveal>
@@ -155,10 +155,10 @@ export function Problem() {
         >
           <ul>
             {ROWS.map((row, i) => (
-              <li key={row.id} data-row={row.id} className="group border-t border-[var(--h-line)]">
+              <li key={row.id} data-row={row.id} className="group border-t border-(--h-line)">
                 <Reveal delay={i * 0.06} className="py-9 lg:py-12">
                   <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)_minmax(0,22rem)] lg:items-start lg:gap-12">
-                    <span className="t-mono text-[var(--h-fg-45)]">{row.n}</span>
+                    <span className="t-mono text-(--h-fg-45)">{row.n}</span>
 
                     <h3 className="t-head max-w-[16ch] text-[clamp(1.5rem,3.4vw,2.6rem)] transition-transform duration-500 ease-(--h-ease) lg:group-hover:translate-x-3">
                       {row.title}
@@ -166,14 +166,14 @@ export function Problem() {
 
                     <div>
                       <p className="t-body">{row.body}</p>
-                      <p className="t-mono mt-5 text-[var(--h-acc)]">{row.tag}</p>
+                      <p className="t-mono mt-5 text-(--h-acc)">{row.tag}</p>
                     </div>
                   </div>
                 </Reveal>
               </li>
             ))}
           </ul>
-          <span className="block border-t border-[var(--h-line)]" />
+          <span className="block border-t border-(--h-line)" />
         </HoverPreview>
       </div>
     </Section>

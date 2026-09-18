@@ -146,7 +146,7 @@ export function CheckoutReturn() {
   }, [landed, settle]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[460px] flex-col pt-8">
+    <div className="mx-auto flex w-full max-w-115 flex-col pt-8">
       <Panel>
         <PanelBody className="flex flex-col items-center gap-3 py-8 text-center">
           {slow ? (

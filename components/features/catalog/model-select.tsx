@@ -74,14 +74,14 @@ export function ModelSelect({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[340px] p-0" align="start">
+      <PopoverContent className="w-[--radix-popover-trigger-width] min-w-85 p-0" align="start">
         <Command
           filter={(itemValue, search) =>
             itemValue.toLowerCase().includes(search.toLowerCase()) ? 1 : 0
           }
         >
           <CommandInput placeholder="Search models…" className="h-9" />
-          <CommandList className="max-h-[320px]">
+          <CommandList className="max-h-80">
             <CommandEmpty>No model matches.</CommandEmpty>
             {grouped.map(([provider, providerModels]) => (
               <CommandGroup key={provider} heading={provider}>
@@ -127,7 +127,7 @@ function ModelMeta({ model }: { model: CatalogModel }) {
       {model.context_window ? (
         <span className="text-fg-subtle tabular-nums">{compactNumber(model.context_window)}</span>
       ) : null}
-      <span className="w-[72px] text-right text-fg-muted tabular-nums">
+      <span className="w-18 text-right text-fg-muted tabular-nums">
         {perMillion(model.input_cost_per_1k)}
       </span>
     </span>

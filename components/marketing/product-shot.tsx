@@ -56,8 +56,8 @@ export function ProductShot({ src, alt, priority = false, className }: ProductSh
   return (
     <figure
       className={cn(
-        "overflow-hidden rounded-[var(--radius)] border border-line bg-surface",
-        "shadow-[var(--shadow-panel)]",
+        "overflow-hidden rounded-(--radius) border border-line bg-surface",
+        "shadow-panel",
         className,
       )}
     >

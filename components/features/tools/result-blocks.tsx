@@ -435,7 +435,7 @@ function CodeBlock({
       <Code code={artifact.content} className="rounded-none border-0 bg-transparent">
         <CodeBlockView
           lang={artifact.language ?? languageFor(artifact.format)}
-          className="max-h-[420px]"
+          className="max-h-105"
           writing={false}
           duration={0}
         />
@@ -556,7 +556,7 @@ function ChecklistBlock({
               <input
                 type="checkbox"
                 checked={checked.has(index)}
-                className="mt-0.5 accent-[var(--color-ember)]"
+                className="mt-0.5 accent-(--color-ember)"
                 onChange={() =>
                   setChecked((current) => {
                     const next = new Set(current);
@@ -655,7 +655,7 @@ function JsonBlock({
           code={JSON.stringify(data, null, 2)}
           className="rounded-none border-0 border-t border-line bg-transparent"
         >
-          <CodeBlockView lang="json" className="max-h-[420px]" writing={false} duration={0} />
+          <CodeBlockView lang="json" className="max-h-105" writing={false} duration={0} />
         </Code>
       ) : null}
     </Panel>

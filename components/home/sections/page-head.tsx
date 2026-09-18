@@ -73,7 +73,7 @@ export function PageHead({
 
       <div className="relative mx-auto w-full max-w-[110rem]">
         <Reveal from="none" duration={0.6}>
-          <p className="t-mono text-[var(--h-fg-45)]">{eyebrow}</p>
+          <p className="t-mono text-(--h-fg-45)">{eyebrow}</p>
         </Reveal>
 
         <MaskLines
@@ -97,7 +97,7 @@ export function PageHead({
                     <dd className="t-head text-[clamp(1.5rem,2.4vw,2.2rem)]">
                       <Counter value={value} />
                     </dd>
-                    <dt className="t-mono mt-2 text-[9px] text-[var(--h-fg-45)]">{label}</dt>
+                    <dt className="t-mono mt-2 text-[9px] text-(--h-fg-45)">{label}</dt>
                   </div>
                 ))}
               </dl>

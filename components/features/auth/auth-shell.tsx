@@ -26,7 +26,7 @@ export function AuthShell({
       </header>
 
       <main className="flex flex-1 items-start justify-center px-5 pt-6 pb-16 sm:items-center sm:pt-0 sm:pb-24">
-        <div className={wide ? "w-full max-w-[460px]" : "w-full max-w-[400px]"}>
+        <div className={wide ? "w-full max-w-115" : "w-full max-w-100"}>
           <h1 className="font-serif text-[28px] leading-tight tracking-[-0.01em] text-fg">
             {title}
           </h1>

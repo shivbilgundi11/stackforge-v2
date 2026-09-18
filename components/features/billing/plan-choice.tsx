@@ -52,7 +52,7 @@ export function PlanChoice({
     return (
       <div className="flex flex-col gap-2">
         {[0, 1, 2].map((key) => (
-          <Skeleton key={key} className="h-[74px] rounded-md" />
+          <Skeleton key={key} className="h-18.5 rounded-md" />
         ))}
       </div>
     );
@@ -146,7 +146,7 @@ function PlanOption({
         <span className="mt-0.5 flex flex-col gap-0.5">
           {plan.highlights.slice(0, 2).map((line) => (
             <span key={line} className="flex items-start gap-1.5 text-[11.5px] text-fg-subtle">
-              <CheckIcon className="mt-[3px] size-3 shrink-0 text-ember" aria-hidden />
+              <CheckIcon className="mt-0.75 size-3 shrink-0 text-ember" aria-hidden />
               {line}
             </span>
           ))}

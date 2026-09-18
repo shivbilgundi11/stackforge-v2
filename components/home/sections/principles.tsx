@@ -67,8 +67,8 @@ export function Principles({ pairs, verified }: { pairs: string; verified: strin
         {/* The claim, held on screen while its evidence scrolls past. */}
         <div className="lg:sticky lg:top-32 lg:self-start">
           <Reveal from="none" duration={0.6}>
-            <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-              <span className="text-[var(--h-acc)]">06</span>
+            <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+              <span className="text-(--h-acc)">06</span>
               The method, defended
             </p>
           </Reveal>
@@ -87,20 +87,17 @@ export function Principles({ pairs, verified }: { pairs: string; verified: strin
           </Reveal>
 
           <Reveal delay={0.28} className="mt-9">
-            <Link href="/about" data-cursor="Read" className="u-link t-mono text-[var(--h-acc)]">
+            <Link href="/about" data-cursor="Read" className="u-link t-mono text-(--h-acc)">
               How the catalog is maintained →
             </Link>
           </Reveal>
         </div>
 
-        <Stagger step={0.06} className="border-t border-[var(--h-line)]">
+        <Stagger step={0.06} className="border-t border-(--h-line)">
           {items.map((item) => (
-            <StaggerItem
-              key={item.n}
-              className="group border-b border-[var(--h-line)] py-7 lg:py-9"
-            >
+            <StaggerItem key={item.n} className="group border-b border-(--h-line) py-7 lg:py-9">
               <div className="flex gap-6 lg:gap-10">
-                <span className="t-mono shrink-0 pt-1 text-[var(--h-fg-45)] transition-colors duration-300 group-hover:text-[var(--h-acc)]">
+                <span className="t-mono shrink-0 pt-1 text-(--h-fg-45) transition-colors duration-300 group-hover:text-(--h-acc)">
                   {item.n}
                 </span>
                 <div>

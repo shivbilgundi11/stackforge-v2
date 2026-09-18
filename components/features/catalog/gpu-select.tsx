@@ -67,10 +67,10 @@ export function GpuSelect({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[360px] p-0" align="start">
+      <PopoverContent className="w-[--radix-popover-trigger-width] min-w-90 p-0" align="start">
         <Command>
           <CommandInput placeholder="Search instances…" className="h-9" />
-          <CommandList className="max-h-[320px]">
+          <CommandList className="max-h-80">
             <CommandEmpty>No instance matches.</CommandEmpty>
             {grouped.map(([provider, providerGpus]) => (
               <CommandGroup key={provider} heading={provider}>
@@ -100,7 +100,7 @@ export function GpuSelect({
                     <span className="shrink-0 text-xs text-fg-subtle tabular-nums">
                       {gpu.gpu_count}x {gpu.gpu_model} · {gpu.vram_total_gb}GB
                     </span>
-                    <span className="w-[68px] shrink-0 text-right text-xs text-fg-muted tabular-nums">
+                    <span className="w-17 shrink-0 text-right text-xs text-fg-muted tabular-nums">
                       {currency(gpu.hourly_cost_usd)}/hr
                     </span>
                   </CommandItem>

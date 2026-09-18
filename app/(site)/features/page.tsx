@@ -63,7 +63,7 @@ export default async function Page() {
           "Everything you need",
           "to argue for",
           <Fragment key="last">
-            a stack<span className="text-[var(--h-acc)]">.</span>
+            a stack<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
         lede="Seven surfaces over one catalog. Every screenshot below is the product answering a real question — not a mockup, and not a redrawn illustration."
@@ -107,8 +107,8 @@ export default async function Page() {
                       reader. What is missing on a page of seven near-identical
                       chapters is how far through them you are. */}
                   <Reveal from="none" duration={0.6}>
-                    <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-                      <span className="text-[var(--h-acc)]">{n}</span>
+                    <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+                      <span className="text-(--h-acc)">{n}</span>
                       of {String(FEATURES.length).padStart(2, "0")}
                     </p>
                   </Reveal>
@@ -123,9 +123,9 @@ export default async function Page() {
                     <p className="t-body mt-6 max-w-[52ch]">{feature.body}</p>
                   </Reveal>
 
-                  <Stagger step={0.05} className="mt-9 border-t border-[var(--h-line)]">
+                  <Stagger step={0.05} className="mt-9 border-t border-(--h-line)">
                     {feature.points.map((point) => (
-                      <StaggerItem key={point} className="border-b border-[var(--h-line)] py-4">
+                      <StaggerItem key={point} className="border-b border-(--h-line) py-4">
                         <p className="t-body max-w-[54ch] text-[0.9375rem]">{point}</p>
                       </StaggerItem>
                     ))}

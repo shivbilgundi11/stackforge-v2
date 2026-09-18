@@ -63,7 +63,7 @@ function ScoreRing({ score }: { score: number }) {
   const filled = circumference * Math.min(1, Math.max(0, score / 100));
 
   return (
-    <div className="relative size-[7.5rem] shrink-0">
+    <div className="relative size-30 shrink-0">
       <svg
         viewBox="0 0 120 120"
         className="size-full -rotate-90"
@@ -129,7 +129,7 @@ export function StackResult({ data }: { data: ToolRunResult }) {
           <ScoreRing score={score} />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+              <span className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">
                 Recommended stack
               </span>
               {data.metrics?.["confidence"] ? (
@@ -184,7 +184,7 @@ export function StackResult({ data }: { data: ToolRunResult }) {
               )}
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] tracking-[0.05em] text-fg-muted uppercase">
+                <span className="text-[11px] tracking-wider text-fg-muted uppercase">
                   {row.role}
                 </span>
                 <span className="text-sm font-medium text-fg">{row.name}</span>

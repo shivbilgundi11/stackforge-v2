@@ -77,7 +77,7 @@ export function HomeFooter() {
       <div className="mx-auto w-full max-w-[110rem] px-5 pt-24 pb-10 sm:px-8">
         <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_auto]">
           <div>
-            <p className="t-mono text-[var(--h-fg-45)]">Get in touch</p>
+            <p className="t-mono text-(--h-fg-45)">Get in touch</p>
             <MaskLines
               as="p"
               lines={["Plan the stack", "before you build it."]}
@@ -96,11 +96,11 @@ export function HomeFooter() {
           <nav aria-label="Footer" className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:gap-16">
             {COLUMNS.map((column) => (
               <div key={column.title}>
-                <p className="t-mono text-[var(--h-fg-45)]">{column.title}</p>
+                <p className="t-mono text-(--h-fg-45)">{column.title}</p>
                 <ul className="mt-5 flex flex-col gap-2.5">
                   {column.links.map((link) => (
                     <li key={link.href + link.label}>
-                      <Link href={link.href} className="u-link text-[14px] text-[var(--h-fg-70)]">
+                      <Link href={link.href} className="u-link text-[14px] text-(--h-fg-70)">
                         {link.label}
                       </Link>
                     </li>
@@ -114,16 +114,16 @@ export function HomeFooter() {
         {/* The full stop. Decorative — the wordmark is already in the nav and
             in the page title, so announcing it a third time adds nothing. */}
         <div aria-hidden className="mt-20 overflow-hidden">
-          <p className="t-display -mb-[0.13em] text-[clamp(4rem,19.5vw,17rem)] whitespace-nowrap text-[var(--h-fg)]">
-            Buildtact<span className="text-[var(--h-acc)]">.</span>
+          <p className="t-display mb-[-0.13em] text-[clamp(4rem,19.5vw,17rem)] whitespace-nowrap text-(--h-fg)">
+            Buildtact<span className="text-(--h-acc)">.</span>
           </p>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--h-line)] pt-6">
-          <p className="t-mono text-[var(--h-fg-45)]">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-(--h-line) pt-6">
+          <p className="t-mono text-(--h-fg-45)">
             © {new Date().getFullYear()} Buildtact — plan before you build
           </p>
-          <p className="t-mono text-[var(--h-fg-45)]">
+          <p className="t-mono text-(--h-fg-45)">
             <span className="tabular-nums">{now ?? "--:--:--"}</span> local
           </p>
         </div>

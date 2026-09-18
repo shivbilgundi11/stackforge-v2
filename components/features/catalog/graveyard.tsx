@@ -134,7 +134,7 @@ export function Graveyard() {
                 </div>
 
                 <div className="rounded-md border border-line bg-surface-2/50 px-3 py-2.5">
-                  <p className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+                  <p className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">
                     Why
                   </p>
                   <p className="mt-1 text-[13px] leading-relaxed text-fg">{entry.status_reason}</p>
@@ -142,7 +142,7 @@ export function Graveyard() {
 
                 {entry.alternative_tools?.length ? (
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+                    <span className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">
                       Use instead
                     </span>
                     {entry.alternative_tools?.map((alternative) => (

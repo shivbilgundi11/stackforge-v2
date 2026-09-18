@@ -98,7 +98,7 @@ export function ToolDefinitionsInput({
                   aria-hidden
                 />
               </button>
-              <span className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+              <span className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">
                 Tool {index + 1}
               </span>
               {isCollapsed && tool.name ? (
@@ -152,7 +152,7 @@ export function ToolDefinitionsInput({
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[11px] font-medium tracking-[0.05em] text-fg-muted uppercase">
+                  <span className="text-[11px] font-medium tracking-wider text-fg-muted uppercase">
                     Parameters
                   </span>
 

@@ -22,8 +22,8 @@ export function Pricing({ plans }: { plans: Plan[] | null }) {
         <Rule />
         <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">
           <Reveal from="none" duration={0.6}>
-            <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
-              <span className="text-[var(--h-acc)]">07</span>
+            <p className="t-mono flex items-baseline gap-3 text-(--h-fg-45)">
+              <span className="text-(--h-acc)">07</span>
               The price
             </p>
           </Reveal>

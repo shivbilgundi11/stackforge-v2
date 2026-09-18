@@ -107,7 +107,7 @@ export function ToolSelect({
         >
           <Command>
             <CommandInput placeholder="Search tools…" className="h-9" />
-            <CommandList className="max-h-[320px]">
+            <CommandList className="max-h-80">
               <CommandEmpty>No tool matches.</CommandEmpty>
               {grouped.map(([group, groupTools]) => (
                 <CommandGroup key={group} heading={group}>

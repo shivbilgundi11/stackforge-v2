@@ -44,9 +44,9 @@ import { cn } from "@/lib/utils";
  */
 
 const LINKS = [
+  { href: "/about", label: "About" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ] as const;
@@ -144,17 +144,17 @@ export function HomeNav() {
         // the two read as one surface rather than as a hole in the top of it.
         data-chapter={menu ? "ink" : undefined}
         className={cn(
-          "fixed inset-x-0 top-0 z-[60] transition-colors duration-500",
-          solid && !menu && "bg-[var(--h-ground)]/80 backdrop-blur-xl",
+          "fixed inset-x-0 top-0 z-60 transition-colors duration-500",
+          solid && !menu && "bg-(--h-ground)/80 backdrop-blur-xl",
           // Only while groundless. Once solid, the bar paints the page's own
           // ground behind itself, and the page's type colour is right again.
-          overInk && !solid && !menu && "text-[var(--h-bone)]",
+          overInk && !solid && !menu && "text-(--h-bone)",
         )}
       >
         <div
           className={cn(
             "mx-auto flex h-18 w-full max-w-[110rem] items-center justify-between gap-6 px-5 transition-colors duration-500 sm:px-8",
-            solid && !menu && "border-b border-[var(--h-line)]",
+            solid && !menu && "border-b border-(--h-line)",
           )}
         >
           <Link href="/" aria-label="Buildtact home" className="group flex items-center gap-2.5">
@@ -198,19 +198,19 @@ export function HomeNav() {
               onClick={() => setMenu((v) => !v)}
               aria-expanded={menu}
               aria-controls="home-menu"
-              className="ml-1 flex size-10 flex-col items-center justify-center gap-[5px] lg:hidden"
+              className="ml-1 flex size-10 flex-col items-center justify-center gap-1.25 lg:hidden"
             >
               <span className="sr-only">{menu ? "Close menu" : "Open menu"}</span>
               <span
                 className={cn(
                   "block h-px w-5 bg-current transition-transform duration-300",
-                  menu && "translate-y-[3px] rotate-45",
+                  menu && "translate-y-0.75 rotate-45",
                 )}
               />
               <span
                 className={cn(
                   "block h-px w-5 bg-current transition-transform duration-300",
-                  menu && "-translate-y-[3px] -rotate-45",
+                  menu && "-translate-y-0.75 -rotate-45",
                 )}
               />
             </button>
@@ -227,12 +227,12 @@ export function HomeNav() {
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: reduced ? 0 : 0.7, ease: EASE }}
-            className="fixed inset-0 z-[55] flex flex-col justify-end px-5 pt-24 pb-10 sm:px-8 lg:hidden"
+            className="fixed inset-0 z-55 flex flex-col justify-end px-5 pt-24 pb-10 sm:px-8 lg:hidden"
           >
             <nav aria-label="Main">
               <ul className="flex flex-col">
                 {LINKS.map((link, i) => (
-                  <li key={link.href} className="overflow-hidden border-t border-[var(--h-line)]">
+                  <li key={link.href} className="overflow-hidden border-t border-(--h-line)">
                     <motion.div
                       initial={{ y: "100%" }}
                       animate={{ y: "0%" }}
@@ -247,7 +247,7 @@ export function HomeNav() {
                         onClick={() => setMenu(false)}
                         className="t-head flex items-baseline gap-4 py-5 text-[clamp(2rem,9vw,3.2rem)]"
                       >
-                        <span className="t-mono text-[10px] text-[var(--h-fg-45)]">
+                        <span className="t-mono text-[10px] text-(--h-fg-45)">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         {link.label}
@@ -258,8 +258,8 @@ export function HomeNav() {
               </ul>
             </nav>
 
-            <div className="mt-10 flex items-center justify-between border-t border-[var(--h-line)] pt-6">
-              <span className="t-mono text-[var(--h-fg-45)]">Free tier · no card</span>
+            <div className="mt-10 flex items-center justify-between border-t border-(--h-line) pt-6">
+              <span className="t-mono text-(--h-fg-45)">Free tier · no card</span>
               <Link
                 href="/signup"
                 onClick={() => setMenu(false)}
@@ -295,7 +295,7 @@ export function Wordmark({ className }: { className?: string }) {
       </span>
       <span
         aria-hidden
-        className="absolute inset-x-0 top-full block text-[var(--h-acc)] transition-transform duration-500 ease-(--h-ease) group-hover:-translate-y-full"
+        className="absolute inset-x-0 top-full block text-(--h-acc) transition-transform duration-500 ease-(--h-ease) group-hover:-translate-y-full"
       >
         Buildtact
       </span>

@@ -142,7 +142,7 @@ export function McpBundle({ data }: { data: ToolRunResult }) {
             >
               <CodeBlockView
                 lang={languageFor(current)}
-                className="max-h-[560px]"
+                className="max-h-140"
                 writing={false}
                 duration={0}
               />

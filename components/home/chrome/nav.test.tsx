@@ -83,7 +83,7 @@ describe("HomeNav", () => {
     render(<HomeNav />);
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
-    expect(await screen.findByRole("banner")).toHaveClass("text-[var(--h-bone)]");
+    expect(await screen.findByRole("banner")).toHaveClass("text-(--h-bone)");
     ink.remove();
   });
 
@@ -98,7 +98,7 @@ describe("HomeNav", () => {
     render(<HomeNav />);
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
-    expect(screen.getByRole("banner")).not.toHaveClass("text-[var(--h-bone)]");
+    expect(screen.getByRole("banner")).not.toHaveClass("text-(--h-bone)");
     bone.remove();
   });
 
