@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { Parallax } from "@/components/home/fx/scroll";
@@ -69,7 +70,10 @@ export function Evidence() {
   return (
     <Section>
       <Rule />
-      <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-16">
+      {/* Chapter mark, prompt, illustration — the same three-column row as
+          the premise, at the same 1.25:1 between the last two, so the two
+          illustrated chapters read as a pair. */}
+      <div className="grid gap-8 pt-7 lg:grid-cols-[minmax(0,14rem)_minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-16">
         <Reveal from="none" duration={0.6}>
           <p className="t-mono flex items-baseline gap-3 text-[var(--h-fg-45)]">
             <span className="text-[var(--h-acc)]">04</span>
@@ -97,6 +101,8 @@ export function Evidence() {
             </p>
           </Reveal>
         </div>
+
+        <EvidenceVisual />
       </div>
 
       {/* ── The headline figures ───────────────────────────────────────────── */}
@@ -219,5 +225,41 @@ export function Evidence() {
         </div>
       </div>
     </Section>
+  );
+}
+
+/**
+ * The prompt, drawn: sources flowing into retrieval and out as a grounded
+ * answer.
+ *
+ * ## Labelled as an illustration, on purpose
+ *
+ * This chapter's whole claim is that its figures are *returned*, not drawn —
+ * the copy beside this says so in as many words, and the capture further
+ * down is labelled "Screen capture" for the same reason. So this carries the
+ * opposite label. Its $2,042 agrees with the run; its "$6,400 without RAG"
+ * and "68%" are the picture's, not the engine's, and an unlabelled image
+ * quoting them next to "not an illustration" would be the one unsourced
+ * number on the page. The alt text leaves them out for the same reason.
+ *
+ * Transparent, glow and all, so like the premise it is not a framed `Shot`.
+ */
+function EvidenceVisual() {
+  return (
+    <Parallax distance={36} className="lg:pt-6">
+      <figure>
+        <Image
+          src="/marketing/evidence-rag-flow.webp"
+          alt="Illustration of retrieval-augmented generation: internal PDFs, Notion, Drive, Confluence, GitHub and web research feeding one retrieval step, which answers a question with relevant context, a grounded answer and citations."
+          width={1536}
+          height={1024}
+          loading="lazy"
+          // Same column as the premise's, measured the same way.
+          sizes="(max-width: 1024px) 100vw, (max-width: 1824px) 35vw, 38rem"
+          className="h-auto w-full"
+        />
+        <figcaption className="t-mono mt-3 text-[var(--h-fg-45)]">Illustration</figcaption>
+      </figure>
+    </Parallax>
   );
 }
