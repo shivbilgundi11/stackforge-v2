@@ -157,7 +157,7 @@ export function CheckoutReturn() {
               <h1 className="text-[15px] font-semibold text-fg">Payment received</h1>
               <p className="max-w-[38ch] text-[12.5px] leading-relaxed text-pretty text-fg-muted">
                 Your payment went through, but Razorpay has not confirmed it to us yet. Nothing is
-                lost. Check again now, or leave it — the plan switches over on its own once the
+                lost. Check again now, or leave it. The plan switches over on its own once the
                 confirmation lands.
               </p>
               <div className="mt-1 flex flex-wrap items-center justify-center gap-2">

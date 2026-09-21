@@ -20,7 +20,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Resources",
   description:
-    "Stack templates, architecture blueprints, code starters, prompts, configs, and checklists for building AI systems — with the reasoning behind each decision.",
+    "Stack templates, architecture blueprints, code starters, prompts, configs, and checklists for building AI systems, with the reasoning behind each decision.",
   alternates: { canonical: "/resources" },
   openGraph: {
     title: "Resources · Buildtact",
@@ -40,7 +40,7 @@ export default async function ResourcesPage() {
         <Panel>
           <EmptyState
             title="The library is not reachable"
-            description="The API did not answer. Reload in a moment — nothing is lost."
+            description="The API did not answer. Reload in a moment. Nothing is lost."
           />
         </Panel>
       </>

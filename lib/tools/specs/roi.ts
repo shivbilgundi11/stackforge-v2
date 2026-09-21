@@ -73,7 +73,7 @@ export const hoursSavedSpec: ToolSpec = {
       span: 6,
       min: 1,
       description:
-        "Salary plus benefits, overhead, and equipment — usually 1.25-1.4x base. A case built on the base rate understates itself and is easy to dismiss.",
+        "Salary plus benefits, overhead, and equipment, usually 1.25-1.4x base. A case built on the base rate understates itself and is easy to dismiss.",
     },
     {
       kind: "slider",

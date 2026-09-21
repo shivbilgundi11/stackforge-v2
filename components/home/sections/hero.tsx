@@ -120,7 +120,7 @@ export function Hero() {
         <Reveal delay={0.5}>
           <p className="t-body mt-6 max-w-[68ch]">
             Cost a stack, compare the options with the tradeoffs in front of you, size the
-            infrastructure, and leave with the architecture document and the numbers to justify it —
+            infrastructure, and leave with the architecture document and the numbers to justify it,
             before writing code.
           </p>
         </Reveal>

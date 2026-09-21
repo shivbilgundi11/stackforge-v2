@@ -61,7 +61,7 @@ export default async function SharedPage({ params }: { params: Promise<{ token: 
       <aside className="mt-4 flex flex-col items-start gap-3 rounded-md border border-line bg-surface-2/50 px-5 py-5">
         <h2 className="text-[15px] font-semibold text-fg">Plan your own stack</h2>
         <p className="max-w-prose text-sm leading-relaxed text-fg-muted">
-          This was produced by Buildtact — costs, comparisons, and architectures computed from a
+          This was produced by Buildtact: costs, comparisons, and architectures computed from a
           hand-verified catalog, with every figure traceable to the date its source was checked.
           Running your own takes about a minute and does not need an account.
         </p>

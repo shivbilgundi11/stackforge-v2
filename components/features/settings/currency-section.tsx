@@ -72,7 +72,7 @@ export function CurrencySection() {
 
         <p className="text-xs leading-relaxed text-fg-muted">
           Dollar prices are set by hand, not converted at a live rate, so they do not move between
-          page loads. Whichever you pick, checkout charges the rupee price — it is shown alongside
+          page loads. Whichever you pick, checkout charges the rupee price, which is shown alongside
           every plan.
         </p>
       </PanelBody>

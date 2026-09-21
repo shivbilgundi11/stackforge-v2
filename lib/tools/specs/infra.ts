@@ -28,7 +28,7 @@ export const vramEstimateSpec: ToolSpec = {
   group: "infra",
   eyebrow: "WF4",
   title: "VRAM Estimator",
-  summary: "Weights, KV cache, and activations separately — and which GPUs actually hold them.",
+  summary: "Weights, KV cache, and activations separately, and which GPUs actually hold them.",
   keywords: ["vram", "gpu", "memory", "kv cache", "quantization", "gguf", "awq", "gqa"],
   endpoint: "/api/v1/tools/infra/vram-estimate",
   tier: "free",
@@ -71,7 +71,7 @@ export const vramEstimateSpec: ToolSpec = {
     },
     {
       label: "Production serving",
-      description: "Long context, real concurrency — where KV cache dominates",
+      description: "Long context, real concurrency: where KV cache dominates",
       values: { context: 32_768, concurrency: 8, quantisation: "fp16" },
     },
     {
@@ -157,7 +157,7 @@ export const vramEstimateSpec: ToolSpec = {
         key: "gpu_fit",
         title: "What it runs on",
         description:
-          "Three states, not two — a card that cannot hold your full context can often hold a shorter one.",
+          "Three states, not two. A card that cannot hold your full context can often hold a shorter one.",
         limit: 40,
       },
       { kind: "json" },
@@ -283,7 +283,7 @@ export const cloudCostSpec: ToolSpec = {
   group: "infra",
   eyebrow: "WF4",
   title: "Cloud Cost Estimator",
-  summary: "Compute, database, cache, storage — and the egress line nobody budgets for.",
+  summary: "Compute, database, cache, storage, and the egress line nobody budgets for.",
   keywords: ["cloud", "aws", "gcp", "azure", "egress", "infrastructure"],
   endpoint: "/api/v1/tools/infra/cloud-cost",
   tier: "free",
@@ -410,7 +410,8 @@ export const dockerComposeSpec: ToolSpec = {
       label: "Model",
       placeholder: "llama3.1:8b",
       span: 6,
-      description: "Ollama tag or HuggingFace id. Colons are safe — the file is not string-built.",
+      description:
+        "Ollama tag or HuggingFace id. Colons are safe, because the file is not string-built.",
     },
     { kind: "switch", name: "gpu", label: "GPU passthrough", span: 6 },
   ],

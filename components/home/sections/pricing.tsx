@@ -36,8 +36,8 @@ export function Pricing({ plans }: { plans: Plan[] | null }) {
             />
             <Reveal delay={0.2}>
               <p className="t-body mt-7 max-w-[54ch]">
-                The paid tiers are for keeping the work and taking it out of the app — not for
-                gating the tools. Every calculator is open to everyone, on every plan.
+                The paid tiers are for keeping the work and taking it out of the app, not for gating
+                the tools. Every calculator is open to everyone, on every plan.
               </p>
             </Reveal>
           </div>

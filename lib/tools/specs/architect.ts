@@ -58,8 +58,7 @@ export const stackArchitectSpec: ToolSpec = {
   presets: [
     {
       label: "Regulated enterprise",
-      description:
-        "Nothing leaves the network — the constraint that eliminates most of the catalog",
+      description: "Nothing leaves the network: the constraint that eliminates most of the catalog",
       values: { sensitivity: "regulated", deployment: "self-hosted", scale_target: "large" },
     },
     {
@@ -74,7 +73,7 @@ export const stackArchitectSpec: ToolSpec = {
     },
     {
       label: "Self-hosted 70B",
-      description: "Open weights on rented GPUs — the case that adds a compute layer",
+      description: "Open weights on rented GPUs: the case that adds a compute layer",
       values: {
         model_hosting: "self-hosted",
         workload: "inference",
@@ -122,7 +121,7 @@ export const stackArchitectSpec: ToolSpec = {
       span: 6,
       min: 0,
       description:
-        "Cost efficiency is scored against this, not absolutely — the same stack scores differently on $500 and $50,000.",
+        "Cost efficiency is scored against this, not absolutely. The same stack scores differently on $500 and $50,000.",
     },
     {
       kind: "select",
@@ -239,7 +238,7 @@ export const stackArchitectSpec: ToolSpec = {
         { value: "us", label: "US" },
       ],
       description:
-        "Asked of the whole stack, not just the compute layer — the vector store holding your embeddings is the same question. A managed tool with no verified residency on file is excluded rather than assumed.",
+        "Asked of the whole stack, not just the compute layer. The vector store holding your embeddings is the same question, and a managed tool with no verified residency on file is excluded rather than assumed.",
     },
   ],
   submitLabel: "Design my stack",
@@ -276,7 +275,7 @@ export const stackCompatibilitySpec: ToolSpec = {
   path: "compatibility",
   title: "Compatibility Checker",
   summary:
-    "Score any combination of tools against each other — pairwise, order-independent, with the weakest pairing named.",
+    "Score any combination of tools against each other: pairwise, order-independent, with the weakest pairing named.",
   keywords: ["compatibility", "matrix", "pairs", "score", "stack"],
   endpoint: "/api/v1/architect/score",
   tier: "free",

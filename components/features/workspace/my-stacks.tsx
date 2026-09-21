@@ -76,8 +76,8 @@ export function MyStacks() {
     onSuccess: (stack) => {
       toast.success(
         stack.visibility === "team"
-          ? "Shared — every team member can now see it"
-          : "Private again — only you can see it",
+          ? "Shared. Every team member can now see it"
+          : "Private again. Only you can see it",
       );
       void client.invalidateQueries({ queryKey: ["stacks", "list"] });
     },
@@ -97,7 +97,7 @@ export function MyStacks() {
   const clone = useMutation({
     mutationFn: (id: string) => apiFetch<Stack>(`/api/v1/stacks/${id}/clone`, { method: "POST" }),
     onSuccess: () => {
-      toast.success("Cloned — the copy starts its own version history");
+      toast.success("Cloned. The copy starts its own version history");
       void client.invalidateQueries({ queryKey: ["stacks", "list"] });
     },
   });
@@ -268,7 +268,7 @@ function VersionHistory({ stackId }: { stackId: string }) {
     <Panel>
       <PanelHeader
         title="Version history"
-        description="Every save creates a version — including a rename, so the history does not lie by omission."
+        description="Every save creates a version, including a rename, so the history does not lie by omission."
         actions={
           rows.length >= 2 ? (
             <Button

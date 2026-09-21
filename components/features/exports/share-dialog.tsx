@@ -130,8 +130,8 @@ export function ShareDialog({
 
         {status !== "authenticated" ? (
           <p className="rounded-md border border-line bg-surface-2/50 px-3 py-2.5 text-xs leading-relaxed text-fg-muted">
-            Sharing needs an account — a link you cannot revoke later is a link you cannot take
-            back, and revoking is the only control a public URL has. Exporting works either way.
+            Sharing needs an account. A link you cannot revoke later is a link you cannot take back,
+            and revoking is the only control a public URL has. Exporting works either way.
           </p>
         ) : link ? (
           <div className="flex flex-col gap-3">
@@ -195,7 +195,7 @@ export function ShareDialog({
             </Select>
             <p className="text-[11px] text-fg-subtle">
               The page is marked <code className="font-mono">noindex</code>, so it will not appear
-              in a search engine. You can revoke the link at any time — it starts returning a 404
+              in a search engine. You can revoke the link at any time, and it starts returning a 404
               immediately.
             </p>
           </div>

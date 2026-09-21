@@ -60,7 +60,7 @@ export function CopyBody({ template }: { template: TemplateDetail }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 1600);
         toast.success(
-          template.locked ? "Preview copied — the rest needs Pro" : "Copied as Markdown",
+          template.locked ? "Preview copied. The rest needs Pro" : "Copied as Markdown",
         );
       }}
     >
@@ -195,7 +195,7 @@ export function UpgradeCard({ template }: { template: TemplateDetail }) {
       </div>
       <p className="max-w-prose text-sm leading-relaxed text-fg-muted">
         {template.file_count > 0
-          ? `The remaining sections and all ${template.file_count} files — ready to download as an archive with the directory structure intact.`
+          ? `The remaining sections and all ${template.file_count} files, ready to download as an archive with the directory structure intact.`
           : "The remaining sections, and the download."}
       </p>
       <div className="flex flex-wrap items-center gap-2">

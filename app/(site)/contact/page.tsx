@@ -56,7 +56,7 @@ const ROUTES = [
   {
     n: "03",
     title: "You are evaluating it for a team",
-    body: "The Team plan adds a shared workspace with roles, comments, and approvals. Start on Pro and move up — seats change at the end of the billing cycle.",
+    body: "The Team plan adds a shared workspace with roles, comments, and approvals. Start on Pro and move up. Seats change at the end of the billing cycle.",
     href: "/pricing",
     cta: "Compare the plans",
   },
@@ -73,7 +73,7 @@ export default function Page() {
             Get in touch<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
-        lede="A contact form is not live yet. Rather than put one here that quietly goes nowhere, these are the routes that reach us — or answer the question directly."
+        lede="A contact form is not live yet. Rather than put one here that quietly goes nowhere, these are the routes that reach us, or answer the question directly."
       />
 
       {/* ── Direct ────────────────────────────────────────────────────────── */}

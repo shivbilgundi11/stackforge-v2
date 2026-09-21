@@ -249,7 +249,7 @@ export const pdfTokensSpec: ToolSpec = {
       label: "PDF",
       accept: "application/pdf",
       description:
-        "Up to 25 MB. The file is read in memory and discarded — nothing is written to disk and no copy is kept.",
+        "Up to 25 MB. The file is read in memory and discarded. Nothing is written to disk and no copy is kept.",
     },
     {
       kind: "model-select",
@@ -293,7 +293,8 @@ export const pipelineCostSpec: ToolSpec = {
   group: "rag",
   eyebrow: "WF2",
   title: "RAG Pipeline Cost",
-  summary: "Ingestion, retrieval, reranking, and generation — every rate pulled from the catalog.",
+  summary:
+    "Ingestion, retrieval, reranking, and generation, with every rate pulled from the catalog.",
   keywords: ["rag", "pipeline", "cost", "monthly", "rerank", "generation"],
   endpoint: "/api/v1/tools/rag/pipeline-cost",
   tier: "free",
@@ -368,7 +369,7 @@ export const pipelineCostSpec: ToolSpec = {
       label: "Reranker",
       family: "rerank",
       description:
-        "Optional. Priced in the provider's own unit — per search for Cohere, per token for Voyage and Jina.",
+        "Optional. Priced in the provider's own unit: per search for Cohere, per token for Voyage and Jina.",
     },
     {
       kind: "number",

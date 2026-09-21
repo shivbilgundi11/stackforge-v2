@@ -87,7 +87,7 @@ export function AppearanceSection() {
                   role="radio"
                   aria-checked={active}
                   aria-label={option.label}
-                  title={option.hint ? `${option.label} — ${option.hint}` : option.label}
+                  title={option.hint ? `${option.label}: ${option.hint}` : option.label}
                   onClick={() => setAccent(option.value as AccentValue)}
                   className={cn(
                     "flex items-center gap-2 rounded-full border py-1.5 pr-3 pl-1.5 transition-colors",
@@ -123,7 +123,7 @@ export function AppearanceSection() {
           </div>
 
           <p className="text-xs leading-relaxed text-fg-muted">
-            Each of these sits near a hue that already means something — warning, success, or the
+            Each of these sits near a hue that already means something: warning, success, or the
             indigo that marks AI-generated content. Picking one nudges that colour aside so the two
             stay tellable apart.
           </p>

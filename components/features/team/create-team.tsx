@@ -64,7 +64,7 @@ export function CreateTeam() {
         description={
           onTeamPlan
             ? "You are the owner. Seats, roles, and invitations come next."
-            : "Upgrade to create a shared workspace — your personal work stays personal either way."
+            : "Upgrade to create a shared workspace. Your personal work stays personal either way."
         }
         action={
           <form

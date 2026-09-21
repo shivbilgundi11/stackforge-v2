@@ -56,21 +56,21 @@ const disclaimer = (body: string) => `Disclaimer: ${body}`;
 
 /** Location 2 — beside any figure the result renders as money. */
 export const ESTIMATE = disclaimer(
-  "Estimate based on your inputs and the pricing dates shown above — real-world costs " +
+  "Estimate based on your inputs and the pricing dates shown above. Real-world costs " +
     "can run higher or lower depending on how you actually use it. Treat this as a strong " +
     "starting point, not a locked-in number.",
 );
 
 /** Location 1 — under every comparison table. */
 export const COMPARISON = disclaimer(
-  "Based on public data verified on the dates shown above — always double-check with the " +
+  "Based on public data verified on the dates shown above. Always double-check with the " +
     "provider before you commit, since pricing and features change fast. Nobody pays to be " +
     "ranked here.",
 );
 
 /** Location 3 — under the Stack Score, which on its own implies false precision. */
 export const SCORE = disclaimer(
-  "This score is computed from what you told us and our compatibility data — a strong " +
+  "This score is computed from what you told us and our compatibility data. A strong " +
     "starting point, not gospel.",
 );
 
@@ -103,14 +103,14 @@ export const ROI_INPUT = disclaimer(
 
 /** Location 8 — on a catalog or graveyard entry. */
 export const CATALOG = disclaimer(
-  "Status and maturity reflect our assessment on the review date shown — this space moves " +
+  "Status and maturity reflect our assessment on the review date shown. This space moves " +
     "fast, so if something looks out of date, tell us and we will take another look.",
 );
 
 /** Location 9 — the first-run notice, shown once per tool per browser. */
 export const FIRST_RUN = disclaimer(
   "Everything here is generated guidance based on what you tell us and the data in our " +
-    "catalog — a starting point, not a final answer. Always check it against your own " +
+    "catalog. A starting point, not a final answer. Always check it against your own " +
     "situation before acting on it.",
 );
 

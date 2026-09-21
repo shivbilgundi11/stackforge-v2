@@ -65,7 +65,7 @@ function ResetPasswordForm() {
       <AuthShell title="Link not valid">
         <div className="flex flex-col gap-3 py-2 text-center">
           <p className="text-[13px] leading-relaxed text-fg-muted">
-            This reset link is incomplete. Request a fresh one — links expire after 30 minutes.
+            This reset link is incomplete. Request a fresh one. Links expire after 30 minutes.
           </p>
           <Button asChild variant="outline" size="sm">
             <Link href="/forgot-password">Request a new link</Link>

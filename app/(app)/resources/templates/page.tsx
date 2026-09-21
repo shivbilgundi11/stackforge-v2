@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const metadata: Metadata = {
   title: "Templates",
   description:
-    "Search thirty templates for building AI systems — stacks, blueprints, code starters, prompts, configs, checklists, and business documents.",
+    "Search thirty templates for building AI systems: stacks, blueprints, code starters, prompts, configs, checklists, and business documents.",
   alternates: { canonical: "/resources/templates" },
 };
 

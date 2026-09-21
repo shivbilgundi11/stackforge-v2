@@ -53,7 +53,7 @@ const ANSWERS = [
   {
     n: "02",
     q: "So what am I paying for?",
-    a: "Keeping the work and taking it out of the app: saved projects, the full export set — architecture document, diagram, roadmap, Compose and Kubernetes starters — and being told when a price your plan depends on moves.",
+    a: "Keeping the work and taking it out of the app: saved projects, the full export set (architecture document, diagram, roadmap, Compose and Kubernetes starters), and being told when a price your plan depends on moves.",
   },
   {
     n: "03",
@@ -84,7 +84,7 @@ export default async function Page() {
             the answer<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
-        lede="The calculators are not the paid part — free accounts get real, complete results. What Pro buys is taking the work out of the app and keeping it."
+        lede="The calculators are not the paid part. Free accounts get real, complete results, and what Pro buys is taking the work out of the app and keeping it."
         // Crossfade-looped like /about, and stripped of the audio track the
         // source carried — a background must be silent, and a muted track is
         // still bytes. 2.57 MB at 1080p from md up, 1.18 MB at 720p below.

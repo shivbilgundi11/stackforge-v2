@@ -13,7 +13,7 @@ export default function Error({
     <RouteError
       error={error}
       reset={reset}
-      description="We could not load this step. Trying again usually clears it — your account is unaffected."
+      description="We could not load this step. Trying again usually clears it, and your account is unaffected."
       homeHref="/login"
       homeLabel="Back to sign in"
     />

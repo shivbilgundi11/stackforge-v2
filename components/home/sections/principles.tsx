@@ -31,7 +31,7 @@ export function Principles({ pairs, verified }: { pairs: string; verified: strin
     {
       n: "01",
       title: "Deterministic first",
-      body: "Rule engines compute every figure before any model is called. Where a model writes the prose, the result says so — and when it is unavailable, the computed answer ships anyway.",
+      body: "Rule engines compute every figure before any model is called. Where a model writes the prose, the result says so, and when it is unavailable, the computed answer ships anyway.",
     },
     {
       n: "02",
@@ -56,7 +56,7 @@ export function Principles({ pairs, verified }: { pairs: string; verified: strin
     {
       n: "06",
       title: "Generated files are starters",
-      body: "The Compose and Kubernetes output is a starting template you will edit — described that way here because it is described that way in the product.",
+      body: "The Compose and Kubernetes output is a starting template you will edit, described that way here because it is described that way in the product.",
     },
   ];
 

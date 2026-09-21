@@ -13,7 +13,7 @@ export default function ProjectsPage() {
     <>
       <PageHeader
         title="Projects"
-        description="A container for one piece of work — its runs, its stacks, and the figures carried between them."
+        description="A container for one piece of work: its runs, its stacks, and the figures carried between them."
       />
       <Projects />
     </>

@@ -44,7 +44,7 @@ const toolDefinitionsField = {
   label: "Tools",
   max: 30,
   description:
-    "What the model can call. The description is what it selects on — write it for a reader who has no other context.",
+    "What the model can call. The description is what it selects on, so write it for a reader who has no other context.",
 };
 
 export const mcpConfigSpec: ToolSpec = {
@@ -53,7 +53,7 @@ export const mcpConfigSpec: ToolSpec = {
   eyebrow: "WF3",
   title: "MCP Config Generator",
   summary:
-    "A complete MCP server that runs — six files, a handshake test, and a paste-ready client config.",
+    "A complete MCP server that runs: six files, a handshake test, and a paste-ready client config.",
   keywords: ["mcp", "server", "claude desktop", "stdio", "tools", "model context protocol"],
   endpoint: "/api/v1/tools/agents/mcp-config",
   tier: "free",
@@ -83,7 +83,7 @@ export const mcpConfigSpec: ToolSpec = {
   presets: [
     {
       label: "Local server for Claude Desktop",
-      description: "stdio, no credentials — the shape that just works",
+      description: "stdio, no credentials: the shape that just works",
       values: { transport: "stdio", auth: "none" },
     },
     {
@@ -93,7 +93,7 @@ export const mcpConfigSpec: ToolSpec = {
     },
     {
       label: "Served over HTTP",
-      description: "Needs real auth in front of it — the SDK provides none",
+      description: "Needs real auth in front of it, since the SDK provides none",
       values: { transport: "streamable-http", auth: "bearer" },
     },
   ],
@@ -133,7 +133,7 @@ export const mcpConfigSpec: ToolSpec = {
         { value: "bearer", label: "Bearer token", hint: "MCP_BEARER_TOKEN" },
       ],
       description:
-        "Protects the service this server calls. Over stdio it is not client authentication — the client is the process that launched it.",
+        "Protects the service this server calls. Over stdio it is not client authentication, because the client is the process that launched it.",
     },
     toolDefinitionsField,
   ],
@@ -163,7 +163,7 @@ export const agentCostSpec: ToolSpec = {
   eyebrow: "WF3",
   title: "Agent Cost Calculator",
   summary:
-    "Loop cost including the two lines that get left out — tool schemas re-sent every turn, and retries.",
+    "Loop cost including the two lines that get left out: tool schemas re-sent every turn, and retries.",
   keywords: ["agent", "loop", "steps", "retries", "schema overhead", "tokens", "cost"],
   endpoint: "/api/v1/tools/agents/agent-cost",
   tier: "free",
@@ -312,7 +312,7 @@ export const agentCostSpec: ToolSpec = {
       step: 0.05,
       format: (value) => `${Math.round(value * 100)}%`,
       description:
-        "Applies to the prompt and the tool definitions only — the lines that repeat verbatim.",
+        "Applies to the prompt and the tool definitions only, the lines that repeat verbatim.",
     },
   ],
   result: {
@@ -446,7 +446,8 @@ export const workflowPlanSpec: ToolSpec = {
       name: "available_tools",
       label: "Tools the agents can call",
       max: 20,
-      description: "Agent count follows this list — an agent exists to own a set of capabilities.",
+      description:
+        "Agent count follows this list, because an agent exists to own a set of capabilities.",
     },
     { kind: "tag-input", name: "constraints", label: "Constraints", max: 10 },
     {
@@ -497,7 +498,7 @@ export const functionSchemaSpec: ToolSpec = {
   eyebrow: "WF3",
   title: "Function Schema Generator",
   summary:
-    "Tool schemas for OpenAI, Anthropic, MCP, or plain JSON Schema — validated against the format, not eyeballed.",
+    "Tool schemas for OpenAI, Anthropic, MCP, or plain JSON Schema, validated against the format, not eyeballed.",
   keywords: ["json schema", "tool calling", "function calling", "openai", "anthropic", "mcp"],
   endpoint: "/api/v1/tools/agents/function-schema",
   tier: "free",
@@ -579,7 +580,7 @@ export const rateLimitsSpec: ToolSpec = {
   eyebrow: "WF3",
   title: "API Rate Limit Calculator",
   summary:
-    "Which ceiling binds first — usually not requests per minute, and often not the provider's at all.",
+    "Which ceiling binds first. Usually not requests per minute, and often not the provider's at all.",
   keywords: ["rpm", "tpm", "throttle", "backoff", "429", "quota", "concurrency"],
   endpoint: "/api/v1/tools/agents/rate-limits",
   tier: "free",
@@ -708,7 +709,7 @@ export const rateLimitsSpec: ToolSpec = {
         key: "backoff",
         title: "Backoff",
         description:
-          "Chosen for what is actually binding — retrying a token-bound 429 re-spends a budget you do not have.",
+          "Chosen for what is actually binding, because retrying a token-bound 429 re-spends a budget you do not have.",
       },
       { kind: "table", key: "tiers", title: "Published tiers" },
       { kind: "json" },

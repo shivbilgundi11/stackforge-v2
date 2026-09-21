@@ -56,7 +56,7 @@ const ROWS = [
     id: "artifacts",
     n: "03",
     title: "Planning leaves nothing behind",
-    body: "The work happens in documents and whiteboards, so there is no artifact to hand to the person building it — and it gets redone in six months.",
+    body: "The work happens in documents and whiteboards, so there is no artifact to hand to the person building it, and it gets redone in six months.",
     tag: "Lost knowledge",
     preview: <ScatteredVisual className="w-64" />,
   },
@@ -85,7 +85,7 @@ export function Premise() {
         </Reveal>
 
         <ScrubText
-          text="Most AI systems are costed after they are built. By then the architecture is decided, the bill is a surprise, and the reasoning behind the choices lives in a thread nobody can find. Buildtact moves all of that to the front — where changing your mind is still free."
+          text="Most AI systems are costed after they are built. By then the architecture is decided, the bill is a surprise, and the reasoning behind the choices lives in a thread nobody can find. Buildtact moves all of that to the front, where changing your mind is still free."
           className="t-head max-w-[24ch] text-[clamp(1.7rem,4.4vw,3.4rem)]"
         />
 
@@ -127,7 +127,7 @@ function PremiseVisual() {
       <Reveal from="right" distance={96} duration={1.1}>
         <Image
           src="/marketing/premise-plan-vs-built.webp"
-          alt="The same build planned in advance — use case, model, data layer, infrastructure, and a $1,920 a month estimate — beside the version costed only after it shipped, at $4,870 a month and 143% over, with the reasoning for each choice scattered across old Slack, Notion and Gmail messages."
+          alt="The same build planned in advance, covering use case, model, data layer, infrastructure, and a $1,920 a month estimate, beside the version costed only after it shipped, at $4,870 a month and 143% over, with the reasoning for each choice scattered across old Slack, Notion and Gmail messages."
           width={1371}
           height={1148}
           loading="lazy"

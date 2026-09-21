@@ -278,7 +278,7 @@ function SensitivityTable({ rows }: { rows: Record<string, unknown>[] }) {
         title="Sensitivity"
         description={
           flips.size > 1
-            ? "The answer flips inside the plausible range of hours and rates — treat the recommendation as conditional."
+            ? "The answer flips inside the plausible range of hours and rates, so treat the recommendation as conditional."
             : "The answer holds across every hour and rate combination below."
         }
       />

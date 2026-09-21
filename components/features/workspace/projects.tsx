@@ -62,7 +62,7 @@ export function Projects() {
   const remove = useMutation({
     mutationFn: deleteProject,
     onSuccess: () => {
-      toast.success("Project deleted — the runs and stacks it held are untouched");
+      toast.success("Project deleted. The runs and stacks it held are untouched");
       void client.invalidateQueries({ queryKey: qk.workspace.projects() });
       void client.invalidateQueries({ queryKey: qk.workspace.dashboard() });
     },

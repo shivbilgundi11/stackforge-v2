@@ -26,8 +26,8 @@ export const DISPLAY_CURRENCIES: {
   symbol: string;
   hint: string;
 }[] = [
-  { value: "inr", label: "Indian rupee", symbol: "₹", hint: "INR — what you are charged" },
-  { value: "usd", label: "US dollar", symbol: "$", hint: "USD — shown for reference" },
+  { value: "inr", label: "Indian rupee", symbol: "₹", hint: "INR, what you are charged" },
+  { value: "usd", label: "US dollar", symbol: "$", hint: "USD, shown for reference" },
 ];
 
 export function isDisplayCurrency(value: unknown): value is DisplayCurrency {

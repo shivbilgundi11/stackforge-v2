@@ -180,7 +180,7 @@ function PlanPanel({ subscription }: { subscription: Subscription | undefined })
             </p>
           ) : (
             <p className="text-[13px] text-fg-muted">
-              Every tool, the whole catalog, and Markdown export — no card.
+              Every tool, the whole catalog, and Markdown export. No card.
             </p>
           )}
         </div>
@@ -207,7 +207,7 @@ function PlanPanel({ subscription }: { subscription: Subscription | undefined })
         <PanelFooter>
           <p className="text-[11.5px] text-fg-subtle">
             {subscription?.cancel_at_period_end
-              ? "Your plan ends at the period boundary. Nothing is deleted — your work stays and becomes read-only above the free limits."
+              ? "Your plan ends at the period boundary. Nothing is deleted. Your work stays and becomes read-only above the free limits."
               : "Cancelling keeps the period you have paid for. Nothing is deleted either way."}
           </p>
           <Button
@@ -295,7 +295,7 @@ function StateBanner({ subscription }: { subscription: Subscription }) {
               will. */}
           <p className="text-[12.5px] text-fg-muted">
             Your payment method is already authorized, so your plan continues automatically. Cancel
-            before it ends and you are not charged — nothing is deleted either way.
+            before it ends and you are not charged. Nothing is deleted either way.
           </p>
         </div>
         <Button asChild size="sm" variant="outline">

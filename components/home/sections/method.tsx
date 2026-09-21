@@ -56,7 +56,7 @@ const STEPS = [
   {
     n: "04",
     title: "Take the artifacts",
-    body: "Architecture document, diagram, roadmap, starter Compose file, and .cursorrules — generated from the same result the page renders.",
+    body: "Architecture document, diagram, roadmap, starter Compose file, and .cursorrules, generated from the same result the page renders.",
     aside: "Generated from the result, so they cannot drift from it.",
     visual: <ArtifactsVisual />,
   },
@@ -79,7 +79,7 @@ export function Method({ pairs }: { pairs: string }) {
             Constraints in, a defensible plan out.
           </h2>
           <p className="t-body mt-7 max-w-[38ch]">
-            Four steps from an idea to an architecture you can put in front of a review — with{" "}
+            Four steps from an idea to an architecture you can put in front of a review, with{" "}
             {pairs} pairwise compatibility entries deciding what may sit next to what.
           </p>
           <p className="t-mono mt-10 hidden items-center gap-3 text-(--h-fg-45) lg:flex">

@@ -108,7 +108,7 @@ it("shows a locked format rather than hiding it", async () => {
   renderTray();
 
   const locked = await screen.findByRole("button", {
-    name: /Export as PDF — requires the pro plan/i,
+    name: /Export as PDF, requires the pro plan/i,
   });
   expect(locked).toBeInTheDocument();
   // The plan is on the button, not only in the label a screen reader reads.

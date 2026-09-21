@@ -90,8 +90,8 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
     onSuccess: (updated) => {
       toast.success(
         updated.visibility === "team"
-          ? "Shared — every team member can now see it"
-          : "Private again — only you can see it",
+          ? "Shared. Every team member can now see it"
+          : "Private again. Only you can see it",
       );
       invalidate();
     },

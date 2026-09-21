@@ -167,7 +167,7 @@ export function ArtifactTray({
             ) : (
               <p className="truncate text-[11px] text-fg-subtle">
                 {chosen
-                  ? `${chosen.filename} — ${chosen.description}`
+                  ? `${chosen.filename}: ${chosen.description}`
                   : "Everything on this page, in one file."}
               </p>
             )}
@@ -237,7 +237,7 @@ function FormatButton({
       aria-label={
         format.available
           ? `Export as ${format.label}`
-          : `Export as ${format.label} — requires the ${format.required_plan} plan`
+          : `Export as ${format.label}, requires the ${format.required_plan} plan`
       }
       className={cn(!format.available && "text-fg-muted")}
     >

@@ -87,7 +87,7 @@ export async function LegalPage({ name, title }: { name: LegalDocument; title: s
 function DraftNotice() {
   return (
     <Reveal role="note" className="border-l-2 border-(--h-acc) bg-(--h-panel) px-6 py-5">
-      <p className="t-mono text-(--h-acc)">Draft — pending legal review</p>
+      <p className="t-mono text-(--h-acc)">Draft: pending legal review</p>
       <p className="t-body mt-3 text-[14.5px]">
         This document describes how the product currently behaves and is accurate to the
         implementation, but it has not yet been reviewed by counsel and is not in force. It will be

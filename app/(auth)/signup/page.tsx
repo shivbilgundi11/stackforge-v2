@@ -173,8 +173,8 @@ function SignupForm() {
             We sent a verification link to <span className="font-medium">{sentTo}</span>.
           </p>
           <p className="text-[12.5px] leading-relaxed text-pretty text-fg-muted">
-            The link is good for 24 hours. You can start using the calculators straight away —
-            verification is only needed to save and export.
+            The link is good for 24 hours. You can start using the calculators straight away.
+            Verification is only needed to save and export.
           </p>
           <Button asChild variant="outline" size="sm" className="mt-1">
             <Link href="/dashboard">Go to the workbench</Link>

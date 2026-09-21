@@ -121,7 +121,7 @@ export function HomeFooter() {
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-(--h-line) pt-6">
           <p className="t-mono text-(--h-fg-45)">
-            © {new Date().getFullYear()} Buildtact — plan before you build
+            © {new Date().getFullYear()} Buildtact. Plan before you build
           </p>
           <p className="t-mono text-(--h-fg-45)">
             <span className="tabular-nums">{now ?? "--:--:--"}</span> local

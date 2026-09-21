@@ -99,7 +99,7 @@ export function Evidence() {
           />
           <Reveal delay={0.25}>
             <p className="t-body mt-8 max-w-[50ch]">
-              Run against the live engine. What follows are the figures it returns — not an
+              Run against the live engine. What follows are the figures it returns, not an
               illustration of what it might return.
             </p>
           </Reveal>

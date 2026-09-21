@@ -136,7 +136,7 @@ export function PricingTable() {
       {converted ? (
         <p className="mt-6 text-center text-[12.5px] text-fg-subtle">
           Dollar prices are shown for reference. Every payment is taken in Indian rupees at the
-          rupee price under each plan — the amount your card is charged is that one.{" "}
+          rupee price under each plan. The amount your card is charged is that one.{" "}
           <Link href="/settings" className="underline hover:text-fg-muted">
             Change the currency
           </Link>
@@ -146,7 +146,7 @@ export function PricingTable() {
 
       <p className="mt-6 text-center text-[12.5px] text-fg-subtle">
         Nothing is ever deleted when a plan ends. Your projects, stacks, and runs stay where they
-        are — you can read and export them, and creating a new one is what waits for an upgrade.
+        are. You can read and export them, and creating a new one is what waits for an upgrade.
       </p>
     </div>
   );

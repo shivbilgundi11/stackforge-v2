@@ -110,7 +110,7 @@ export function ApprovalPanel({
                 <>
                   {latest.status === "approved" ? "Approved" : "Rejected"} by{" "}
                   {latest.decided_by ?? "an admin"}
-                  {latest.decision_note ? <> — “{latest.decision_note}”</> : null}
+                  {latest.decision_note ? <>: “{latest.decision_note}”</> : null}
                 </>
               )}
             </p>

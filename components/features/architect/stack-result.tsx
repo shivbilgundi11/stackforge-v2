@@ -411,8 +411,8 @@ function ExclusionTable({ rows }: { rows: Record<string, unknown>[] }) {
           <Badge variant="outline" className="h-fit shrink-0">
             {String(row["constraint"])}
           </Badge>
-          <span className="text-fg">{String(row["tool"])}</span>
-          <span className="text-fg-muted">— {String(row["reason"])}</span>
+          <span className="text-fg">{String(row["tool"])}:</span>
+          <span className="text-fg-muted">{String(row["reason"])}</span>
         </div>
       ))}
     </div>

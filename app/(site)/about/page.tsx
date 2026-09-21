@@ -52,7 +52,7 @@ const PRINCIPLES = [
   {
     n: "01",
     title: "The rule engine decides. The model explains.",
-    body: "Every figure is computed deterministically before any language model is involved. Where a model writes the prose over that result, the result is badged as model-authored — and when the model is unavailable, the computed answer ships regardless. A planning tool whose numbers change because an API had a bad afternoon is not a planning tool.",
+    body: "Every figure is computed deterministically before any language model is involved. Where a model writes the prose over that result, the result is badged as model-authored, and when the model is unavailable, the computed answer ships regardless. A planning tool whose numbers change because an API had a bad afternoon is not a planning tool.",
   },
   {
     n: "02",
@@ -62,7 +62,7 @@ const PRINCIPLES = [
   {
     n: "03",
     title: "Constraints eliminate rather than penalise.",
-    body: "If your data cannot leave your infrastructure, a managed-only option is not a slightly-lower-scoring choice — it is not a choice. Recommendations that quietly rank down a disqualifying option produce answers that look reasonable and cannot be acted on.",
+    body: "If your data cannot leave your infrastructure, a managed-only option is not a slightly-lower-scoring choice. It is not a choice. Recommendations that quietly rank down a disqualifying option produce answers that look reasonable and cannot be acted on.",
   },
   {
     n: "04",
@@ -98,7 +98,7 @@ export default async function Page() {
             already exist<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
-        lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. Buildtact is the step in between — the one where the numbers get worked out while they can still change the decision."
+        lede="Teams decide their AI architecture in documents and Slack threads, then discover the cost in an invoice. Buildtact is the step in between, the one where the numbers get worked out while they can still change the decision."
         // Its first and last frames were a hard cut apart, so the final second
         // dissolves into the first and the loop has no seam. 1.52 MB, one size:
         // the source is 960x540.
@@ -145,7 +145,7 @@ export default async function Page() {
                 <p className="t-body">
                   You describe what you are building and its constraints; it costs the options,
                   scores them against each other, checks whether they work together, and hands back
-                  the artifacts — an architecture document, a diagram, a roadmap, and starter
+                  the artifacts: an architecture document, a diagram, a roadmap, and starter
                   configuration.
                 </p>
               </Reveal>

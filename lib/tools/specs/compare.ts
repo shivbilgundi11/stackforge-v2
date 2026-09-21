@@ -52,7 +52,7 @@ export const compareModelsSpec: ToolSpec = {
   group: "compare",
   title: "Model Compare",
   summary:
-    "Two to four models scored against your actual usage profile — cost computed, not asserted.",
+    "Two to four models scored against your actual usage profile, with cost computed, not asserted.",
   keywords: ["compare", "models", "llm", "versus", "benchmark"],
   endpoint: "/api/v1/tools/compare/models",
   tier: "free",
@@ -91,7 +91,7 @@ export const compareModelsSpec: ToolSpec = {
       name: "priorities",
       label: "Priorities",
       description:
-        "Reweights every criterion, and the winner genuinely changes — this is the difference between a comparison and a leaderboard. Pick as many as apply; two priorities pull the weighting toward both. Pick none for a balanced weighting.",
+        "Reweights every criterion, and the winner genuinely changes. This is the difference between a comparison and a leaderboard. Pick as many as apply; two priorities pull the weighting toward both. Pick none for a balanced weighting.",
       options: PRIORITY_OPTIONS,
     },
     { kind: "number", name: "input_tokens", label: "Input tokens", span: 6, min: 0 },
@@ -213,7 +213,7 @@ export const compareStacksSpec: ToolSpec = {
   group: "compare",
   title: "Stack Compare",
   summary:
-    "Archetypes compared on twelve-month TCO — including the engineering time budgets forget.",
+    "Archetypes compared on twelve-month TCO, including the engineering time budgets forget.",
   keywords: ["stack", "architecture", "tco", "mvp", "enterprise", "serverless"],
   endpoint: "/api/v1/tools/compare/stacks",
   tier: "free",

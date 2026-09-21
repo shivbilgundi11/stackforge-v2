@@ -142,8 +142,8 @@ function GeneralSection({ org }: { org: Organization }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="private">Private — visible only to its author</SelectItem>
-              <SelectItem value="team">Team — visible to every member</SelectItem>
+              <SelectItem value="private">Private: visible only to its author</SelectItem>
+              <SelectItem value="team">Team: visible to every member</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-[11.5px] text-fg-muted">
@@ -159,7 +159,7 @@ function GeneralSection({ org }: { org: Organization }) {
             </Label>
             <p className="mt-0.5 max-w-md text-[11.5px] text-fg-muted">
               When on, a stack shows its approval state and the team treats an unapproved stack
-              as not ready. Off by default — a five-person team that did not ask for a gate
+              as not ready. Off by default, because a five-person team that did not ask for a gate
               should not meet one.
             </p>
           </div>
@@ -210,7 +210,7 @@ function ApprovedToolsSection({ org }: { org: Organization }) {
       void queryClient.invalidateQueries({ queryKey: qk.team.orgs() });
       notify.success(
         selected.size === 0
-          ? "Allowlist cleared — recommendations carry no policy badges."
+          ? "Allowlist cleared. Recommendations carry no policy badges."
           : "Approved tools saved. Unapproved picks get a badge, never removed.",
       );
     },
@@ -385,8 +385,8 @@ function DangerSection({ org }: { org: Organization }) {
           <DialogHeader>
             <DialogTitle>Delete {org.name}?</DialogTitle>
             <DialogDescription>
-              This removes the team for every member. No one&apos;s work is destroyed — shared
-              items revert to their authors — but the shared space, comments, and approvals go
+              This removes the team for every member. No one&apos;s work is destroyed, and shared
+              items revert to their authors, but the shared space, comments, and approvals go
               with it.
             </DialogDescription>
           </DialogHeader>

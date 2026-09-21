@@ -143,7 +143,7 @@ function Overview({ org, manage }: { org: Organization; manage: boolean }) {
           <EmptyState
             icon={<Layers3Icon className="size-4" aria-hidden />}
             title="Nothing shared yet"
-            description="Save a stack and set its visibility to team — it will show up here for everyone."
+            description="Save a stack and set its visibility to team, and it will show up here for everyone."
           />
         ) : (
           <ul className="divide-y divide-line">

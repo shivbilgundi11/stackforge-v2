@@ -29,9 +29,9 @@ import { useAuth } from "@/lib/auth/auth-provider";
  */
 
 const PITCH: Record<string, string> = {
-  pdf: "A laid-out, paginated document with a cover page and your share link in the footer — the version you send to a client.",
+  pdf: "A laid-out, paginated document with a cover page and your share link in the footer. The version you send to a client.",
   zip: "Every file in the plan as one download: the architecture document, the diagram, the roadmap, a starter Compose file, and .cursorrules.",
-  json: "The full result as structured data, with a versioned envelope — for a pipeline, a diff, or a script.",
+  json: "The full result as structured data, with a versioned envelope, ready for a pipeline, a diff, or a script.",
   yaml: "The same structured data as JSON, in the format your config tooling already reads.",
   csv: "One table, ready for a spreadsheet.",
 };
@@ -62,8 +62,8 @@ export function UpgradeDialog({
         </DialogHeader>
 
         <p className="rounded-md border border-line bg-surface-2/50 px-3 py-2.5 text-xs leading-relaxed text-fg-muted">
-          Markdown export is free and always will be. It contains the whole answer — every figure,
-          table, and source on this page — so nothing here is being held back from you, only
+          Markdown export is free and always will be. It contains the whole answer: every figure,
+          table, and source on this page. Nothing here is being held back from you, only
           reformatted.
         </p>
 

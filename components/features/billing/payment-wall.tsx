@@ -135,7 +135,7 @@ export function PaymentWall() {
         title={pastDue ? "Your payment did not go through" : "Complete your subscription"}
         description={
           pastDue
-            ? "We could not charge your card, and the retry window has closed. Your account is on the free plan until a payment succeeds — nothing has been deleted."
+            ? "We could not charge your card, and the retry window has closed. Your account is on the free plan until a payment succeeds. Nothing has been deleted."
             : "You chose a paid plan when you signed up. Pay for it here and the rest of the product opens up."
         }
       />
@@ -145,7 +145,7 @@ export function PaymentWall() {
           <AlertTriangleIcon className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
           <p className="text-[12.5px] leading-relaxed text-fg-muted">
             Every project, stack, and run you have made is still there and still exportable. Paying
-            restores the limits, not the data — the data never left.
+            restores the limits, not the data. The data never left.
           </p>
         </div>
       ) : null}
@@ -199,7 +199,7 @@ export function PaymentWall() {
             <div className="rounded-md border border-line bg-surface-2 px-3.5 py-3">
               <p className="text-[12.5px] leading-relaxed text-fg-muted">
                 Card payments are not available in this environment yet. Continue on the free plan
-                for now — everything you make is kept, and upgrading later changes nothing but the
+                for now. Everything you make is kept, and upgrading later changes nothing but the
                 limits.
               </p>
             </div>

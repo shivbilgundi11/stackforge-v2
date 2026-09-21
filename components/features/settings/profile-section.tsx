@@ -132,7 +132,7 @@ export function ProfileSection({ user }: { user: User }) {
               )}
             </div>
             <p className="text-xs text-fg-muted">
-              Changing the address on an account is not supported yet — it needs re-verification on
+              Changing the address on an account is not supported yet. It needs re-verification on
               both addresses to be safe, which is its own piece of work.
             </p>
           </div>

@@ -41,7 +41,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: {
-    default: "Buildtact — Plan your AI stack before you build",
+    default: "Buildtact: Plan your AI stack before you build",
     template: "%s · Buildtact",
   },
   description:

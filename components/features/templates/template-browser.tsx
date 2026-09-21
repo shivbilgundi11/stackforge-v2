@@ -88,7 +88,7 @@ export function TemplateBrowser() {
             type="search"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="Search templates — try 'chunking', 'agent safety', 'payback'"
+            placeholder="Search templates: try 'chunking', 'agent safety', 'payback'"
             aria-label="Search templates"
             className="pl-9"
           />

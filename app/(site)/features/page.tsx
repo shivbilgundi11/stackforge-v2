@@ -43,7 +43,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Features",
   description:
-    "Seven surfaces: Stack Architect, Cost Planner, Compare Center, RAG Planner, Agent & MCP Builder, Infra Planner, and the ROI Calculator — with the real product in every screenshot.",
+    "Seven surfaces: Stack Architect, Cost Planner, Compare Center, RAG Planner, Agent & MCP Builder, Infra Planner, and the ROI Calculator, with the real product in every screenshot.",
   alternates: { canonical: "/features" },
 };
 
@@ -66,7 +66,7 @@ export default async function Page() {
             a stack<span className="text-(--h-acc)">.</span>
           </Fragment>,
         ]}
-        lede="Seven surfaces over one catalog. Every screenshot below is the product answering a real question — not a mockup, and not a redrawn illustration."
+        lede="Seven surfaces over one catalog. Every screenshot below is the product answering a real question, not a mockup and not a redrawn illustration."
         stats={[
           ["Models", catalog.models],
           ["Tools", catalog.tools],
@@ -157,7 +157,7 @@ export default async function Page() {
 
       <CtaBand
         title={["Try it on", "something real."]}
-        lede="No card, and the first result is a complete one — the document, the diagram and the roadmap included."
+        lede="No card, and the first result is a complete one, with the document, the diagram and the roadmap included."
         secondary={{ href: "/pricing", label: "See the plans" }}
       />
     </>

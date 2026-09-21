@@ -78,7 +78,7 @@ export const FEATURES: MarketingFeature[] = [
     title: "Stack Architect",
     body: "Describe the system and its constraints. Hard limits eliminate options rather than ranking them down, ten weighted dimensions score what is left, and three ranked stacks come back with the reasoning attached.",
     points: [
-      "Hard constraints — data sensitivity, deployment preference — eliminate candidates outright, and the result tells you what was excluded and why.",
+      "Hard constraints such as data sensitivity and deployment preference eliminate candidates outright, and the result tells you what was excluded and why.",
       "Ten weighted dimensions, whose contributions sum to the headline score, so the number can be checked rather than trusted.",
       "Three ranked stacks, each with its strongest and weakest dimension named.",
       "Pairwise compatibility across the whole stack, scored on its worst pairing rather than its average.",
@@ -93,7 +93,7 @@ export const FEATURES: MarketingFeature[] = [
     title: "Cost Planner",
     body: "Real tokenizer counts rather than a characters-over-four estimate, priced against catalogued model rates. Per-request, monthly, and annual, with the tokenizer that produced the count named on the result.",
     points: [
-      "Token counts from the real tokenizer for the provider, with the method named on the result — and said plainly when it is an estimate instead.",
+      "Token counts from the real tokenizer for the provider, with the method named on the result, and said plainly when it is an estimate instead.",
       "Per-request, monthly, and annual spend from your own volume assumptions.",
       "Embedding cost split into first ingestion and re-embedding, which are the two figures usually collapsed into one.",
       "A blended monthly budget across every workload line, where the total is the sum of the lines you can see.",
@@ -105,11 +105,11 @@ export const FEATURES: MarketingFeature[] = [
   {
     icon: ScaleIcon,
     title: "Compare Center",
-    body: "Models, vector databases, stack archetypes, and build-versus-buy, side by side. Reweight the criteria and the recommendation recalculates — the weights are inputs, not decoration.",
+    body: "Models, vector databases, stack archetypes, and build-versus-buy, side by side. Reweight the criteria and the recommendation recalculates. The weights are inputs, not decoration.",
     points: [
       "Models compared on cost, context window, and task suitability, with a recommendation and its reasoning.",
       "Vector databases across the options people actually shortlist: Pinecone, Qdrant, Weaviate, Milvus, pgvector, and Chroma.",
-      "Stack archetypes — MVP against enterprise against open-source — on twelve-month total cost.",
+      "Stack archetypes, MVP against enterprise against open-source, on twelve-month total cost.",
       "Build versus buy, with the assumptions visible so the argument can be had about the inputs.",
     ],
     shot: "compare-models",
@@ -134,12 +134,12 @@ export const FEATURES: MarketingFeature[] = [
   {
     icon: BotIcon,
     title: "Agent & MCP Builder",
-    body: "Define your tools and get a complete MCP server you can actually run, plus agent loop costs that include schema overhead and retries — the two lines that make agent estimates wrong when they are left out.",
+    body: "Define your tools and get a complete MCP server you can actually run, plus agent loop costs that include schema overhead and retries, the two lines that make agent estimates wrong when they are left out.",
     points: [
       "A complete MCP server generated from your tool definitions, downloadable as a bundle.",
       "Agent loop cost with schema overhead and retries shown separately, not folded into a total.",
       "Multi-agent topology as a DAG, with per-node cost and the failure modes named.",
-      "Function-calling schemas for OpenAI, Anthropic, or MCP — the output shape actually differs per target.",
+      "Function-calling schemas for OpenAI, Anthropic, or MCP. The output shape actually differs per target.",
       "Rate-limit planning that says which limit binds first, and the backoff that survives it.",
     ],
     shot: "mcp-config",
@@ -225,7 +225,7 @@ export type FaqItem = { q: string; a: string };
 export const FAQ: FaqItem[] = [
   {
     q: "Do I need an account to use it?",
-    a: "Yes, and it is free — no card, twenty-five runs a day. Signing up takes an email and a password, and every tool is open the moment you are in.",
+    a: "Yes, and it is free: no card, twenty-five runs a day. Signing up takes an email and a password, and every tool is open the moment you are in.",
   },
   {
     q: "Where do the numbers come from?",
@@ -233,7 +233,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "Is this a wrapper around a language model?",
-    a: "No. Every figure is computed by a deterministic engine before any model is involved. Where a result is written up in prose by a model, it is badged as such — and if that model is unavailable, you still get the complete computed answer.",
+    a: "No. Every figure is computed by a deterministic engine before any model is involved. Where a result is written up in prose by a model, it is badged as such, and if that model is unavailable, you still get the complete computed answer.",
   },
   {
     q: "What do I actually leave with?",
@@ -241,7 +241,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "How accurate are the cost estimates?",
-    a: "The arithmetic is exact against the inputs you give it and the prices in the catalog. What it cannot know is your real traffic — so treat the output as a defensible model of your assumptions, not a forecast. The assumptions are all visible and editable for exactly that reason.",
+    a: "The arithmetic is exact against the inputs you give it and the prices in the catalog. What it cannot know is your real traffic, so treat the output as a defensible model of your assumptions, not a forecast. The assumptions are all visible and editable for exactly that reason.",
   },
   {
     q: "Is the generated infrastructure production-ready?",

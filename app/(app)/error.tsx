@@ -13,7 +13,7 @@ export default function Error({
     <RouteError
       error={error}
       reset={reset}
-      description="This tool failed to load. Your saved work is unaffected — trying again usually clears it."
+      description="This tool failed to load. Your saved work is unaffected, and trying again usually clears it."
       homeHref="/dashboard"
       homeLabel="Back to dashboard"
     />

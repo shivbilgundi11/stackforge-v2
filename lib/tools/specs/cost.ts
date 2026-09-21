@@ -343,7 +343,7 @@ export const embeddingCostSpec: ToolSpec = {
         key: "provider_comparison",
         title: "Provider comparison",
         description:
-          "Dimensions matter downstream — vector storage cost scales with them, not just embedding cost.",
+          "Dimensions matter downstream. Vector storage cost scales with them, not just embedding cost.",
       },
       { kind: "json" },
     ],
