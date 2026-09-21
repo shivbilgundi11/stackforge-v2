@@ -694,6 +694,10 @@ export interface paths {
         /**
          * Get Compare Meta
          * @description Priorities and stack archetypes, so the frontend does not hardcode them.
+         *
+         *     `balanced` is absent by design. Selecting nothing is the balanced
+         *     weighting, so offering it as a checkbox would be offering a box that does
+         *     nothing when ticked alongside any other.
          */
         get: operations["get_compare_meta"];
         put?: never;
@@ -1641,6 +1645,11 @@ export interface paths {
          *     raising the free tier with an `UPDATE` changes the page too. That is the
          *     whole reason the limits live in a table: a marketing number and an enforced
          *     number that can disagree eventually will.
+         *
+         *     Keyed on `OptionalUser`, never `CallerIdentity`: this is the one billing
+         *     route a signed-out caller must reach. The signup form's plan picker and the
+         *     pricing page both render from it, and a 401 here is an empty plan list on
+         *     the page that exists to sell the plans.
          */
         get: operations["list_plans"];
         put?: never;
@@ -2769,6 +2778,8 @@ export interface components {
         };
         /** CompareBuildVsBuyIn */
         CompareBuildVsBuyIn: {
+            /** Priorities */
+            priorities?: ("cost" | "scale" | "speed" | "simplicity" | "control")[];
             /** Build Hours */
             build_hours: number;
             /**
@@ -2793,12 +2804,6 @@ export interface components {
              * @default 0
              */
             vendor_integration_hours: number;
-            /**
-             * Priority
-             * @default balanced
-             * @enum {string}
-             */
-            priority: "balanced" | "cost" | "scale" | "speed" | "simplicity" | "control";
         };
         /** CompareMetaOut */
         CompareMetaOut: {
@@ -2809,6 +2814,8 @@ export interface components {
         };
         /** CompareModelsIn */
         CompareModelsIn: {
+            /** Priorities */
+            priorities?: ("cost" | "scale" | "speed" | "simplicity" | "control")[];
             /** Model Ids */
             model_ids: string[];
             /**
@@ -2831,12 +2838,6 @@ export interface components {
              * @default 0
              */
             cached_input_ratio: number | string;
-            /**
-             * Priority
-             * @default balanced
-             * @enum {string}
-             */
-            priority: "balanced" | "cost" | "scale" | "speed" | "simplicity" | "control";
         };
         /** ComparePriorityOut */
         ComparePriorityOut: {
@@ -2849,6 +2850,8 @@ export interface components {
         };
         /** CompareStacksIn */
         CompareStacksIn: {
+            /** Priorities */
+            priorities?: ("cost" | "scale" | "speed" | "simplicity" | "control")[];
             /** Archetypes */
             archetypes: string[];
             /**
@@ -2861,15 +2864,11 @@ export interface components {
              * @default 120
              */
             blended_hourly_rate: number | string;
-            /**
-             * Priority
-             * @default balanced
-             * @enum {string}
-             */
-            priority: "balanced" | "cost" | "scale" | "speed" | "simplicity" | "control";
         };
         /** CompareVectorDbIn */
         CompareVectorDbIn: {
+            /** Priorities */
+            priorities?: ("cost" | "scale" | "speed" | "simplicity" | "control")[];
             /** Tool Slugs */
             tool_slugs: string[];
             /**
@@ -2882,12 +2881,6 @@ export interface components {
              * @default 1536
              */
             dimensions: number;
-            /**
-             * Priority
-             * @default balanced
-             * @enum {string}
-             */
-            priority: "balanced" | "cost" | "scale" | "speed" | "simplicity" | "control";
         };
         /**
          * CompatibilityOut

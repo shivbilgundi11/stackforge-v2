@@ -32,6 +32,7 @@ export function coerceValue(field: Field, raw: unknown): unknown {
       return typeof raw === "boolean" ? raw : raw === "true";
 
     case "multi-select":
+    case "checkbox-group":
     case "tag-input":
       return toList(raw);
 

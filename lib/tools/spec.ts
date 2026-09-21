@@ -54,6 +54,14 @@ export type Field =
   | (FieldBase & { kind: "select"; options: SelectOption[] })
   | (FieldBase & { kind: "multi-select"; options: SelectOption[]; max?: number })
   | (FieldBase & { kind: "radio-group"; options: SelectOption[] })
+  /**
+   * `multi-select` in the shape of `radio-group`, for when the options need
+   * their hints. The pill row `multi-select` renders has no room for a second
+   * line, which is fine for a list of model names and wrong for a list where
+   * the hint is the whole explanation — "Control / avoid lock-in" is the
+   * difference between a label and an informed choice.
+   */
+  | (FieldBase & { kind: "checkbox-group"; options: SelectOption[]; max?: number })
   | (FieldBase & { kind: "checkbox" })
   | (FieldBase & { kind: "switch" })
   | (FieldBase & { kind: "tag-input"; max?: number })

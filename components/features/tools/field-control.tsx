@@ -298,6 +298,49 @@ function Renderer({ field, value, onChange, onBlur, invalid, describedBy }: Rend
         </RadioGroup>
       );
 
+    case "checkbox-group": {
+      const selected = Array.isArray(value) ? (value as string[]) : [];
+      const atLimit = field.max !== undefined && selected.length >= field.max;
+      return (
+        <div role="group" aria-describedby={describedBy} className="flex flex-col gap-2">
+          {field.options.map((option) => {
+            const isOn = selected.includes(option.value);
+            return (
+              <label
+                key={option.value}
+                className={cn(
+                  "flex items-start gap-2.5 rounded-md border px-3 py-2 text-[13px] transition-colors",
+                  isOn
+                    ? "border-ember-line bg-ember-quiet"
+                    : "border-line hover:border-line-strong",
+                  atLimit && !isOn ? "cursor-not-allowed opacity-40" : "cursor-pointer",
+                )}
+              >
+                <Checkbox
+                  checked={isOn}
+                  disabled={atLimit && !isOn}
+                  onCheckedChange={() =>
+                    onChange(
+                      isOn
+                        ? selected.filter((item) => item !== option.value)
+                        : [...selected, option.value],
+                    )
+                  }
+                  className="mt-0.5"
+                />
+                <span className="min-w-0">
+                  <span className="block font-medium text-fg">{option.label}</span>
+                  {option.hint ? (
+                    <span className="block text-xs text-fg-muted">{option.hint}</span>
+                  ) : null}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      );
+    }
+
     case "checkbox":
       return (
         <label className="flex cursor-pointer items-center gap-2.5 text-[13px]">

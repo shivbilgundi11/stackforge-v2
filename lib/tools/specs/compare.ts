@@ -11,8 +11,16 @@ import type { ResultSpec, SelectOption, ToolSpec } from "@/lib/tools/spec";
  * entirely that these four agree on an output contract.
  */
 
+/**
+ * What to weight, and as many of them as apply.
+ *
+ * There is no "Balanced" here on purpose. It used to be the default and it
+ * meant "no axis favoured" — a multiplier of 1.0 on every criterion — which
+ * once the field took more than one value became a box that combines with
+ * everything and changes nothing. Ticking none of these is the balanced
+ * weighting, and `description` on the field below says so.
+ */
 const PRIORITY_OPTIONS: SelectOption[] = [
-  { value: "balanced", label: "Balanced", hint: "no axis favoured" },
   { value: "cost", label: "Cost", hint: "accept more work to save money" },
   { value: "scale", label: "Scale", hint: "assume 10x growth" },
   { value: "speed", label: "Speed", hint: "latency and time to ship" },
@@ -20,7 +28,15 @@ const PRIORITY_OPTIONS: SelectOption[] = [
   { value: "control", label: "Control", hint: "avoid lock-in" },
 ];
 
-const priority = z.enum(["balanced", "cost", "scale", "speed", "simplicity", "control"]);
+/**
+ * Order is preserved and duplicates are dropped server-side — the weighting is
+ * a set, so ["cost", "cost"] is not a different question. Order still shows up
+ * in the prose the result reads back ("wins on a cost and control weighting").
+ */
+const priorities = z
+  .array(z.enum(["cost", "scale", "speed", "simplicity", "control"]))
+  .max(5)
+  .default([]);
 
 /**
  * Every comparison uses the same bespoke renderer.
@@ -50,7 +66,7 @@ export const compareModelsSpec: ToolSpec = {
     output_tokens: z.number().int().min(0),
     requests_per_day: z.number().int().min(0),
     cached_input_ratio: z.number().min(0).max(1).optional(),
-    priority,
+    priorities,
   }),
   defaults: {
     model_ids: ["gpt-4o-mini", "claude-sonnet-5"],
@@ -58,7 +74,7 @@ export const compareModelsSpec: ToolSpec = {
     output_tokens: 500,
     requests_per_day: 1000,
     cached_input_ratio: 0,
-    priority: "balanced",
+    priorities: [],
   },
   fields: [
     {
@@ -71,11 +87,11 @@ export const compareModelsSpec: ToolSpec = {
       description: "Order sets the column order in the matrix.",
     },
     {
-      kind: "radio-group",
-      name: "priority",
-      label: "Priority",
+      kind: "checkbox-group",
+      name: "priorities",
+      label: "Priorities",
       description:
-        "Reweights every criterion. The winner genuinely changes — this is the difference between a comparison and a leaderboard.",
+        "Reweights every criterion, and the winner genuinely changes — this is the difference between a comparison and a leaderboard. Pick as many as apply; two priorities pull the weighting toward both. Pick none for a balanced weighting.",
       options: PRIORITY_OPTIONS,
     },
     { kind: "number", name: "input_tokens", label: "Input tokens", span: 6, min: 0 },
@@ -140,13 +156,13 @@ export const compareVectorDbSpec: ToolSpec = {
     tool_slugs: z.array(z.string().min(1)).min(2, "Pick at least two databases.").max(6),
     vector_count: z.number().int().min(1),
     dimensions: z.number().int().min(1).max(16_384),
-    priority,
+    priorities,
   }),
   defaults: {
     tool_slugs: ["pinecone", "qdrant", "pgvector"],
     vector_count: 1_000_000,
     dimensions: 1536,
-    priority: "balanced",
+    priorities: [],
   },
   presets: [
     { label: "Prototype", values: { vector_count: 100_000, dimensions: 1536 } },
@@ -163,9 +179,10 @@ export const compareVectorDbSpec: ToolSpec = {
       max: 6,
     },
     {
-      kind: "radio-group",
-      name: "priority",
-      label: "Priority",
+      kind: "checkbox-group",
+      name: "priorities",
+      label: "Priorities",
+      description: "As many as apply. None is a balanced weighting.",
       options: PRIORITY_OPTIONS,
     },
     {
@@ -205,13 +222,13 @@ export const compareStacksSpec: ToolSpec = {
     archetypes: z.array(z.string().min(1)).min(2, "Pick at least two.").max(5),
     monthly_model_spend: z.number().min(0),
     blended_hourly_rate: z.number().min(1).max(1000),
-    priority,
+    priorities,
   }),
   defaults: {
     archetypes: ["mvp", "serverless", "open-source"],
     monthly_model_spend: 500,
     blended_hourly_rate: 120,
-    priority: "balanced",
+    priorities: [],
   },
   fields: [
     {
@@ -228,9 +245,10 @@ export const compareStacksSpec: ToolSpec = {
       ],
     },
     {
-      kind: "radio-group",
-      name: "priority",
-      label: "Priority",
+      kind: "checkbox-group",
+      name: "priorities",
+      label: "Priorities",
+      description: "As many as apply. None is a balanced weighting.",
       options: PRIORITY_OPTIONS,
     },
     {
@@ -286,7 +304,7 @@ export const compareBuildVsBuySpec: ToolSpec = {
     maintenance_hours_per_month: z.number().min(0).max(1000),
     vendor_monthly: z.number().min(0),
     vendor_integration_hours: z.number().int().min(0).max(10_000).optional(),
-    priority,
+    priorities,
   }),
   defaults: {
     build_hours: 300,
@@ -295,7 +313,7 @@ export const compareBuildVsBuySpec: ToolSpec = {
     maintenance_hours_per_month: 8,
     vendor_monthly: 1500,
     vendor_integration_hours: 20,
-    priority: "balanced",
+    priorities: [],
   },
   fields: [
     {
@@ -347,9 +365,10 @@ export const compareBuildVsBuySpec: ToolSpec = {
       min: 0,
     },
     {
-      kind: "radio-group",
-      name: "priority",
-      label: "Priority",
+      kind: "checkbox-group",
+      name: "priorities",
+      label: "Priorities",
+      description: "As many as apply. None is a balanced weighting.",
       options: PRIORITY_OPTIONS,
     },
   ],

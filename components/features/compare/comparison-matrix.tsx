@@ -71,7 +71,7 @@ export function ComparisonMatrix({ data }: { data: ToolRunResult }) {
       <Panel>
         <PanelHeader
           title="Comparison"
-          description="Criteria weighted by your stated priority. Cost is computed live, never scored."
+          description="Criteria weighted by your stated priorities. Cost is computed live, never scored."
           actions={<FlagAction data={data} />}
         />
         <div className="overflow-x-auto">
@@ -126,7 +126,7 @@ export function ComparisonMatrix({ data }: { data: ToolRunResult }) {
                       <span className="text-[13px] font-medium text-fg">{row.label}</span>
                       <span className="flex items-center gap-1.5">
                         {/* The weight is shown because it is the thing the
-                            priority selector actually changes — hiding it
+                            priorities actually change — hiding it
                             makes reweighting feel like magic. */}
                         <WeightBar weight={row.weight} />
                         <span className="text-[10px] text-fg-subtle tabular-nums">

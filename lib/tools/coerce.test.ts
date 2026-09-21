@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { coerceValues } from "@/lib/tools/coerce";
+import { compareModelsSpec } from "@/lib/tools/specs/compare";
 import { llmPricingSpec, budgetEstimatorSpec } from "@/lib/tools/specs/cost";
 import type { Field } from "@/lib/tools/spec";
 
@@ -102,5 +103,32 @@ describe("coercing a stored run's input", () => {
     };
 
     expect(llmPricingSpec.input.safeParse(restored).success).toBe(true);
+  });
+});
+
+describe("coercing a shared link's priorities", () => {
+  it("splits the comma-joined priorities a URL carries back into a list", () => {
+    // The failure this catches is the one a new list-shaped field kind always
+    // hits: without a case here it falls through to `default`, the checkbox
+    // group is handed the string "cost,scale", and a shared link restores the
+    // models and the token counts but silently loses the weighting — the one
+    // input that decides which model won.
+    const values = coerceValues(compareModelsSpec.fields, {
+      model_ids: "gpt-4o-mini,claude-sonnet-5",
+      priorities: "cost,scale",
+      input_tokens: "2000",
+    });
+
+    expect(values.priorities).toEqual(["cost", "scale"]);
+  });
+
+  it("reads back an array unchanged, which is what a stored run holds", () => {
+    const values = coerceValues(compareModelsSpec.fields, { priorities: ["control"] });
+    expect(values.priorities).toEqual(["control"]);
+  });
+
+  it("drops an empty selection rather than restoring [''], which is not balanced", () => {
+    const values = coerceValues(compareModelsSpec.fields, { priorities: "" });
+    expect("priorities" in values).toBe(false);
   });
 });
