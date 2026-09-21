@@ -32,8 +32,45 @@ export type MarketingFeature = {
   points: string[];
   /** File stem under `public/marketing/`, captured from the running product. */
   shot: string;
+  /**
+   * The product route the shot was captured from, shown in the address bar of
+   * the frame around it. It lives here rather than on the page because it is
+   * held to the same rule as every other line in this file: it has to name a
+   * route that exists under `app/(app)/`, or it is a claim the product does
+   * not back.
+   */
+  route: string;
   alt: string;
 };
+
+/**
+ * The host the product screenshots are framed as being served from.
+ *
+ * The frame around every capture is a browser window (`components/ui/safari.tsx`),
+ * and a browser window with an invented domain in it is the one part of an
+ * otherwise honest screenshot that is a mockup. `NEXT_PUBLIC_SITE_URL` is the
+ * deployment's own public origin — `deploy/compose.prod.yml` passes
+ * `PUBLIC_ORIGIN` into the build — so in production the address bar reads as
+ * the host the visitor is already on.
+ *
+ * The fallback is for local development, where the variable is unset.
+ */
+const SHOT_HOST_FALLBACK = "aiveda.app";
+
+function shotHost(): string {
+  const origin = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!origin) return SHOT_HOST_FALLBACK;
+  try {
+    return new URL(origin).host;
+  } catch {
+    return SHOT_HOST_FALLBACK;
+  }
+}
+
+/** `aiveda.app/stack-architect` — what the frame's address bar shows. */
+export function shotAddress(route: string): string {
+  return `${shotHost()}${route}`;
+}
 
 export const FEATURES: MarketingFeature[] = [
   {
@@ -48,6 +85,7 @@ export const FEATURES: MarketingFeature[] = [
       "Exports an architecture document, a diagram, and a roadmap generated from the same result the page renders.",
     ],
     shot: "stack-architect",
+    route: "/stack-architect",
     alt: "Stack Architect returning a recommended stack scored 85 out of 100, with eight components, a score breakdown across ten weighted dimensions, and an architecture diagram.",
   },
   {
@@ -61,6 +99,7 @@ export const FEATURES: MarketingFeature[] = [
       "A blended monthly budget across every workload line, where the total is the sum of the lines you can see.",
     ],
     shot: "llm-pricing",
+    route: "/cost",
     alt: "The LLM pricing calculator showing cost per request, monthly and annual spend, and the token count with the tokenizer named.",
   },
   {
@@ -74,6 +113,7 @@ export const FEATURES: MarketingFeature[] = [
       "Build versus buy, with the assumptions visible so the argument can be had about the inputs.",
     ],
     shot: "compare-models",
+    route: "/compare",
     alt: "Model comparison showing several models side by side across cost, context window, and task suitability, with a recommendation.",
   },
   {
@@ -88,6 +128,7 @@ export const FEATURES: MarketingFeature[] = [
       "A recommended architecture with a rendered diagram and a written rationale.",
     ],
     shot: "rag-architecture",
+    route: "/rag",
     alt: "The RAG architecture planner showing a recommended pipeline, a rendered diagram, and the reasoning behind each choice.",
   },
   {
@@ -102,6 +143,7 @@ export const FEATURES: MarketingFeature[] = [
       "Rate-limit planning that says which limit binds first, and the backoff that survives it.",
     ],
     shot: "mcp-config",
+    route: "/agents",
     alt: "The MCP config generator showing a generated, runnable MCP server with its files listed.",
   },
   {
@@ -116,6 +158,7 @@ export const FEATURES: MarketingFeature[] = [
       "A production-readiness checklist conditioned on the stack you described.",
     ],
     shot: "vram-estimate",
+    route: "/infra",
     alt: "The VRAM estimator breaking memory into weights, KV cache, and activations, and listing which GPUs fit.",
   },
   {
@@ -129,6 +172,7 @@ export const FEATURES: MarketingFeature[] = [
       "Implementation cost with contingency as its own visible line.",
     ],
     shot: "model-roi",
+    route: "/roi",
     alt: "The AI model ROI calculator showing payback period, twelve-month return, and net present value against an adoption ramp.",
   },
 ];

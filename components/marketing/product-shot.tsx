@@ -1,9 +1,9 @@
 import Image from "next/image";
 
-import { cn } from "@/lib/utils";
+import { Safari } from "@/components/ui/safari";
 
 /**
- * A real screenshot of the product, in a window frame.
+ * A real screenshot of the product, in a browser window.
  *
  * Captured from the running app against the real engines — not a mockup, not
  * a redrawn illustration. This audience trusts artifacts over claims (M22),
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  *
  * ## Why two files per shot
  *
- * The marketing pages are theme-aware, so a screenshot baked in one theme is
+ * The theme-aware pages are exactly that, so a screenshot baked in one theme is
  * the most obvious way for a page to look broken in the other — a white slab
  * sitting in a matte-black page. Every shot is captured twice and swapped on
  * the same `.dark` class next-themes writes onto `<html>`, so the product
@@ -22,6 +22,14 @@ import { cn } from "@/lib/utils";
  * the wire, which is why every shot is `loading="lazy"` below the fold and
  * why the hero passes `priority` explicitly rather than every instance
  * claiming to be the most important thing on the page.
+ *
+ * ## The frame
+ *
+ * Magic UI's Safari window, vendored at `components/ui/safari.tsx`. It replaces
+ * three hand-drawn dots on a bar, which was the same idea done worse: the same
+ * claim about what the reader is looking at, with none of the detail that makes
+ * the claim land. The frame reads `--line` and `--surface`, so it follows the
+ * theme here for the same reason the capture does.
  */
 
 export type ProductShotProps = {
@@ -33,6 +41,8 @@ export type ProductShotProps = {
    * section is claiming; "screenshot of Stack Architect" tells them nothing.
    */
   alt: string;
+  /** The frame's address bar — `shotAddress()` in `lib/marketing/content.ts`. */
+  url?: string;
   /** The hero shot only. Everything else stays lazy. */
   priority?: boolean;
   className?: string;
@@ -42,7 +52,7 @@ export type ProductShotProps = {
 const WIDTH = 2880;
 const HEIGHT = 1800;
 
-export function ProductShot({ src, alt, priority = false, className }: ProductShotProps) {
+export function ProductShot({ src, alt, url, priority = false, className }: ProductShotProps) {
   const common = {
     width: WIDTH,
     height: HEIGHT,
@@ -50,44 +60,29 @@ export function ProductShot({ src, alt, priority = false, className }: ProductSh
     priority,
     loading: priority ? undefined : ("lazy" as const),
     sizes: "(max-width: 1120px) 100vw, 1120px",
-    className: "w-full",
+    className: "block w-full",
   };
 
   return (
-    <figure
-      className={cn(
-        "overflow-hidden rounded-(--radius) border border-line bg-surface",
-        "shadow-panel",
-        className,
-      )}
-    >
-      {/* Window chrome. Decorative, so it is hidden from the accessibility
-          tree — the alt text on the image below carries the meaning. */}
-      <div
-        className="flex h-8 items-center gap-1.5 border-b border-line bg-surface-2 px-3"
-        aria-hidden
-      >
-        <span className="size-2 rounded-full bg-line-strong" />
-        <span className="size-2 rounded-full bg-line-strong" />
-        <span className="size-2 rounded-full bg-line-strong" />
-      </div>
-
-      {/* One alt between the pair: to assistive tech this is a single image,
-          and announcing it twice because the design has a theme swap would be
-          a bug, not a feature. */}
-      <Image
-        {...common}
-        src={`/marketing/${src}-light.png`}
-        alt={alt}
-        className="w-full dark:hidden"
-      />
-      <Image
-        {...common}
-        src={`/marketing/${src}-dark.png`}
-        alt=""
-        aria-hidden
-        className="hidden w-full dark:block"
-      />
+    <figure className={className}>
+      <Safari url={url} className="shadow-panel">
+        {/* One alt between the pair: to assistive tech this is a single image,
+            and announcing it twice because the design has a theme swap would be
+            a bug, not a feature. */}
+        <Image
+          {...common}
+          src={`/marketing/${src}-light.png`}
+          alt={alt}
+          className="block w-full dark:hidden"
+        />
+        <Image
+          {...common}
+          src={`/marketing/${src}-dark.png`}
+          alt=""
+          aria-hidden
+          className="hidden w-full dark:block"
+        />
+      </Safari>
     </figure>
   );
 }

@@ -7,7 +7,8 @@ import { Parallax } from "@/components/home/fx/scroll";
 import { Counter, MaskLines, Reveal, Rule, Stagger, StaggerItem } from "@/components/home/fx/type";
 import { Magnetic } from "@/components/home/fx/ui";
 import { Section } from "@/components/home/sections/head";
-import { ProductShot } from "@/components/marketing/product-shot";
+import { Shot } from "@/components/home/sections/shot";
+import { shotAddress } from "@/lib/marketing/content";
 
 /**
  * Chapter four: one run of the engine, and what came back.
@@ -152,8 +153,17 @@ export function Evidence() {
           </Reveal>
           <Parallax distance={54}>
             <Reveal from="none" duration={1.1}>
-              <ProductShot
+              {/* `Shot` and not `ProductShot`: this chapter is bone, and it
+                  stays bone whatever the workbench theme is set to. The
+                  theme-aware component would have put the dark capture on
+                  paper for every visitor whose product theme is dark.
+                  `parallax` is off because the `Parallax` above already
+                  moves it. */}
+              <Shot
                 src="rag-architecture"
+                url={shotAddress("/rag")}
+                tone="bone"
+                parallax={false}
                 alt="The RAG architecture planner showing the pipeline it returned for internal documentation at medium scale on a $2,000 monthly budget, with the estimated cost, component count, and the options its constraints eliminated."
               />
             </Reveal>

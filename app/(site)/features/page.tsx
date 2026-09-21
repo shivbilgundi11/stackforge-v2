@@ -8,7 +8,7 @@ import { Magnetic } from "@/components/home/fx/ui";
 import { CtaBand } from "@/components/home/sections/cta-band";
 import { PageHead } from "@/components/home/sections/page-head";
 import { Shot } from "@/components/home/sections/shot";
-import { FEATURES } from "@/lib/marketing/content";
+import { FEATURES, shotAddress } from "@/lib/marketing/content";
 import { getCatalogStats } from "@/lib/marketing/data";
 
 /**
@@ -143,6 +143,7 @@ export default async function Page() {
                 <Shot
                   src={feature.shot}
                   alt={feature.alt}
+                  url={shotAddress(feature.route)}
                   tone={ink ? "ink" : "bone"}
                   priority={index === 0}
                   parallax={index !== 0}

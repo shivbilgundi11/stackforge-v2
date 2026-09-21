@@ -163,7 +163,7 @@ export function HomeNav() {
 
           <nav aria-label="Main" className="hidden items-center gap-9 lg:flex">
             {LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="u-link t-mono text-[10px]">
+              <Link key={link.href} href={link.href} className="u-link text-[14px] font-medium">
                 {link.label}
               </Link>
             ))}
