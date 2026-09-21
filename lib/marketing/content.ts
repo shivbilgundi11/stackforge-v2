@@ -55,7 +55,7 @@ export type MarketingFeature = {
  *
  * The fallback is for local development, where the variable is unset.
  */
-const SHOT_HOST_FALLBACK = "aiveda.app";
+const SHOT_HOST_FALLBACK = "buildtact.ai";
 
 function shotHost(): string {
   const origin = process.env.NEXT_PUBLIC_SITE_URL;
