@@ -155,38 +155,14 @@ function Renderer({ field, value, onChange, onBlur, invalid, describedBy }: Rend
     case "number":
     case "currency":
       return (
-        <div className="relative">
-          {field.kind === "currency" ? (
-            <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-fg-subtle">
-              $
-            </span>
-          ) : null}
-          <Input
-            {...common}
-            type="number"
-            inputMode="decimal"
-            min={field.min}
-            max={field.max}
-            step={field.step ?? "any"}
-            value={value === undefined || value === null ? "" : String(value)}
-            placeholder={field.placeholder}
-            className={cn(
-              "tabular-nums",
-              field.kind === "currency" && "pl-6",
-              field.unit && "pr-14",
-            )}
-            // Empty means "unset", not zero. Coercing "" to 0 here would make
-            // clearing a field silently submit a real value.
-            onChange={(event) =>
-              onChange(event.target.value === "" ? undefined : Number(event.target.value))
-            }
-          />
-          {field.unit ? (
-            <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-fg-subtle">
-              {field.unit}
-            </span>
-          ) : null}
-        </div>
+        <NumberInput
+          field={field}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          invalid={invalid}
+          describedBy={describedBy}
+        />
       );
 
     case "slider":
@@ -484,6 +460,129 @@ function Renderer({ field, value, onChange, onBlur, invalid, describedBy }: Rend
         />
       );
   }
+}
+
+/**
+ * A number the user can actually edit.
+ *
+ * The form holds `number | null`; this input holds the text being typed. They
+ * are not the same thing mid-edit, and conflating them is what made a
+ * prefilled field feel locked: `String(Number(text))` normalises on every
+ * keystroke, so deleting the "1" from "1536" produced "536", React wrote that
+ * back over the input, and the caret jumped to the end. The value could only
+ * be replaced wholesale — select all, retype — which is exactly the workaround
+ * users had found. The same round trip swallowed a decimal point, because
+ * `Number("2.")` is `2` and `String(2)` is `"2"`.
+ *
+ * `type="text"` rather than `type="number"` for the same reason: a number
+ * input's `value` getter returns `""` for anything it considers incomplete —
+ * "2.", "-", "1e" — so the raw keystrokes never arrive intact. `inputMode`
+ * keeps the numeric keypad on touch devices, which is what `type="number"`
+ * was really buying here.
+ *
+ * Empty stays empty. Coercing a cleared field to `0` would submit a figure the
+ * user never entered, and on a cost or ROI tool a silent zero is a wrong
+ * answer rather than a validation error.
+ */
+function NumberInput({
+  field,
+  value,
+  onChange,
+  onBlur,
+  invalid,
+  describedBy,
+}: Omit<RendererProps, "field"> & {
+  field: Extract<Field, { kind: "number" | "currency" }>;
+}) {
+  const [draft, setDraft] = useState(() => toText(value));
+
+  // Follow the form when the change came from somewhere else — a preset, a
+  // reopened run, an inbound handoff. `emitted` is the last value this input
+  // sent up, so anything else is an external write and replaces the draft.
+  const [emitted, setEmitted] = useState(value);
+  if (value !== emitted) {
+    setEmitted(value);
+    setDraft(toText(value));
+  }
+
+  function handleChange(raw: string) {
+    const next = acceptable(raw);
+    if (next === undefined) return;
+    const parsed = toNumber(next);
+    setDraft(next);
+    setEmitted(parsed);
+    onChange(parsed);
+  }
+
+  return (
+    <div className="relative">
+      {field.kind === "currency" ? (
+        <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-fg-subtle">
+          $
+        </span>
+      ) : null}
+      <Input
+        id={field.name}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
+        type="text"
+        // A minus key is only worth asking for on a field that accepts one.
+        inputMode={field.min !== undefined && field.min >= 0 ? "decimal" : "text"}
+        autoComplete="off"
+        value={draft}
+        placeholder={field.placeholder}
+        className={cn("tabular-nums", field.kind === "currency" && "pl-6", field.unit && "pr-14")}
+        onChange={(event) => handleChange(event.target.value)}
+        onBlur={() => {
+          // Settle the display on the value that was actually recorded, so a
+          // field left reading "0536" or "2." does not disagree with what the
+          // tool is about to be run with.
+          const parsed = toNumber(draft);
+          if (parsed !== null) setDraft(String(parsed));
+          onBlur();
+        }}
+      />
+      {field.unit ? (
+        <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-fg-subtle">
+          {field.unit}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+/** Digits, one decimal point, an optional leading minus — and the empty string. */
+const NUMERIC_DRAFT = /^-?\d*\.?\d*$/;
+
+/**
+ * The text as typed, or `undefined` to refuse the keystroke — which is what
+ * `type="number"` did for a letter, and the only behaviour of it worth keeping.
+ *
+ * Separators are stripped rather than rejected: "1,536" is what pasting a
+ * number out of a spreadsheet gives you, and it is not a different number.
+ */
+function acceptable(raw: string): string | undefined {
+  const cleaned = raw.replace(/[\s,]/g, "");
+  return NUMERIC_DRAFT.test(cleaned) ? cleaned : undefined;
+}
+
+/** `null`, not `0` or `NaN`, for anything that is not yet a number. */
+function toNumber(text: string): number | null {
+  if (text === "" || text === "-" || text === "." || text === "-.") return null;
+  const parsed = Number(text);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+/**
+ * A string is tolerated as well as a number. The form's contract is
+ * `number | null`, but money and ratios cross the wire as decimal strings
+ * (D-08); if one ever reaches a field without passing `coerceValue` first,
+ * showing "0.7" and letting the schema object is better than a field that
+ * silently renders empty over a value that is really there.
+ */
+function toText(value: unknown): string {
+  if (typeof value === "number") return Number.isFinite(value) ? String(value) : "";
+  return typeof value === "string" ? value : "";
 }
 
 /**

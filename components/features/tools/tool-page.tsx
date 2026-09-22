@@ -1,6 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BookOpenIcon, PlayIcon, SparklesIcon, ZapIcon } from "lucide-react";
 import Link from "next/link";
@@ -35,6 +34,7 @@ import { useRun } from "@/lib/api/hooks";
 import { qk } from "@/lib/api/query-keys";
 import { runTool, type ToolRunResult } from "@/lib/api/tools";
 import { coerceValues } from "@/lib/tools/coerce";
+import { toolResolver } from "@/lib/tools/resolver";
 import { useToolUrlState } from "@/lib/tools/url-state";
 import type { ToolSpec } from "@/lib/tools/spec";
 import { duration } from "@/lib/format";
@@ -64,7 +64,7 @@ export function ToolPage({ spec }: { spec: ToolSpec }) {
   useHandoffConsumed(spec.slug, handoff);
 
   const form = useForm<Values>({
-    resolver: zodResolver(spec.input as never),
+    resolver: useMemo(() => toolResolver(spec), [spec]),
     defaultValues: { ...spec.defaults, ...urlState, ...handoff?.values },
     mode: "onSubmit",
   });

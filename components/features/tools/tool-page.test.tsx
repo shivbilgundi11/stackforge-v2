@@ -99,7 +99,7 @@ const RESULT: ToolRunResult = {
   ai: null,
 };
 
-function renderTool(searchParams = "") {
+function renderTool(searchParams = "", withSpec: ToolSpec = spec) {
   // `retry: false` so a rejected mutation surfaces immediately instead of
   // being retried past the test's timeout.
   const client = new QueryClient({
@@ -113,7 +113,7 @@ function renderTool(searchParams = "") {
     <QueryClientProvider client={client}>
       <TooltipProvider delayDuration={200}>
         <NuqsTestingAdapter searchParams={searchParams}>
-          <ToolPage spec={spec} />
+          <ToolPage spec={withSpec} />
         </NuqsTestingAdapter>
       </TooltipProvider>
     </QueryClientProvider>,
@@ -342,8 +342,8 @@ describe("cross-workflow handoff", () => {
 
     renderTool();
 
-    expect(screen.getByLabelText(/input tokens/i)).toHaveValue(9000);
-    expect(screen.getByLabelText(/requests per day/i)).toHaveValue(42);
+    expect(screen.getByLabelText(/input tokens/i)).toHaveValue("9000");
+    expect(screen.getByLabelText(/requests per day/i)).toHaveValue("42");
 
     // Consumed, not observed: leaving it in the store would re-apply it and
     // silently discard the user's edits on the next mount.
@@ -371,8 +371,8 @@ describe("reopening a stored run", () => {
 
     expect(await screen.findByText("$56.31")).toBeInTheDocument();
     // The inputs come back too: a reopened run is editable, not a receipt.
-    await waitFor(() => expect(screen.getByLabelText(/input tokens/i)).toHaveValue(4000));
-    expect(screen.getByLabelText(/requests per day/i)).toHaveValue(250);
+    await waitFor(() => expect(screen.getByLabelText(/input tokens/i)).toHaveValue("4000"));
+    expect(screen.getByLabelText(/requests per day/i)).toHaveValue("250");
   });
 
   it("does not sit on a skeleton when there is no run to reopen", () => {
@@ -383,5 +383,146 @@ describe("reopening a stored run", () => {
 
     expect(screen.getByText("No result yet")).toBeInTheDocument();
     expect(getRun).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Number fields carry most of what these tools are actually given, and until
+ * this suite existed they were the hardest thing in the product to type into:
+ * the value was round-tripped through `String(Number(text))` on every
+ * keystroke, so a prefilled figure could only be replaced by selecting all and
+ * retyping. These cover editing as a sequence of keystrokes rather than as one
+ * final value, because that is where it broke.
+ */
+describe("editing a number field", () => {
+  // Decimals and one optional field, which the required-by-default spec above
+  // cannot express: `.int()` would reject "2.5" for the wrong reason, and
+  // "clearing an optional field is allowed" needs a field that is optional.
+  const loose: ToolSpec = {
+    ...spec,
+    input: z.object({
+      input_tokens: z.number().min(0),
+      requests_per_day: z.number().min(0).optional(),
+    }),
+  };
+
+  it("keeps a partial deletion instead of rewriting the field", async () => {
+    const user = userEvent.setup();
+    renderTool();
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.type(input, "{Backspace}{Backspace}");
+
+    // Not "2000", and not a caret thrown to the end mid-edit.
+    expect(input).toHaveValue("20");
+  });
+
+  it("clears to empty without substituting a zero", async () => {
+    const user = userEvent.setup();
+    renderTool();
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.clear(input);
+
+    // A silent 0 here is a wrong answer on a cost tool, not a blank field.
+    expect(input).toHaveValue("");
+  });
+
+  it("can be cleared and retyped without selecting all first", async () => {
+    const user = userEvent.setup();
+    renderTool();
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.type(input, "{Backspace}{Backspace}{Backspace}{Backspace}87878");
+
+    expect(input).toHaveValue("87878");
+  });
+
+  it("holds a decimal point while the rest of the number is typed", async () => {
+    const user = userEvent.setup();
+    renderTool("", loose);
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.clear(input);
+    await user.type(input, "2.");
+    // `Number("2.")` is 2 and `String(2)` is "2", which used to eat the point
+    // the instant it was typed.
+    expect(input).toHaveValue("2.");
+
+    await user.type(input, "5");
+    expect(input).toHaveValue("2.5");
+  });
+
+  it("takes a pasted figure with thousands separators", async () => {
+    const user = userEvent.setup();
+    renderTool();
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.clear(input);
+    await user.paste("1,536");
+
+    expect(input).toHaveValue("1536");
+  });
+
+  it("refuses characters that cannot be part of a number", async () => {
+    const user = userEvent.setup();
+    renderTool();
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.clear(input);
+    await user.type(input, "12abc3");
+
+    expect(input).toHaveValue("123");
+  });
+
+  it("settles the display on the recorded value when it loses focus", async () => {
+    const user = userEvent.setup();
+    renderTool();
+    const input = screen.getByLabelText(/input tokens/i);
+
+    await user.clear(input);
+    await user.type(input, "0536");
+    expect(input).toHaveValue("0536");
+
+    await user.tab();
+    // Otherwise the field disagrees with the figure the tool is about to run.
+    expect(input).toHaveValue("536");
+  });
+});
+
+describe("submitting with a number field left empty", () => {
+  const loose: ToolSpec = {
+    ...spec,
+    input: z.object({
+      input_tokens: z.number().min(0),
+      requests_per_day: z.number().min(0).optional(),
+    }),
+  };
+
+  it("blocks the run and names the field", async () => {
+    const user = userEvent.setup();
+    renderTool();
+
+    await user.clear(screen.getByLabelText(/input tokens/i));
+    await user.click(screen.getByRole("button", { name: /calculate/i }));
+
+    // Not zod's "expected number, received undefined", which says nothing a
+    // reader looking at an empty box does not already know.
+    expect(await screen.findByText("Input tokens is required.")).toBeInTheDocument();
+    expect(runTool).not.toHaveBeenCalled();
+  });
+
+  it("runs without an optional field the user emptied", async () => {
+    const user = userEvent.setup();
+    runTool.mockResolvedValue(RESULT);
+    renderTool("", loose);
+
+    await user.clear(screen.getByLabelText(/requests per day/i));
+    await user.click(screen.getByRole("button", { name: /calculate/i }));
+
+    // `z.number().optional()` rejects `null`, so an emptied optional field
+    // would otherwise fail for being empty — the one thing optional permits.
+    await waitFor(() => expect(runTool).toHaveBeenCalledTimes(1));
+    expect(runTool.mock.calls[0]?.[1]).toEqual({ input_tokens: 2000 });
   });
 });
